@@ -1,0 +1,4 @@
+To enable automatic loading of a file at startup, make it executable first:
+
+   chmod +x foo
+

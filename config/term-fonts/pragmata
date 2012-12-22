@@ -1,0 +1,7 @@
+
+URxvt.font:xft:pragmatapro:style=regular:pixelsize=14
+URxvt.boldFont:xft:pragmatapro:style=regular:pixelsize=14
+URxvt.italicFont:xft:pragmatapro:style=italic:pixelsize=14
+URxvt.boldItalicFont:xft:pragmatapro:style=italic:pixelsize=14
+
+! vim:ft=xdefaults

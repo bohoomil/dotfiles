@@ -1,0 +1,47 @@
+set adjust-open	            "width"
+set scroll-wrap		          "false"
+set font                    "Envy Code R Regular 10"
+set default-bg              "#090C19"
+set default-fg              "#E6E6E6"
+set statusbar-bg            "#090C19"
+set statusbar-fg            "#E6E6E6"
+set completion-bg           "#222946"
+set completion-fg           "#E6E6E6"
+set completion-highlight-bg "#090C19"
+set completion-highlight-fg "#FFAA3E"
+set inputbar-bg             "#090C19"
+set inputbar-fg             "#E6E6E6"
+set notification-error-bg   "#090C19"
+set notification-error-fg   "#DC2F32"
+set notification-warning-bg "#090C19"
+set notification-warning-fg "#E671D3"
+set highlight-color         "#1AAA13"
+set highlight-active-color  "#DC2F32"
+set recolor                  1
+set recolor-keephue          1
+set recolor-darkcolor       "#1A1A1A"
+set recolor-lightcolor      "#F2F2F2"
+set tabbar-bg               "#505050"
+set tabbar-fg               "#707070"
+set tabbar-focus-bg         "#090C19"
+set tabbar-focus-fg         "#CACCC2"
+set pages-per-row	           1
+set page-padding             5
+set window-title-basename    1
+
+map <PageUp> scroll full-up
+map <PageDown> scroll full-down
+map <S-PageUp> scroll top
+map <S-PageDown> scroll bottom
+map ] navigate next
+map [ navigate previous
+map <C-q> quit
+map <Space> adjust_window
+map + zoom in
+map - zoom out
+map <F1> set "pages-per-row 1"
+map <F2> set "pages-per-row 2"
+map <F3> adjust_window best-fit
+map <F4> adjust_window width
+
+" vim:ft=vim

@@ -1,0 +1,3 @@
+#!/bin/sh
+xsetroot -solid "#11151E" -cursor_name left_ptr
+

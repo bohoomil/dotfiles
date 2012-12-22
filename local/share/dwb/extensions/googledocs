@@ -1,0 +1,116 @@
+//
+//  Copyright (c) 2012 Stefan Bolte <portix@gmx.net>
+//
+//  This program is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation; either version 3 of the License, or
+//  (at your option) any later version.
+//  
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with this program; if not, write to the Free Software Foundation, Inc.,
+//  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+//
+//
+/*
+ *
+ * Extension that automatically opens links in Google Docs
+ *
+ * To use this extension save this script as $HOME/.local/share/dwb/extensions/googledocs 
+ * and load it with a userscript in $HOME/.config/dwb/userscripts/, e.g. 
+ *
+ * ------------------------------------------------------------------------------
+ * |#!javascript                                                                | 
+ * |                                                                            | 
+ * |extensions.load("googledocs");                                              | 
+ * ------------------------------------------------------------------------------
+ *
+ *
+ * Configuration options:
+ *
+ * filetypes        : An array of filename extensions, matching urls will be
+ *                    loaded  with Google Docs, the extensions are case
+ *                    insensitive. The default value is 
+ *                    [ "doc", "docx", "xls", "xlsx", "odt", "ods" ]
+ *                    Possible filetypes are
+ *                    "DOC", "DOCX", "XLS", "XLSX", "PPT", "PPTX", "ODT", "ODS",
+ *                    "PDF", "PAGES", "AI", "PSD", "TIFF", "DXF", "SVG", "EPS",
+ *                    "PS", "TTF", "OTF", "XPS", "ZIP" and "RAR".
+ *
+ * Example (loading config with extensions.load()) 
+ *
+ * ------------------------------------------------------------------------------
+ * |extensions.load("googledocs", {                                             |
+ * |    filetypes : [ "doc", "docx", "xls", "xlsx", "pdf", "ps" ]       |
+ * |});                                                                         |
+ * ------------------------------------------------------------------------------
+ *
+ * Example extensionrc:
+ *
+ * ------------------------------------------------------------------------------
+ * |return {                                                                    |
+ * |   foo : { ... },                                                           |
+ * |                                                                            |
+ * |   googledocs : {                                                           |
+ * |      filetypes : [ "doc", "docx", "xls", "xlsx", "pdf", "ps" ]     |
+ * |   },                                                                       |
+ * |   bar : { ... }                                                            |
+ * |}                                                                           |
+ * ------------------------------------------------------------------------------
+ */
+
+/*<INFO
+Automatically open links in google docs
+INFO>*/
+
+var config = {};
+var defaultConfig = { 
+//<DEFAULT_CONFIG
+  // An array of filename extensions, matching urls will be
+  // loaded  with Google Docs, the extensions are case
+  // insensitive. The default value is 
+  // [ "doc", "docx", "xls", "xlsx", "odt", "ods" ]
+  // Possible filetypes are
+  // "DOC", "DOCX", "XLS", "XLSX", "PPT", "PPTX", "ODT", "ODS",
+  // "PDF", "PAGES", "AI", "PSD", "TIFF", "DXF", "SVG", "EPS",
+  // "PS", "TTF", "OTF", "XPS", "ZIP" and "RAR".
+  filetypes: [ "doc", "docx", "xls", "xlsx", "odt", "ods" ],
+//>DEFAULT_CONFIG
+};
+
+var sigId = -1; 
+var reg; 
+
+function downloadCheck(w, d) {
+  if (w.mainFrame.host === "docs.google.com")
+    return false;
+  else if (reg.test(d.networkRequest.uri)) {
+    w.loadUri("http://docs.google.com/viewer?url=" + d.networkRequest.uri);
+    return true;
+  }
+}
+
+function disconnect() {
+  if (sigId >= 0) {
+    signals.disconnect(sigId);
+    sigId = -1;
+  }
+}
+return { 
+  init : function (c) {
+    config = extensions.getConfig(c, defaultConfig);
+    sigId = signals.connect("download", downloadCheck);
+    reg = new RegExp(".*\.(" + config.filetypes.join("|") + ")$", "i");
+    return true;
+
+  },
+  end : function () {
+    disconnect();
+  }
+};
+
+// vim: set ft=javascript:

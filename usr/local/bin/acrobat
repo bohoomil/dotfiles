@@ -1,0 +1,5 @@
+#!/bin/sh
+WINEPREFIX="/home/bohoomil/.wine"
+ACROPATH="/drive_c/Program Files/Adobe/Acrobat 8.0/Acrobat"
+schroot -pqd "$(pwd)" -- wine "${WINEPREFIX}${ACROPATH}/Acrobat.exe" >/dev/null 2>&1
+

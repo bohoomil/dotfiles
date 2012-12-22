@@ -1,0 +1,11 @@
+[Unit]
+Description=32-bit chroot
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/arch32 start
+ExecStop=/usr/local/bin/arch32 stop
+
+[Install]
+WantedBy=multi-user.target

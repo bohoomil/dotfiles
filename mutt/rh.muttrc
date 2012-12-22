@@ -1,0 +1,2 @@
+# needed by RH based distros due to a different certificates location
+set ssl_ca_certificates_file=/etc/pki/tls/certs/ca-bundle.crt

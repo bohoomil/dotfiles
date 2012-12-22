@@ -1,0 +1,14 @@
+# custom bindings
+keymap y EXTERN
+keymap Y EXTERN_LINK
+keymap b BACK
+keymap m NEXT
+keymap u PEEK
+keymap ESC-u PEEK_LINK
+keymap r RELOAD
+keymap P PRINT
+keymap B ADD_BOOKMARK
+keymap o GOTO
+keymap C-c OPTIONS
+keymap C-s INTERRUPT
+

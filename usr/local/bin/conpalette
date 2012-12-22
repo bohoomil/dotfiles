@@ -1,0 +1,267 @@
+#!/usr/bin/env perl
+
+package App::ConPalette;
+BEGIN {
+  $App::ConPalette::VERSION = '0.1.5';
+}
+
+use strict;
+use warnings FATAL => 'all';
+use Getopt::Long qw(:config auto_help);
+use Pod::Usage;
+
+my %palettes = (
+    'konsole' => [
+        '000000',
+        'B21818',
+        '18B218',
+        'B26818',
+        '1818B2',
+        'B218B2',
+        '18B2B2',
+        'B2B2B2',
+
+        '686868',
+        'FF5454',
+        '54FF54',
+        'FFFF54',
+        '5454FF',
+        'FF54FF',
+        '54FFFF',
+        'FFFFFF',
+    ],
+    'rxvt' => [
+        '000000',
+        'CD0000',
+        '00CD00',
+        'CDCD00',
+        '0000CD',
+        'CD00CD',
+        '00CDCD',
+        'FAEBD7',
+
+        '404040',
+        'FF0000',
+        '00FF00',
+        'FFFF00',
+        '0000FF',
+        'FF00FF',
+        '00FFFF',
+        'FFFFFF',
+    ],
+    'sinclair' => [
+        '000000',
+        'CA0000',
+        '00CA00',
+        'CACA00',
+        '0000AA',
+        'CA00CA',
+        '00CACA',
+        'CACACA',
+
+        '555555',
+        'FF0000',
+        '00FF00',
+        'FFFF00',
+        '0000FF',
+        'FF00FF',
+        '00FFFF',
+        'FFFFFF',
+    ],
+    'tango-dark' => [
+        '000000',
+        'CC0000',
+        '4E9A06',
+        'C4A000',
+        '3465A4',
+        '75507B',
+        '06989A',
+        'AAAAAA',
+        
+        '555753',
+        'EF2929',
+        '8AE234',
+        'FCE94F',
+        '729FCF',
+        'AD7FA8',
+        '34E2E2',
+        'D3D7CF',
+    ],
+    'tango-light' => [
+        '2E3436',
+        'CC0000',
+        '4E9A06',
+        'C4A000',
+        '3465A4',
+        '75507B',
+        '06989A',
+        
+        'D3D7CF',
+        '555753',
+        'EF2929',
+        '8AE234',
+        'FCE94F',
+        '729FCF',
+        'AD7FA8',
+        '34E2E2',
+        'EEEEEC',
+    ],
+    'xterm' => [
+        '000000',
+        'CD0000',
+        '00CD00',
+        'CDCD00',
+        '1E90FF',
+        'CD00CD',
+        '00CDCD',
+        'E5E5E5',
+
+        '4C4C4C',
+        'FF0000',
+        '00FF00',
+        'FFFF00',
+        '4682B4',
+        'FF00FF',
+        '00FFFF',
+        'FFFFFF',
+    ],
+		'dc3' => [
+			'000000', #black
+			'801A2B', #darkred
+			'2E733A', #darkgreen
+			'807933', #brown
+			'00518C', #darkblue
+			'50468C', #darkmagenta
+			'008080', #darkcyan
+			'69758C', #lightgrey
+			
+			'3A4759', #darkgrey
+			'B3364B', #red
+			'4BA65A', #green
+			'B38F6B', #yellow
+			'3971BF', #blue
+			'A6317F', #magenta
+			'3193A6', #cyan
+			'959EA6', #white
+		],
+		'euphrasia' => [
+			'000000', #black
+			'A62A3E', #darkred
+			'38912B', #darkgreen
+			'B27D12', #brown
+			'355C9A', #darkblue
+			'7C4F9F', #darkmagenta
+			'258F8F', #darkcyan
+			'77858C', #lightgrey
+			
+			'666666', #darkgrey
+			'F04758', #red
+			'93C724', #green
+			'DDB62B', #yellow
+			'45A3E6', #blue
+			'C953EF', #magenta
+			'60C6C8', #cyan
+			'C0C0C0', #white
+		],
+);
+
+GetOptions(
+    'l|list'    => \&list,
+    'r|reset'   => \my $reset,
+    's|show'    => \&show,
+    't|tty=i'   => \(my $tty = ''),
+) or pod2usage();
+
+open(my $handle, '>', "/dev/tty$tty") or die "Can't open tty: $!; aborted\n";
+
+if ($reset) {
+    syswrite $handle, "\033]R";
+    exit;
+}
+
+my $name = $ARGV[0];
+die "No palette name specified; aborted\n" if !defined $name;
+die "Unknown palette name; aborted\n" if !exists $palettes{$name};
+
+for my $num (0..$#{ $palettes{$name} }) {
+    my $escape = sprintf("\033]P%X%s", $num, $palettes{$name}[$num]);
+    syswrite $handle, $escape;
+}
+
+exit;
+
+sub list {
+    print $_, "\n" for sort keys %palettes;
+    exit;
+}
+
+sub show {
+    my $esc = "\033[";
+
+    for my $fg_color (0, 7, 1..6) {
+        my $normal = '';
+        my $bright = '';
+        my $dim    = '';
+        
+        for my $bg_color (undef, 7, 0, 1..6) {
+            my $colors = "3$fg_color";
+            my $padding = '  ';
+            
+            if (defined $bg_color) {
+                $colors .= ";4$bg_color";
+                $padding = '';
+            }
+
+            $normal = sprintf('%s%s%sm   %s%s %s0m',   $normal, $esc, $colors, $padding, $colors, $esc);
+            $bright = sprintf('%s%s1;%sm %s1;%s %s0m', $bright, $esc, $colors, $padding, $colors, $esc);
+            $dim    = sprintf('%s%s2;%sm %s2;%s %s0m', $dim,    $esc, $colors, $padding, $colors, $esc);
+            
+        }
+        
+        print "$normal\n$bright\n$dim\n";
+    }
+    exit;
+}
+
+__END__
+
+=head1 NAME
+
+conpalette - Redefine a Linux console's color palette
+
+=head1 SYNOPSIS
+
+B<conpalette> [options] [palette]
+
+ Options:
+   -h, --help              Display this help message
+   -l, --list              List the available palettes
+   -r, --reset             Reset the console palette
+   -s, --show              Show the current palette
+   -t N, --tty=N           Specify a different tty
+
+=head1 DESCRIPTION
+
+This little program redefines the color palette of your Linux console using
+the escape sequences documented in L<console_codes(4)>.
+
+=head1 EXAMPLES
+
+You might put this in your F<~/.bashrc>:
+
+ if [ "$TERM" = "linux" ]; then
+     conpalette tango-dark
+ fi
+
+=head1 AUTHOR
+
+Hinrik E<Ouml>rn SigurE<eth>sson, hinrik.sig@gmail.com
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2008 Hinrik E<Ouml>rn SigurE<eth>sson
+
+This program is free software, you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

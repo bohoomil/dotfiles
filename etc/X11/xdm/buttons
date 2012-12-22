@@ -1,0 +1,18 @@
+#!/bin/sh
+
+xmessage -buttons reboot,halt,poweroff,suspend "$@" ""
+
+case "$?" in
+	101)
+		/sbin/reboot
+		;;
+	102)
+		/sbin/halt
+		;;
+	103)
+		/sbin/poweroff
+		;;
+	104)
+		/usr/bin/systemctl suspend
+		;;
+esac

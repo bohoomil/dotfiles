@@ -1,0 +1,32 @@
+
+!URxvt.font:xft:Envy Code R:Regular:pixelsize=13:antialias=false
+!URxvt.boldFont:xft:Envy Code R:Regular:pixelsize=13:antialias=false
+!URxvt.italicFont:xft:Envy Code R:Italic:pixelsize=13:antialias=false
+!URxvt.boldItalicFont:xft:Envy Code R:Italic:pixelsize=13:antialias=false
+
+URxvt.font:xft:Envy Code R:style=Regular:pixelsize=13:antialias=false, \
+					 xft:PragmataPro:style=Regular:pixelsize=13:antialias=false, \
+					 xft:DejaVu Sans Mono:style=Book:pixelsize=13:antialias=false, \
+					 xft:VL Gothic:style=Regular:pixelsize=13:antialias=false, \
+					 xft:DotumChe:style=Regular:pixelsize=13:antialias=false, \
+					 xft:Droid Sans Mono:style=Regular:pixelsize=13:antialias=false
+URxvt.boldFont:xft:Envy Code R:style=Regular:pixelsize=13:antialias=false, \
+					 xft:PragmataPro:style=Regular:pixelsize=13:antialias=false, \
+					 xft:DejaVu Sans Mono:style=Book:pixelsize=13:antialias=false, \
+					 xft:VL Gothic:style=Regular:pixelsize=13:antialias=false, \
+					 xft:DotumChe:style=Regular:pixelsize=13:antialias=false, \
+					 xft:Droid Sans Mono:style=Regular:pixelsize=13:antialias=false
+URxvt.italicFont:xft:Envy Code R:style=Italic:pixelsize=13:antialias=false, \
+					 xft:PragmataPro:style=Italic:pixelsize=13:antialias=false, \
+					 xft:DejaVu Sans Mono:style=Oblique:pixelsize=13:antialias=false, \
+					 xft:VL Gothic:style=Regular:pixelsize=13:antialias=false, \
+					 xft:DotumChe:style=Regular:pixelsize=13:antialias=false, \
+					 xft:Droid Sans Mono:style=Regular:pixelsize=13:antialias=false
+URxvt.boldItalicFont:xft:Envy Code R:style=Italic:pixelsize=13:antialias=false, \
+					 xft:PragmataPro:style=Italic:pixelsize=13:antialias=false, \
+					 xft:DejaVu Sans Mono:style=Oblique:pixelsize=13:antialias=false, \
+					 xft:VL Gothic:style=Regular:pixelsize=13:antialias=false, \
+					 xft:DotumChe:style=Regular:pixelsize=13:antialias=false, \
+					 xft:Droid Sans Mono:style=Regular:pixelsize=13:antialias=false
+
+! vim:ft=xdefaults

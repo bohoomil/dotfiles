@@ -1,0 +1,11 @@
+#!/bin/sh
+
+#edit="xterm -fn 'xft:pragmatapro:pixelsize=14' -geometry 110x64 -e vim"
+edit="urxvtc -geometry 110x68 -e vim"
+
+if [ ! -f "$1" ]; then
+	$edit 
+else
+	$edit "$1"
+fi
+

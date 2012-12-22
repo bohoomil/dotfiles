@@ -1,0 +1,8 @@
+
+URxvt.font:xft:Monaco for Powerline:Regular:size=11
+URxvt.imFont:xft:Monaco for Powerline:Regular:size=11
+URxvt.boldFont:xft:Monaco for Powerline:bold:size=11
+URxvt.italicFont:xft:Monaco for Powerline:italic:size=11
+URxvt.boldItalicFont:xft:Monaco for Powerline:bold:italic:size=11
+
+! vim:ft=xdefaults

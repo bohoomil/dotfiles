@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+wm=monsterwm
+ff="/tmp/$RANDOM.monsterwm.fifo"
+
+tags=('[1]' '[2]' '[3]')
+layouts=('T' 'M' 'B' 'G' 'F') 
+
+[[ -p $ff ]] || mkfifo -m 600 "$ff"
+
+function statusbar {
+    # mpd status
+    cpu=$(eval $(awk '/^cpu /{print "previdle=" $5 "; prevtotal=" $2+$3+$4+$5 }' /proc/stat); sleep 0.4; eval $(awk '/^cpu /{print "idle=" $5 "; total=" $2+$3+$4+$5 }' /proc/stat); intervaltotal=$((total-${prevtotal:-0})); echo "$((100*( (intervaltotal) - ($idle-${previdle:-0}) ) / (intervaltotal) ))")
+    #gmail=$(cat /home/simon/.gma1l)
+    amixer=$(amixer get Master | sed -nr '$ s:.*\[(.+&)].*:\1:p')
+    host=$(hostname)
+    #ip=$(ifconfig |grep inet | grep -v inet6 |grep -v '127' | awk '{print $2}' |cut -d: -f2)
+	  hdd1="$(df -t rootfs | awk '/^rootfs/{printf $5"\n"}')"
+    #home=$(df -h | awk '/rootfs {print "/dev/sda1" $5}')
+    #wireless=$(wireless_status|awk /restor/)
+    mem=$(free -m | awk '/buffers\/cache/ {print $3 MB}')
+    # torrr=$(transmission-remote -l|awk '{print $5 " " $10}' |grep -v Up |grep -v 0.0)
+    #torr=$(transmission-remote -l | awk '/%/ {print $2 " "$13 " " $14}'|tail -n1)
+    #irssi=$(cat /home/simon/.logs/irssi_pipe)
+    #music=$(mpc current)
+    #[ -z "$music" ] && music="Stopped"
+
+    #echo "\f2 | $gmail | \f3$host \f3$home \f2| \f7$ip \f2| \f7Þ \f6$mem \f7Ï \f6 $cpu \f2 |\f7Ò\f2 $irssi \f2|\r \f7Ù\f2 $torr | \f8$wireless \f2| \f3Î \f7$music \f2| \f7Ô \f3$amixer\fr \f2| \f0\b1 Õ \br \u3\f7$(date +"%H:%M") "
+    echo "\f2 | \f3$host \f2 | \f7$hdd1 \f2 | \f5$mem \f6$cpu \f2 | \f3$amixer \f2 | \f1$(date +"%H:%M") "
+}
+
+while read -t 1 -r wmout || true; do
+    if [[ $wmout =~ ^(([[:digit:]]+:)+[[:digit:]]+ ?)+$ ]]; then
+        read -ra desktops <<< "$wmout"
+
+        tmp=
+        for desktop in "${desktops[@]}"; do
+            IFS=':' read -r d w m c u <<< "$desktop"
+            # Tags labels
+            label=${tags[$d]}
+            # Current desktop color and enclosing char (yes/no)
+            ((c)) && fg="0" bg="1" lc="\u7 " rc=" \ur" && layout="\f8"["\f5"${layouts[$m]}"\f8"] || fg="9" bg="0" lc=" " rc=" "
+            # Has windows ?
+            ((w)) && ((! c)) && fg="7" lc="\u5 " rc=" \ur"
+            # Urgent windows ?
+            ((u)) && fg="0" bg="3" lc="\u4 " rc=" \ur"
+
+            tmp+="\f$fg\b$bg$lc$label$rc\fr\br"
+        done
+	
+        tmp+=" $layout"
+    fi
+    echo "$tmp $(statusbar)"
+done < "$ff" | bar &
+#done < "$ff" | dzen2 &
+
+$wm > "$ff"
+
+rm $ff

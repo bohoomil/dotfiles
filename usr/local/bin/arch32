@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Add '/var/run /var/lib/dbus' to the list to enable pulseaudio.
+dirs=(/dev /dev/pts /dev/shm /tmp /home)
+
+case $1 in
+    start)
+        for d in "${dirs[@]}"; do
+            mount -o bind $d /mnt/sda4/arch32-chroot$d
+        done
+        ;;
+    stop)
+        for (( i = ${#dirs[@]} - 1; i >= 0; i-- )); do
+            umount "/mnt/sda4/arch32-chroot${dirs[i]}"
+        done
+        umount /mnt/sda4/arch32-chroot/{proc,sys}
+        ;;
+    *)
+        echo "usage: $0 (start|stop)"
+        exit 1
+esac

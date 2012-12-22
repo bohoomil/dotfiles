@@ -1,0 +1,91 @@
+#!/bin/bash
+#
+# by bohoomil
+# Easily mount your fstab partitions.
+# Prerequisites: sudo, coreutils, util-linux, gawk
+# Drop it somewhere in your $PATH.
+
+usage() {
+	echo -e ""
+  echo -e "Mount an sdX partition."
+  echo -e "Usage:  m <device> <partition number>, e.g."
+  echo -e "        m a 4  -- mount /dev/sda4 in /mnt/sda4"
+	echo -e ""
+}
+
+# colours
+cred="\e[01;31m"
+cgre="\e[01;32m"
+cres="\e[00m"
+
+# /dev /mnt
+mntpt="/mnt/sd"
+mntdv="/dev/sd"
+
+fs=$(fsck -N $mntdv$1$2 | awk 'FNR == 2 { gsub("fsck.", ""); print $5 }')
+
+mntch=$(cat /proc/mounts | grep sd"$1$2")
+mntchex="$?"
+
+# check if the required applications are present
+for req in sudo blkid mount mkdir; do
+  which $req >/dev/null 2>&1
+  if [ "$?" -ne 0 ]; then
+    echo -e "${cred}${req} has not been installed correctly. Exiting.${cres}"
+    exit 1
+  fi
+done
+
+# check if required parameters are present
+case "$1" in
+  [a-z])
+    case "$2" in
+      "")
+        usage
+        exit 1
+        ;;
+      "[1-9]+$")
+        continue
+        ;;
+    esac
+    ;;
+  "[1-9]+$"|"")
+    usage
+    exit 1
+    ;;
+  *)
+    usage
+    exit 1
+    ;;
+esac
+
+# check if the filesystem is already mounted
+if [ "$mntchex" -eq 0 ]; then
+  echo -e "${cred}$mntdv$1$2 already mounted:${cres}"
+  echo -e "$mntch"
+  exit 1
+fi
+
+# check if a mount point exists
+# if it doesn't -- create it
+if [ ! -d "$mntpt$1$2" ]; then
+  echo -e "Mount point $mntpt$1$2 doesn't exist. Creating:"
+  sudo mkdir -pv "$mntpt$1$2"
+  if [ "$?" -ne 0 ]; then
+    echo -e "${cred}Couldn't create the directory. Exiting.${cres}"
+    exit 1
+  fi
+  #echo " Done."
+fi
+
+# mount the filesystem
+sudo mount -t "$fs" "$mntdv$1$2" "$mntpt$1$2"
+
+# check the error code
+if [ "$?" -eq 0 ]; then
+  echo -e "${cgre}Successfully mounted $mntdv$1$2 in $mntpt$1$2${cres}"
+else
+  echo -e "${cred}Something has gone wrong.${cres}"
+  usage
+fi
+

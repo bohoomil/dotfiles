@@ -1,0 +1,510 @@
+//
+//  Copyright (c) 2012 Stefan Bolte <portix@gmx.net>
+//
+//  This program is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation; either version 3 of the License, or
+//  (at your option) any later version.
+//  
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with this program; if not, write to the Free Software Foundation, Inc.,
+//  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+//
+
+/*
+ *
+ * Replace youtube flash videos with a html5 video. 
+ *
+ * This plugin automatically replaces flashvideos on youtube with a html5 video
+ * even if html5 isn't officially available.
+ *
+ * To use this extension save this script as $HOME/.local/share/dwb/extensions/youtube_html5 
+ * and load it with a userscript in $HOME/.config/dwb/userscripts/, e.g. 
+ *
+ * ------------------------------------------------------------------------------
+ * |#!javascript                                                                | 
+ * |                                                                            | 
+ * |extensions.load("youtube_html5");                                           | 
+ * ------------------------------------------------------------------------------
+ *
+ * Configration options: 
+ *
+ * togglePlay          : Shortcut for toggling pause/play, 
+ *                       default: "yp"
+ *
+ * seek                : Seek to position, "37ys" will seek to 37% of the video,
+ *                       :yt_seek 3:55 will seek to position 3:55
+ *                       default: "ys"
+ *
+ * seekForward         : Seek forward, e.g. 7yf will seek 7*seekStep forward,
+ *                       :yt_seek_forward 1:37 will seek forward 1 minute and 37 seconds 
+ *                       default: "yf"
+ *
+ * seekBackward         : Seek backward, e.g. 7yb will seek 7*seekStep forward,
+ *                       :yt_seek_backward 1:37 will seek backward 1 minute and 37 seconds 
+ *                       default: "yb"
+ *
+ * seekStep            : Seekstep in seconds
+ *                       default: 5
+ *
+ * autoplay            : Whether to automatically start the video, 
+ *                       default: false
+ *
+ * controls            : Whether to show controls, 
+ *                       default: true
+ *
+ * defaultQuality      : The default quality, possible qualities are 
+ *                       1080p, 720p, 480p, 360p, 240p
+ *                       If the quality isn't available the next lower quality
+ *                       will be chosen
+ *                       default: "720p"
+ *
+ * excludeQuality      : Array of qualities that should not be offered, 
+ *                       default: []
+ * 
+ * preferredFormat     : The preferred video format, possible formats are
+ *                       x-flv, webm, mp4, 3gpp
+ *                       If the format isn't available the first available will
+ *                       be chosen.
+ *                       default: ""
+ *
+ * excludeFormat       : Array of formats that should be excluded
+ *                       default: []
+ * 
+ * foregroundActive    : Active foreground color
+ *                       default: "#008000"
+ *
+ * foregroundColor     : Inactive foreground color
+ *                       default: "#fff"
+ *
+ * backgroundColor     : Background color
+ *                       default: "#000"
+ *
+ * linkColor           : Color of the video url link
+ *                       default: "#999"
+
+ * backgroundDisabled  : Background color for disabled qualities
+ *                       default: "#555"
+ *
+ * foregroundDisabled  : Foreground color for disabled qualities
+ *                       default: "#aaa"
+ *
+ * separator           : Seperator as a css border specification
+ *                       default: ""
+ *
+ * font                : The font for qualities
+ *                       default: "10px helvetica"
+ *
+ * linkFont            : Font of the url link
+ *                       default: "bold 10px helvetica"
+ * 
+ * barHeight           : Height of the control bar in pixel
+ *                       default: 14
+ *
+ *
+ * Example using extensions.load: 
+ *
+ * ------------------------------------------------------------------------------
+ * |extensions.load("youtube_html5", {                                          |
+ * |    togglePlay : "Control y",                                               |
+ * |    autoplay   : false,                                                     |
+ * |    barHeight  : 15                                                         |
+ * |});                                                                         |
+ * ------------------------------------------------------------------------------
+ *
+ */
+/*<INFO
+Replace youtube flash videos with a html5 video. 
+INFO>*/
+
+var config = {};
+var defaultConfig = {
+//<DEFAULT_CONFIG
+  // Command for an external video player 
+  externalPlayer : "mplayer %u",
+
+  // Shortcut to launch the external player
+  externalShortcut : "eym",
+
+  // Shortcut for the external player
+  externalQuality : "1080p",
+
+  // Shortcut for toggling pause/play, 
+  togglePlay    : "yp",
+
+  // Seek to position, "37ys" will seek to 37% of the video, :yt_seek 3:55 will
+  // seek to position 3:55 default: "ys"
+  seek          : "ys",
+
+  // Seek forward, e.g. 7yf will seek 7*seekStep forward, :yt_seek_forward 1:37
+  // will seek forward 1 minute and 37 seconds default: "yf"
+  seekForward   : "yf",
+
+  // Seek backward, e.g. 7yb will seek 7*seekStep forward, :yt_seek_backward 1:37
+  // will seek backward 1 minute and 37 seconds default: "yb"
+  seekBackward  : "yb",
+
+  // Seekstep in seconds
+  seekStep      : 5,
+
+  // Whether to automatically start the video, 
+  autoplay : false, 
+
+  // Whether to show controls, 
+  controls : true,
+
+  // The default quality, possible qualities are 1080p, 720p, 480p, 360p, 240p
+  // If the quality isn't available the next lower quality will be chosen
+  defaultQuality : "480p",
+
+  // Array of qualities that should not be offered, 
+  excludeQuality : [  ],
+  
+  // The preferred video format, possible formats are x-flv, webm, mp4, 3gpp If
+  // the format isn't available the first available will be chosen.
+  preferredFormat : "",
+
+  // Array of formats that should be excluded
+  excludeFormat : [ ],
+  
+  foregroundActive : "#008000",
+  foregroundColor : "#fff", 
+  backgroundColor : "#000", 
+  linkColor : "#999", 
+
+  backgroundDisabled : "#555", 
+  foregroundDisabled : "#aaa", 
+  separator : "",
+  font : "10px helvetica",
+  linkFont : "bold 10px helvetica",
+
+  barHeight : 14
+//>DEFAULT_CONFIG
+};
+var currentQualities;
+var exports = {};
+
+function parseResult(frame, msg, result, isEmbedded) {
+  var i, n = 0, script;
+  if (msg.statusCode != 200 || result === null || result.substring(0, 11) == "status=fail") 
+    return false;
+  var decoded = decodeURI(result);
+  i = decoded.indexOf("&url_encoded_fmt_stream_map=");
+  if (i == -1) {
+    return false;
+  }
+  decoded = decodeURIComponent(decoded.substring(i));
+  var preUrls = decoded.split(/url=/);
+  var urls = [];
+  var q = { 
+    "1080p" : [], 
+    "720p"  : [], 
+    "480p"  : [], 
+    "360p"  : [], 
+    "240p"  : [],
+    "isEmbedded" : isEmbedded
+  };
+  for (i=0; i<preUrls.length; i++) {
+    var end = preUrls[i].search(/&type=/);
+
+    if (end > -1) {
+      var endString = preUrls[i].substring(end + 12); // &type=video/<format>
+      var format = endString.substring(0, endString.search(/[;&]/));
+      var itag = parseInt(preUrls[i].replace(/.*&itag=([0-9]+).*/, '$1'), 10);
+      var sig = preUrls[i].match(/&sig=[^&]*(?=&)/)[0].substring(5);
+      if (config.excludeFormat.indexOf(format) != -1) 
+        continue;
+      var o= { url : preUrls[i].substring(0, end) + "&signature=" + sig, itag : itag, format : format };
+      switch (itag) {
+        case 38: 
+        case 46: 
+        case 37: 
+          if (config.excludeQuality.indexOf("1080p") == -1) {
+            q["1080p"].push(o); 
+            n++;
+          }
+          break;
+        case 22: 
+        case 45: 
+          if (config.excludeQuality.indexOf("720p") == -1) {
+            q["720p"].push(o); 
+            n++;
+          }
+          break;
+        case 44: 
+        case 35: 
+          if (config.excludeQuality.indexOf("480p") == -1) {
+            q["480p"].push(o); 
+            n++;
+          }
+          break;
+        case 34: 
+        case 43: 
+        case 18: 
+          if (config.excludeQuality.indexOf("360p") == -1) {
+            q["360p"].push(o); 
+            n++;
+          }
+          break;
+        default : 
+            q["240p"].push(o); 
+            n++;
+            break;
+      }
+    }
+  }
+  if (n > 0) {
+    frame.inject(util.getBody(injectFunction), { config : config, qualities : q });
+    return q;
+  }
+  return null;
+}
+function doSendRequest(wv, frame, id, isEmbedded, i) {
+  var el = [ "&el=embedded", "&el=detailpage", "&el=vevo" ];
+  sendRequest("http://youtube.com/get_video_info?video_id=" + id + el[i], function(data, message) {
+    var q;
+    if ( (q = parseResult(frame, message, data.body, isEmbedded)) === null && i < el.length-1) 
+      doSendRequest(wv, frame, id, isEmbedded, i+1);
+    else if (wv == tabs.current ) {
+      currentQualities = q;
+    }
+  });
+}
+
+function documentLoadedCallback(wv, frame) {
+  var i, id, url;
+  if (frame.domain != "youtube.com") 
+    return;
+  id = frame.uri.replace(/.*(\?v=|\/v\/|embed\/)([^$&\/\?]+).*/, '$2');
+  if (id == wv.uri) 
+    return;
+  doSendRequest(wv, frame, id, frame != wv.mainFrame, 0);
+}
+var injectFunction = function () {
+  var config = arguments[0].config;
+  var q = arguments[0].qualities;
+  var i;
+  var d = document.getElementById(q.isEmbedded ? "player" : "watch7-player");
+  var f = document.createElement("table");
+  var id = "dwb_video_player";
+
+  var s = document.defaultView.getComputedStyle(d);
+  var width = s.width;
+  var height = (parseInt(s.height, 10) - config.barHeight) + "px";
+
+  f.innerHTML = 
+    "  <tr align='center' >" + 
+    "    <td colspan='10' >" +
+    "      <video id='" + id + "' style='margin-bottom:-3px;position:relative;padding:0px'" +
+    "          width='" + width + "' " +  
+    "          height='" + height + "' " +  
+    "          src=''/>" +
+    "    </td>" +
+    "  </tr>" +
+    "  <tr align='left' >" +
+    "    <td ><div onclick id='" + id + "1080p'>1080p</div></td>" + 
+    "    <td><a id='" + id + "1080plink' href='' >link</a></td>" +
+    "    <td ><div onclick id='" + id + "720p'>720p</div></td>" + 
+    "    <td><a id='" + id + "720plink' href='' >link</a></td>" +
+    "    <td ><div onclick id='" + id + "480p'>480p</div></td>" + 
+    "    <td><a id='" + id + "480plink' href='' >link</a></td>" +
+    "    <td ><div onclick id='" + id + "360p'>360p</div></td>" + 
+    "    <td><a id='" + id + "360plink' href='' >link</a></td>" + 
+    "    <td ><div onclick id='" + id + "240p'>240p</div></td>" + 
+    "    <td><a id='" + id + "240plink' href='' >link</a></td>" +
+    "  </tr>";
+  var v = f.querySelector("#" + id);
+  v.controls =  config.controls;
+  v.autoplay = config.autoplay;
+  var last = null;
+  
+  var qualities = [ "1080p", "720p", "480p", "360p", "240p" ];
+  function getUrl (key) {
+    if (q[key].length === 0) 
+      return "";
+    var url = null;
+    for (var j=0; j<q[key].length && url === null; j++) {
+      if (q[key][j].format === config.preferredFormat)  {
+        url = q[key][j].url;
+      }
+    }
+    return url === null ? q[key][0].url : url;
+  }
+  for (i=0; i<qualities.length; i++) {
+    (function (key) {
+        var c = f.querySelector("#" + id + key);
+        var l = f.querySelector("#" + id + key + "link");
+        var url = getUrl(key);
+        if (q[key].length > 0) {
+          c.style.cursor = "pointer";
+          c.parentNode.style.backgroundColor = config.backgroundColor;
+          c.style.color = config.foregroundColor;
+          l.style.font = config.linkFont;
+          l.style.textDecoration = "none";
+          l.style.color = config.linkColor;
+          l.parentNode.style.backgroundColor = config.backgroundColor;
+          c.onclick = function () { 
+            v.src = url;
+            last.style.color = config.foregroundColor;
+            c.style.color = config.foregroundActive;
+            last = c;
+          };
+          l.href = url;
+        }
+        else {
+          c.removeAttribute("onclick");
+          c.parentNode.style.backgroundColor = config.backgroundDisabled;
+          l.parentNode.style.backgroundColor = config.backgroundDisabled;
+          c.style.color = config.foregroundDisabled;
+          l.style.visibility = "hidden";
+        }
+        c.style.borderLeft = config.separator;
+        c.style.font = config.font;
+    })(qualities[i]);
+  }
+  var current = null;
+  if (q[config.defaultQuality].length > 0) {
+    current = config.defaultQuality;
+  }
+  else {
+    for (i=qualities.indexOf(config.defaultQuality)+1; i<qualities.length && current === null; i++) {
+      var key = qualities[i];
+      if (q[key].length > 0) {
+        current = key;
+      }
+    }
+  }
+  var c = f.querySelector("#" + id + current);
+  c.style.color = config.foregroundActive;
+  last = c;
+  v.src = getUrl(current);
+
+  while(d.hasChildNodes()) 
+    d.removeChild(d.firstChild);
+  d.appendChild(f);
+};
+
+function togglePlay() {
+  var frame = tabs.current.mainFrame;
+  if (frame.domain != "youtube.com") 
+    return;
+  frame.inject(util.getBody(function() {
+    var v = document.getElementById("dwb_video_player");
+    if (v.paused) 
+      v.play();
+    else 
+      v.pause();
+  }));
+}
+function seek(json) {
+  var frame = tabs.current.mainFrame;
+  if (frame.domain != "youtube.com" || 
+    (json.nummod == -1 && json.arg === undefined && isNaN(json.step)))
+    return;
+  var func = function() {
+    var json = arguments[0];
+    var parseTime = function(arg) {
+      var seconds = 0;
+      var a = arg.split(":");
+      var i=0;
+      if (a.length == 2) {
+        var minutes = parseInt(a[i], 10);
+        if (!isNaN(minutes)) 
+          seconds = minutes * 60;
+        i++;
+      }
+      var s = parseInt(a[i], 10);
+      if (isNaN(s) || (s >= 60 && i>0) ) {
+        return NaN;
+      }
+      seconds += s;
+      return seconds;
+    };
+    var v = document.getElementById("dwb_video_player");
+    if (json.arg || json.step) {
+      if (json.step) {
+        if (!json.arg) 
+          seconds = v.currentTime + Math.max(json.nummod, 1) * json.step;
+        else 
+          seconds = json.dir * parseTime(json.step) + v.currentTime;
+      }
+      else 
+        seconds = parseTime(json.arg);
+      if (isNaN(seconds))
+        return;
+      v.currentTime = Math.max(Math.min(v.duration, seconds), 0); 
+    }
+    else 
+      v.currentTime = v.duration * (Math.max(0, Math.min(json.nummod, 100)) / 100);
+  };
+  frame.inject(util.getBody(func), json);
+}
+
+function launchExternal() {
+  var url = null;
+  var qualities = [ "1080p", "720p", "480p", "360p", "240p" ];
+  var current;
+  if (currentQualities[config.externalQuality].length > 0) {
+    current = config.externalQuality;
+  }
+  else {
+    for (i=qualities.indexOf(config.externalQuality)+1; i<qualities.length && current === null; i++) {
+      var key = qualities[i];
+      if (q[key].length > 0) {
+        current = key;
+      }
+    }
+  }
+  for (var j=0; j<currentQualities[current].length && url === null; j++) {
+    if (currentQualities[current][j].format === config.preferredFormat)  {
+      url = currentQualities[current][j].url;
+    }
+  }
+  url = url || currentQualities[current][0].url;
+  system.spawn(config.externalPlayer.replace("%u", url));
+}
+
+var sigId;
+function init() {
+  sigId = signals.connect("documentLoaded", documentLoadedCallback);
+  bind(config.togglePlay, togglePlay, "yt_toggle_play");
+  bind(config.seek, seek, "yt_seek");
+  bind(config.seekForward, function(json) { 
+    json.step = json.arg || config.seekStep; 
+    json.dir = 1;
+    seek(json); 
+  }, "yt_seek_forward");
+  bind(config.seekBackward, function(json) { 
+    json.step = json.arg || config.seekStep;
+    json.dir = -1;
+    seek(json); }, "yt_seek_backward");
+  bind(config.externalShortcut, launchExternal);
+}
+function end() {
+  signals.disconnect(sigId);
+  unbind("yt_toggle_play");
+  unbind("yt_seek");
+  unbind("yt_seek_forward");
+  unbind("yt_seek_backward");
+  unbind(launchExternal);
+}
+return { 
+  defaultConfig : defaultConfig,
+  exports : exports,
+
+  init : function(c) {
+    config = c;
+    exports.config = c;
+    init();
+    return true;
+  }, 
+  end : function () {
+    end();
+  }
+}
+// vim:set ft=javascript:

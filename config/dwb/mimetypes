@@ -1,0 +1,8 @@
+#image/*; /usr/bin/feh --scale-down %s
+#audio/*; mpl %s
+#video; mplayer %s
+#text/*; vim %s
+image/*; sxiv %s
+application/pdf zathura
+media/avi mplayer
+media/mp3 mpl

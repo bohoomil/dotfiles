@@ -1,0 +1,7 @@
+
+URxvt.font:xft:inconsolata:style=medium:pixelsize=16
+URxvt.boldFont:xft:inconsolata:style=medium:pixelsize=16
+URxvt.italicFont:xft:inconsolata:style=medium:pixelsize=16
+URxvt.boldItalicFont:xft:inconsolata:style=medium:pixelsize=16
+
+! vim:ft=xdefaults

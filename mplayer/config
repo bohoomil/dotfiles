@@ -1,0 +1,52 @@
+# MPlayer preferences
+# -------------------
+
+[default]
+# --- general prefs
+#really-quiet=1						# silence console output
+#quiet=1
+ontop=1										# always keep mplayer on top
+
+# --- disable screensaver
+stop-xscreensaver=1
+heartbeat-cmd="xautolock -disable;xautolock -enable"
+
+# sets postprocessing into overdrive using all 
+# possible spare cpu cycles to make the movie look better
+autoq=100
+vf=pp=de,hqdn3d
+
+# --- audio prefs
+#volstep=5									# step size of mixer volume changes in %
+ao=alsa										# audio out
+
+# --- video prefs
+#vo=vdpau									# video out method
+vo=xv
+zoom=yes									# sofware scaling
+sid=0											# subtitle set
+double=yes								# double buffering (recommended for subtitles)
+monitoraspect=16:9				# 16:9 or or 4:3 
+framedrop=1								# for slower machines
+hardframedrop=0						# toggle hard frame drop
+cache=262144
+lirc=0
+nojoystick=1
+
+# --- subtitle prefs
+#osdlevel=3								# start with all osd elements enabled (time/remaining)
+ass=1
+ass-hinting=3
+ass-font-scale=1.2
+font='DejaVu Sans:style=Regular'
+
+subpos=90									# by default subtitles are too low (100 is lowest)
+subalign=2								# alignment (2 is bottom)
+sub-fuzziness=1						# find subtitle files (1: load all subs containing 
+													## movie name)
+slang=en,eng,english		  # language priorities (format varies by standard)
+
+# provide colorized terminal output
+msgmodule=1
+msgcolor=1
+# vim:ft=mplayerconf:

@@ -1,0 +1,38 @@
+urls-source "googlereader"
+googlereader-login "username@domain.com"
+googlereader-password "xxxxxxxxxxxx"
+googlereader-flag-share "S"
+googlereader-flag-star "b"
+googlereader-min-items 500
+googlereader-show-special-feeds "no"
+max-items     0
+browser       "dwb %u"
+download-path "~/downloads"
+player mplayer
+save-path "~/.local/share/newsbeuter/FeedArticles"
+cache-file "~/.local/share/newsbeuter/cache.db"
+bookmark-cmd  "~/.config/newsbeuter/instapaper"
+
+reload-time 15
+reload-threads 2
+feed-sort-order firsttag
+html-renderer "w3m -I %{charset} -T text/html"
+notify-format "%d new articles (%n unread articles, %f unread feeds)"
+notify-screen yes
+refresh-on-startup yes
+search-highlight-colors white black bold
+articlelist-format "%4i %f %D %?T?;%-17T; ?%t"
+feedlist-format "%n %4i %11u %t"
+show-read-feeds yes
+show-read-articles yes
+text-width 72
+cleanup-on-quit no
+
+# cyan-colored newsbeuter color scheme
+color listnormal white default
+color listfocus  yellow black reverse
+color info       white black 
+#color background white default
+#color article    white default
+
+# vim:set ft=config:

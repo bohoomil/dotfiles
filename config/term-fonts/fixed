@@ -1,0 +1,7 @@
+
+URxvt.font: -*-fixed-medium-r-semicondensed-*-13-*-*-*-*-*-iso10646-1
+URxvt.boldFont: -*-fixed-medium-r-semicondensed-*-13-*-*-*-*-*-iso10646-1
+URxvt.italicFont: -*-fixed-medium-r-semicondensed-*-13-*-*-*-*-*-iso10646-1
+URxvt.boldItalicFont: -*-fixed-medium-r-semicondensed-*-13-*-*-*-*-*-iso10646-1
+
+! vim:ft=xdefaults:

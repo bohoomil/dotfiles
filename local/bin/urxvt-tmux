@@ -1,0 +1,3 @@
+#!/bin/sh
+urxvtc -title "tmux" -cd /home/bohoomil -e tmux -f $HOME/.tmux.conf 
+

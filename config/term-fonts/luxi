@@ -1,0 +1,7 @@
+
+URxvt.font:xft:luxi mono:style=Regular:pixelsize=13:antialias=false
+URxvt.boldFont:xft:luxi mono:style=Regular:pixelsize=13:antialias=false
+URxvt.italicFont:xft:luxi mono:style=Oblique:pixelsize=13:antialias=false
+URxvt.boldItalicFont:xft:luxi mono:style=Oblique:pixelsize=13:antialias=false
+
+! vim:ft=xdefaults

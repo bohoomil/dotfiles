@@ -1,0 +1,3 @@
+#!/bin/sh
+urxvtc -geometry 98x30 -e mplayer -playlist "$1"
+

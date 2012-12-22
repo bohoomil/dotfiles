@@ -1,0 +1,9 @@
+# nvidia video driver
+
+Section "Device"
+	Identifier "nvidia card"
+	Driver     "nouveau"
+	VendorName "NVIDIA Corporation"
+	BoardName  "GeForce 9300M GS"
+	Option     "GLXVBlank" "1"
+EndSection

@@ -1,0 +1,32 @@
+#!/bin/sh
+#
+# by bohoomil
+# Display the number of installed packages,
+# version of the kernel and gcc used.
+
+ALL=$(pacman -Q | wc -l)
+EXPL=$(pacman -Qe | wc -l)
+EXPLND=$(pacman -Qet | wc -l)
+LOCAL=$(pacman -Qm | wc -l)
+KERNEL=$(uname -r)
+GCC=$(gcc --version | head -n 1 | awk '{ print $3 }')
+SETUP=$(grep -i 'installed filesystem' /var/log/pacman.log | perl -lne 'print $1 while (/\[(.*?)\]/g)')
+
+echo You have ...
+
+echo -e "\e[01;31m $ALL\e[0;0m" installed packages altogether;
+
+echo -e "\e[01;33m $EXPL\e[0;0m" explicitly installed packages \(incl. deps\);
+
+echo -e "\e[00;36m $EXPLND\e[0;0m" explicitly installed packages \(excl. deps\);
+
+echo -e "\e[01;32m $LOCAL\e[0;0m"  localy installed packages.
+
+echo -e Your system was originally set up "\e[00;37m$SETUP\e[0;0m"
+
+echo -e You are using kernel "\e[01;34m $KERNEL\e[0;0m"
+
+echo -e and gcc version "\e[01;35m $GCC\e[0;0m"
+
+exit 0
+

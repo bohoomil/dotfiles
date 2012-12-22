@@ -1,0 +1,7 @@
+
+URxvt.font: -*-terminus-medium-r-*-*-14-*-*-*-*-*-iso10646-1
+URxvt.boldFont: -*-terminus-medium-r-*-*-14-*-*-*-*-*-iso10646-1
+URxvt.italicFont: -*-terminus-medium-r-*-*-14-*-*-*-*-*-iso10646-1
+URxvt.boldItalicFont: -*-terminus-medium-r-*-*-14-*-*-*-*-*-iso10646-1
+
+! vim:ft=xdefaults:

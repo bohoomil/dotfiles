@@ -1,0 +1,1 @@
+ARGS="--no-gui --exec-on-drive 'notify-send \"Mounted %f on %d\"' --exec-on-disc 'notify-send \"Mounted %f on %d\"' --exec-on-unmount 'notify-send \"Unmounted %f\"'"

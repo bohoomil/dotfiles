@@ -1,0 +1,7 @@
+
+URxvt.font: -*-lucidatypewriter-medium-*-*-*-*-120-*-75-*-*-iso10646-1
+URxvt.boldFont: -*-lucidatypewriter-medium-*-*-*-*-120-*-75-*-*-iso10646-1
+URxvt.italicFont: -*-lucidatypewriter-medium-*-*-*-*-120-*-75-*-*-iso10646-1
+URxvt.boldItalicFont: -*-lucidatypewriter-medium-*-*-*-*-120-*-75-*-*-iso10646-1
+
+! vim:ft=xdefaults:

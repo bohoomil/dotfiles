@@ -1,0 +1,9 @@
+#!/bin/sh
+CACHE=$HOME/.cache/dmenu_run
+IFS=:
+
+if ! test -f "$CACHE" || find $PATH -type d -newer "$CACHE" | grep -q .; then
+	find $PATH ! -type d \( -perm -1 -o -perm -10 -o -perm -100 \) | sed 's/.*\///' | sort -u > "$CACHE"
+fi
+
+cat "$CACHE"

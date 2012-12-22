@@ -1,0 +1,7 @@
+
+URxvt.font:xft:droid sans mono slashed:style=regular:pixelsize=13:antialias=false
+URxvt.boldFont:xft:droid sans mono slashed:style=regular:pixelsize=13:antialias=false
+URxvt.italicFont:xft:droid sans mono slashed:style=regular:pixelsize=13:antialias=false
+URxvt.boldItalicFont:xft:droid sans mono slashed:style=regular:pixelsize=13:antialias=false
+
+! vim:ft=xdefaults

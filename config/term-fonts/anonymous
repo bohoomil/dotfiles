@@ -1,0 +1,7 @@
+
+URxvt.font:xft:anonymous pro:style=regular:pixelsize=15
+URxvt.boldFont:xft:anonymous pro:style=regular:pixelsize=15
+URxvt.italicFont:xft:anonymous pro:style=italic:pixelsize=15
+URxvt.boldItalicFont:xftanonymous pro:style=italic:pixelsize=15
+
+! vim:ft=xdefaults

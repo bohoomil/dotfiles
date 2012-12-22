@@ -1,0 +1,7 @@
+
+URxvt.font:xft:Menlo:style=Regular:pixelsize=14:antialias=false
+URxvt.boldFont:xft:Menlo:style=Regular:pixelsize=14:antialias=false
+URxvt.italicFont:xft:Menlo:style=Regular:pixelsize=14:antialias=false
+URxvt.boldItalicFont:xft:Menlo:style=Regular:pixelsize=14:antialias=false
+
+! vim:ft=xdefaults

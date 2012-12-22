@@ -1,0 +1,28 @@
+
+# These entries affect all processing:
+[general]
+#source-link: yes
+#datestamp: %Y-%m-%d %H:%M UTC
+generator: off
+
+# These entries affect HTML output:
+[html4css1 writer]
+# Required for docutils-update, the website build system:
+stylesheet-path: ../docutils/writers/html4css1/html4css1.css
+embed-stylesheet: no
+field-name-limit: 20
+
+# LaTeX output
+[latex2e writer]
+docutils_footnotes: yes
+use_latex_docinfo: yes
+literal_block_env: verbatim
+#template: xelatex.tex
+#template: xedroid.tex
+#documentoptions: a4paper,12pt,oneside
+#documentclass: fiche
+#documentclass: paper
+#documentclass: artikel3
+#fontenconding: T1
+#stylesheet: soulutf8,textcomp,amsmath,xspace
+latex_preamble: \defaultfontfeatures{Mapping=tex-text,Numbers=OldStyle,Ligatures=TeX} \setmaimainfont{Charis SIL} \setsansfont{Droid Sans} \setmonofont[HyphenChar=none]{Droid Sans Mono Slashed}

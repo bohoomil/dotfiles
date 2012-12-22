@@ -1,0 +1,6 @@
+#!/bin/sh
+
+VBoxSDL --startvm "Arch Linux"
+
+exit 0
+

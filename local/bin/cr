@@ -1,0 +1,161 @@
+#!/bin/sh
+#
+# by bohoomil
+# A simple script that will repeat 
+# the chrooting routine for you.
+# Drop it somewhere in your $PATH.
+
+# --- colours
+cres="\e[00m"
+cred="\e[01;31m"
+cyel="\e[01;33m"
+cgre="\e[01;32m"
+cblu="\e[01;34m"
+
+usage() {
+	echo -e ""
+	echo -e "Usage:"
+	echo -e "   cr a|b|c|...|X  -- Chroot to a predefined OS"
+	echo -e ""
+	echo -e "Arguments:"
+	echo -e "   a               --  CentOS on /dev/sda8"
+	echo -e "   b               --  Arch Linux on /dev/sda7"
+	echo -e "   c               --  Fedora on /dev/sda6"
+	echo -e "   X               --  Do nothing and exit"
+	echo -e "  -h, help         --  Print this help"
+	echo -e ""
+}
+
+# --- systems
+case "$1" in
+	a) osname="CentOS"
+		 ospart="/mnt/sda8"
+		 osdev="/dev/sda8"
+		;;
+	b) osname="Arch Linux"
+		 ospart="/mnt/sda7"
+		 osdev="/dev/sda7"
+		;;
+	c) osname="Fedora"
+		 ospart="/mnt/sda6"
+		 osdev="/dev/sda6"
+		;;
+	X) echo "Nothing chosen. Exiting."
+		 exit 1
+		;;
+	-h) usage
+		 exit 1
+		;;
+	*) usage
+		 exit 1
+		;;
+esac
+
+fs=$(fsck -N $osdev | awk 'FNR == 2 { gsub("fsck.", ""); print $5 }')
+
+# --- 
+
+if [[ $UID -ne 0 ]]; then
+	sudo -p 'Enter root password to continue: ' bash $0 "$@"
+	exit $?
+fi
+
+echo -e "${cyel}Preparing to enter ${osname} ...${cres}"
+
+# --- mount chroot partition
+echo -e "Mounting $osname partition and system directories ..."
+
+if [ ! -d ${ospart} ]; then
+	echo -e "Mount point $ospart doesn't exist. Creating:"
+	mkdir -pv "${ospart}"
+fi
+
+mntch=$(cat /proc/mounts | grep "${osdev}")
+mntchex="$?"
+
+# -- check if the filesystem is already mounted
+if [ "$mntchex" -eq 0 ]; then
+  echo -e "${cred} $osdev already mounted:${cres}"
+  echo -e "$mntch"
+else
+	echo -e "Mounting $ospart ..."
+	mount -t ${fs} ${osdev} ${ospart}
+	echo -e "${cgre}Done.${cres}"
+fi
+
+if [ "$?" -ne 0 ]; then
+	echo -e "${cred}Couldn't create $ospart. Exiting.${cres}"
+	exit 1
+fi
+
+# --- mount chroot filesystems
+for dir in ${ospart}{/proc,/sys,/dev,/dev/pts}; do
+	if [ ! -d ${dir} ]; then
+		echo -e "Mount point $dir doesn't exist. Creating:"
+		mkdir -pv "${dir}"
+		if [ "$?" -ne 0 ]; then
+			echo -e "${cred}Couldn't create $dir. Exiting.${cres}"
+			exit 1
+		fi
+	fi
+done
+
+cd ${ospart}
+mount -t proc proc proc/
+mount -t sysfs sys sys/
+mount -o bind /dev dev/
+mount -t devpts pts dev/pts/
+if [ $? -eq 0 ]; then
+	echo -e "${cgre}Done.${cres}"
+fi
+
+echo -e "Making host's network accessible in chroot ..."
+if [ -f /etc/resolv.conf ]; then
+	cp -L /etc/resolv.conf etc/resolv.conf
+	if [ $? -eq 0 ]; then
+		echo -e "${cgre}Done.${cres}"
+	else
+		echo -e "${cred}resolv.conf couldn't be copied${cres}"
+	fi
+fi
+
+# --- additional steps
+echo -e "Entering $osname ..."
+echo -e ""
+echo -e "  After you have successfully entered the new environment,"
+echo -e "  you may want to set its variables. In order to do so,"
+echo -e "  issue the following commands:"
+echo -e "    source /etc/profile"
+echo -e "    export PS1='[$osname] \$PS1'"
+echo -e ""
+echo -e "  In case you need to run chroot X server,"
+echo -e "  you should additionaly issue"
+echo -e "    xhost +"
+echo -e "    export DISPLAY=:0.0"
+echo -e ""
+echo -e "  If necessary, mount mount the partitions you need."
+echo -e ""
+
+# --- get in
+chroot . /bin/bash
+
+# --- exit the chroot environment and clean up
+echo -e "${cyel}Leaving chroot ....${cres}"
+echo -e "Unmounting system directories ..."
+umount ${ospart}/dev/pts/
+umount ${ospart}/sys
+umount ${ospart}/dev
+umount ${ospart}/proc
+if [ $? -eq 0 ]; then
+	echo -e "${cgre}Done.${cres}"
+fi
+
+echo -e "Unmounting chroot partition ..."
+cd $HOME
+umount ${ospart}
+if [ $? -eq 0 ]; then
+	echo -e "${cgre}Done.${cres}"
+fi
+
+exit 0
+

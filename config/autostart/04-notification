@@ -1,0 +1,3 @@
+#!/bin/sh
+dunst -geometry 840x3+840+0 &
+

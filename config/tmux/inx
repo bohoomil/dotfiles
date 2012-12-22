@@ -1,0 +1,6 @@
+# vim:fenc=utf-8:nu:ai:si:et:ts=4:sw=4:ft=tmux
+set -g status-justify left # center align window list
+set -g status-right-length 150
+set -g status-left-length 150
+set -g status-right '#[fg=cyan,nobright]SDA1: #($HOME/.local/bin/sda.sh) #[fg=black,bright]'
+set -g status-left '[#[fg=magenta,bright]#S#[default]]'

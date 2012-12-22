@@ -1,0 +1,14 @@
+[Unit]
+Description=%i window manager
+After=xorg.target
+After=environment.target
+
+[Service]
+ExecStart=/usr/bin/env %i
+
+KillMode=process
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=default.target

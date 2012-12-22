@@ -1,0 +1,14 @@
+#!/bin/sh
+
+while true
+	do 
+	/home/bohoomil/.local/bin/dwm-status-sda1.sh 
+	sleep 2s
+done &
+
+while true
+	do
+	/usr/local/bin/dwm 2> /dev/null
+	#dwm 2> ~/.dwm.log
+done
+

@@ -1,0 +1,4 @@
+#!/bin/sh
+#urxvtc -geometry 81x16+0+801 -name "pad" -cd /home/bohoomil -e tmux -f $HOME/.config/tmux/pad
+urxvtc -geometry 81x16+0+801 -name "pad"
+

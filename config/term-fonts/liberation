@@ -1,0 +1,7 @@
+
+URxvt.font:xft:liberation mono:style=regular:pixelsize=13:antialias=false
+URxvt.boldFont:xft:liberation mono:style=regular:pixelsize=13:antialias=false
+URxvt.italicFont:xft:liberation mono:style=italic:pixelsize=13:antialias=false
+URxvt.boldItalicFont:xft:liberation mono:style=italic:pixelsize=13:antialias=false
+
+! vim:ft=xdefaults

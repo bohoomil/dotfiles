@@ -1,0 +1,7 @@
+
+URxvt.font:xft:lucida sans typewriter:style=regular:pixelsize=13
+URxvt.boldFont:xft:lucida sans typewriter:style=regular:pixelsize=13
+URxvt.italicFont:xft:lucida sans typewriter:stye=regular:pixelsize=13
+URxvt.boldItalicFont:xft:lucida sans typewriter:style=regular:pixelsize=13
+
+! vim:ft=xdefaults

@@ -1,0 +1,401 @@
+#
+# .dir_colors
+#
+
+TERM Eterm
+TERM ansi
+TERM color-xterm
+TERM con132x25
+TERM con132x30
+TERM con132x43
+TERM con132x60
+TERM con80x25
+TERM con80x28
+TERM con80x30
+TERM con80x43
+TERM con80x50
+TERM con80x60
+TERM cons25
+TERM console
+TERM cygwin
+TERM dtterm
+TERM eterm-color
+TERM gnome
+TERM gnome-256color
+TERM jfbterm
+TERM konsole
+TERM kterm
+TERM linux
+TERM linux-c
+TERM mach-color
+TERM mlterm
+TERM putty
+TERM rxvt
+TERM rxvt-256color
+TERM rxvt-cygwin
+TERM rxvt-cygwin-native
+TERM rxvt-unicode
+TERM rxvt-unicode-256color
+TERM screen
+TERM screen-256color
+TERM screen-256color-bce
+TERM screen-bce
+TERM screen-w
+TERM screen.linux
+TERM screen.rxvt
+TERM vt100
+TERM xterm
+TERM xterm-16color
+TERM xterm-256color
+TERM xterm-88color
+TERM xterm-color
+TERM xterm-debian
+
+# Attribute codes:
+# 00=none 01=bold 04=underscore 05=blink 07=reverse 08=concealed
+# Text color codes:
+# 30=black 31=red 32=green 33=yellow 34=blue 35=magenta 36=cyan 37=white
+# Background color codes:
+# 40=black 41=red 42=green 43=yellow 44=blue 45=magenta 46=cyan 47=white
+
+#NORMAL         00       # no color code at all
+FILE           38;5;247 # regular file: use no color at all
+RESET          0        # reset to "normal" color
+#DIR            38;5;241 # directory
+DIR            38;5;72 # directory
+LINK           01;36    # symbolic link. (If you set this to 'target' instead of a numerical value, the color is as for the file pointed to.)
+#LINK           01;38;5;245
+
+ # numerical value, the color is as for the file pointed to.)
+MULTIHARDLINK  00       # regular file with more than one link
+FIFO           40;33    # pipe
+SOCK           01;35    # socket
+DOOR           01;35    # door
+BLK            40;31;01 # block device driver
+CHR            40;33;01 # character device driver
+ORPHAN         40;31;01 # symlink to nonexistent file, or non-stat'able file
+SETUID         37;41    # file that is setuid (u+s)
+SETGID         30;43    # file that is setgid (g+s)
+CAPABILITY     30;41    # file with capability
+STICKY_OTHER_WRITABLE 36;40 # dir that is sticky and other-writable (+t,o+w)
+OTHER_WRITABLE 01;36    # dir that is other-writable (o+w) and not sticky
+STICKY         01;37;44 # dir with the sticky bit set (+t) and not other-writable
+
+# executables (bright green)
+EXEC           01;32
+.cmd           01;32 
+.exe           01;32
+.com           01;32
+.btm           01;32
+.bat           01;32
+
+# EIGHTBIT, followed by '1' for on, '0' for off. (8-bit output)
+EIGHTBIT 1
+
+.pdf           00;35
+.djvu          38;5;54
+
+.chm           00;33
+.htm           00;33
+.html          00;33
+.dvi           00;33
+.ps            01;33
+.odt           00;32
+.docx          00;32
+.doc           00;32
+.tex           00;32
+.rtf           00;32
+.sh            00;32
+.csh           00;32
+.t2t           00;36
+.rst           00;36
+
+# archives or compressed (bright red)
+.tar           01;31
+.tgz           00;31
+.arj           01;31
+.taz           01;31
+.lzh           01;31
+.lha           01;31
+.lzma          01;31
+.tlz           01;31
+.txz           00;31
+.zip           01;31
+.z             01;31
+.Z             01;31
+.dz            01;31
+.gz            01;31
+.lz            01;31
+.xz            00;31
+.bz2           01;31
+.bz            01;31
+.tbz           01;31
+.tbz2          01;31
+.tz            01;31
+.deb           00;31
+.rpm           00;31
+.jar           00;31
+.rar           01;31
+.ace           01;31
+.zoo           01;31
+.cpio          00;31
+.7z            01;31
+.rz            01;31
+.iso           38;5;101
+.nrg           38;5;101
+.img           38;5;101
+
+# backup, log, etc.
+.pacnew        01;30
+.pacsave       01;30
+.tmp           01;30
+.swp           01;30
+.swo           01;30
+.bak           01;30
+.bkp           01;30
+.bin           01;30
+.$$$           01;30
+.aux           01;30
+.out           01;30
+.log           01;30
+.un~           38;5;240
+.zcompdump     38;5;240
+.zwc           38;5;240
+
+# image formats
+.jpg           01;35
+.jpeg          01;35
+.gif           01;35
+.bmp           01;35
+.pbm           01;35
+.pgm           01;35
+.ppm           01;35
+.tga           01;35
+.xbm           01;35
+.xpm           01;35
+.tif           01;35
+.tiff          01;35
+.png           01;35
+.svg           01;35
+.svgz          01;35
+.mng           01;35
+.pcx           01;35
+.xcf           01;35
+.xwd           01;35
+.yuv           01;35
+.cgm           01;35
+.emf           01;35
+
+# media        cyan
+.asx           00;36
+.cue           00;36
+.it            00;36
+.med           00;36
+.m3u           00;36
+.mid           00;36
+.midi          00;36
+.mod           00;36
+.mol           00;36
+.mpl           00;36
+.pls           00;36
+.ra            00;36
+.rm            00;36
+.s3m           00;36
+.umx           00;36
+.xm            00;36
+
+# video
+.anx           38;5;29
+.avi           38;5;29
+.axv           38;5;29
+.mov           38;5;29
+.mpg           38;5;29
+.mpeg          38;5;29
+.ogm           38;5;29
+.ogv           38;5;29
+.ogx           38;5;29
+.vob           38;5;29
+.rm            38;5;61
+.rmvb          38;5;61
+.asf           38;5;65
+.dl            38;5;65
+.m2v           38;5;65
+.m4v           38;5;65
+.mkv           38;5;65
+.mp4           38;5;65
+.mp4v          38;5;65
+.nuv           38;5;65
+.wmv           38;5;65
+.flc           38;5;137
+.fli           38;5;137
+.flv           38;5;137
+.webm          38;5;137
+.ql            38;5;137
+.qt            38;5;137
+.swf           38;5;137
+
+# audio        blue
+.aac           00;34
+.ape           00;34
+.au            00;34
+.axa           00;34
+.flac          00;34
+.m4a           00;34
+.mka           00;34
+.wav           00;34
+.mp2           01;34
+.mp3           01;34
+.mpc           01;34
+.oga           01;34
+.ogg           38;5;33
+.spx           01;34
+.wma           01;78
+
+# fonts
+.afm          38;5;59
+.pfb          38;5;58
+.pfm          38;5;239
+.otf          38;5;61
+.dfont        38;5;61
+.TTF          38;5;30
+.ttf          38;5;30
+.ttc          38;5;74
+.pcf          38;5;65
+.psf          38;5;64
+
+# all of the rest
+.PL            00;36
+.asm           00;36
+.asoundrc      00;36
+.awk           00;36
+
+# home configs
+.bash          00;31
+.bashrc        00;31
+.bash_history  00;31
+.bash_profile  00;31
+.zshrc         00;31
+.gtkrc-2.0     00;31
+.gtk-bookmarks 00;31
+.conkyrc       00;31
+
+.c             38;5;35
+.cfg           38;5;35
+.coffee        38;5;35
+.conf          38;5;35
+.cpp           38;5;35
+.cs            38;5;35
+.css           38;5;35
+.csv           38;5;35
+
+.dircolors     01;33
+.dir_colors    01;33
+
+.enc           00;36
+.eps           00;36
+.etx           00;36
+.ex            00;36
+.example       00;36
+.fehbg         00;36
+.bashburnrc    00;36
+.fonts         00;36
+.git           00;36
+.gitignore     00;36
+.nvidia-settings-rc 00;36
+.pwmanrc       00;36
+.hgrc          01;34
+.hgignore      01;34
+.go            01;34
+.h             01;34
+.hs            01;34
+.htoprc        01;34
+.toprc         01;34
+.displayrc     01;34
+.xdvirc        01;34
+.xnviewrc      01;34
+.info          01;34
+.ini           01;34
+.java          01;34
+.jhtm          01;34
+.js            01;34
+.jsm           01;34
+.jsm           01;34
+.json          01;34
+.jsp           01;34
+.lisp          01;34
+.lesshst       01;34
+.log           01;34
+.xspf          01;36
+.lua           00;33
+.map           00;33
+.markdown      00;33
+.md            00;33
+.mf            00;33
+.mfasl         00;33
+.mi            00;33
+.mkd           00;33
+.msmtprc       00;33
+.mtx           00;33
+.muttrc        00;33
+.nfo           00;33
+.netrc         01;31
+.offlineimaprc 00;33
+.pacnew        00;33
+.patch         38;5;31
+.diff          38;5;31
+.pc            00;31
+.pfa           00;31
+.php           00;31
+.pid           00;31
+.pl            01;36
+.pm            00;31
+.pod           00;31
+.py            00;31
+.rc            00;31
+.rb            08;36
+.rdf           00;31
+.ru            00;31
+.sed           00;31
+.sfv           00;31
+.signature     00;31
+.sty           01;35
+.sug           01;35
+.t             01;35
+.tcl           01;35
+.tdy           01;35
+.textile       01;35
+.tfm           01;35
+.tfnt          01;35
+.theme         01;35
+.viminfo       01;35
+.xml           01;35
+.yml           01;35
+.zsh           38;5;25
+.gpg           38;5;208
+
+.urlview       01;35
+.vim           01;34
+.vimrc         01;34
+.NERDTreeBookmarks 01;35
+.docutils      01;35
+.xinitrc       01;31 
+.Xauthority    01;31
+.Xmodmap       00;31
+.Xresources    01;33
+.gitconfig     01;33
+.gitk          01;33
+.rarreg.key    00;32
+
+#...and the files they point to
+MISSING        01;05;37;41 
+# Extra command line options for ls go here.
+# Basically these ones are:
+# -F = show '/' for dirs, '*' for executables, etc.
+# -T 0 = don't trust tab spacing when formatting ls output.
+# -b = better support for special characters
+OPTIONS -F -b -T 0
+# COLOR needs one of these arguments: 'tty' colorizes output to ttys, but not
+# pipes. 'all' adds color characters to all output. 'none' shuts colorization
+# off.
+COLOR all
+

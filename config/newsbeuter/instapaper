@@ -1,0 +1,33 @@
+#!/bin/bash
+
+USERNAME="username@domain.com"
+PASSWORD="xxxxxxxxxxxx"
+
+ADD_URL="$1"
+URL_BASE="https://www.instapaper.com/api/add"
+
+curl -s $URL_BASE -F url=$ADD_URL -F username=$USERNAME -F password=$PASSWORD
+
+STATUS="$?"
+
+case $STATUS in
+  0)
+    notify-send "URL added successfully! (code $STATUS)"
+    ;;  
+	201)
+    notify-send "URL added successfully! (code $STATUS)"
+		;;
+	400)
+		notify-send "Bad request or Rate limit exceeded. (code $STATUS)"
+		;;
+	403)
+		notify-send "Invalid username or password. (code $STATUS)"
+		;;
+	500)
+		notify-send "There was a server error. Please try again later. (code $STATUS)"
+		;;
+	*)
+		notify-send "Unknown status: $STATUS."
+		;;
+esac
+

@@ -1,0 +1,64 @@
+## --- ncmpcpp config by bohoomil
+
+## --- connection settings
+mpd_host = "127.0.0.1"
+mpd_port = "6600"
+mpd_music_dir = "/home/bohoomil/music"
+mpd_connection_timeout = "5"
+mpd_communication_mode = "notifications" # polling / notifications
+ncmpcpp_directory = "/home/bohoomil/.ncmpcpp"
+lyrics_directory  = "/home/bohoomil/.ncmpcpp/lyrics"
+
+lastfm_prefered_language = "en"
+
+## --- colours and layout
+user_interface = "classic" #  classic/alternative
+
+song_list_format = "{ $8%N$9  $7%a$9 }{ $4%t$9}$R{ $8%l$9 }"
+song_status_format = "{ $2♫$9 $7%a$9 $4%t$9 $2♫$9 }|{ $5♫$9 $4%f$9 $5♫$9 }"
+song_library_format = "{%n }{%t}|{%f}"
+
+default_tag_editor_left_col = "dirs" # albums/dirs
+external_editor = "/usr/bin/vim"
+
+#now_playing_prefix = "$2♫$9"
+progressbar_look = "─► "
+
+playlist_display_mode = "classic" # classic/columns
+playlist_disable_highlight_delay = "3"
+playlist_separate_albums = "no"
+
+browser_display_mode = "classic" # classic/columns
+browser_playlist_prefix = "$2[PLS]$9 "
+
+media_library_disable_two_column_mode = "no"
+media_library_left_column = "a" # (a,y,g,c,p)
+media_library_display_date = "yes"
+
+search_engine_display_mode = "classic" # classic/columns
+
+header_visibility = "yes"
+header_window_color = "black"
+display_screens_numbers_on_start = "no"
+
+colors_enabled = "yes"
+color1 = "black"
+color2 = "white"
+
+state_line_color = "black"
+state_flags_color = "red"
+main_window_color = "white"
+main_window_highlight_color = "default"
+active_column_color = "cyan"
+volume_color = "white"
+progressbar_color = "black"
+statusbar_color = "white"
+discard_colors_if_item_is_selected = "no"
+
+centered_cursor = "yes"
+statusbar_visibility = "yes"
+cyclic_scrolling = "no"
+clock_display_seconds = "no"
+ignore_leading_the = "yes"
+
+# vim:ft=sh

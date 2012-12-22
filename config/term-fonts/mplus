@@ -1,0 +1,7 @@
+
+URxvt.font:xft:m+ 1m:style=regular:pixelsize=14:antialias=false
+URxvt.boldFont:xft:m+ 1m:style=regular:pixelsize=14:antialias=false
+URxvt.italicFont:xft:m+ 1m:style=regular:pixelsize=14:antialias=false
+URxvt.boldItalicFont:xft:m+ 1m:style=regular:pixelsize=14:antialias=false
+
+! vim:ft=xdefaults

@@ -1,0 +1,13 @@
+[Unit]
+Description=MPD Scrobbler
+Wants=mpd@%i.service
+After=mpd@%i.service
+
+[Service]
+#Type=forking
+User=%i
+PIDFile=/tmp/mpdscribble-%i.pid
+ExecStart=/usr/bin/mpdscribble -D --conf ${HOME}/.config/mpdscribble/mpdscribble.conf --pidfile /tmp/mpdscribble-%i.pid
+
+[Install]
+WantedBy=multi-user.target

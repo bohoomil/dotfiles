@@ -1,0 +1,11 @@
+[Unit]
+Description=MPD Service
+
+[Service]
+Type=forking
+User=%i
+ExecStart=/usr/bin/mpd ${HOME}/.config/mpd/mpd.conf
+ExecStop=/usr/bin/mpd --kill
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,2 @@
+#!/bin/sh
+urxvtc -title "vterm" -geometry 83x33+0+15
