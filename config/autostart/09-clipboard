@@ -1,3 +1,2 @@
 #!/bin/sh
-parcellite -n &
-
+loliclip --daemon

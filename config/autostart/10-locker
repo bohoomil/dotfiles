@@ -1,3 +1,5 @@
 #!/bin/sh
-xautolock -time 60 -locker "systemctl suspend" &
-
+pidof -s xautolock >& /dev/null
+if [ $? -ne 0 ]; then
+  xautolock -time 60 -notify 20 -notifier "notify-send" -locker "systemctl suspend" &
+fi
