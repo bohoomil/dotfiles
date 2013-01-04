@@ -5,6 +5,11 @@
 ! URxvt*foreground:  #E6E6E6
 ! URxvt*cursorColor: #1AAA13
 
+! euphrasia fg/bg
+URxvt*background:      #090C19
+URxvt*foreground:      #E6E6E6
+URxvt*cursorColor:     #1AAA13
+
 *background: #D0CECB
 *foreground: #090C19
 
@@ -29,19 +34,19 @@
 *color11: #FADD2D
 
 ! blue
-*color4:  #3A57D7
+*color4:  #3753CC
 ! bright blue
 *color12: #507CFF
 
 ! magenta
 *color5:  #BE007F
 ! bright magenta
-*color13: #E671D3
+*color13: #E65CD0
 
 ! cyan
-*color6:  #258F8F
+*color6: #14BDCC
 ! bright cyan
-*color14: #4DC5DC
+*color14: #48F3F3
 
 ! light grey
 *color7:  #AEAEAE
@@ -57,9 +62,9 @@
 !			'BE1919', #darkred
 !			'1AAA13', #darkgreen
 !			'FFAA3E', #brown
-!			'3A57D7', #darkblue
+!			'3753CC', #darkblue
 !			'BE007F', #darkmagenta
-!			'258F8F', #darkcyan
+!			'14BDCC', #darkcyan
 !			'AEAEAE', #lightgrey
 !			
 !			'8C8B89', #darkgrey
@@ -67,8 +72,8 @@
 !			'5DCE33', #green
 !			'FADD2D', #yellow
 !			'507CFF', #blue
-!			'E671D3', #magenta
-!			'4DC5DC', #cyan
+!			'E65CD0', #magenta
+!			'48F3F3', #cyan
 !			'DBDDE4', #white
 !		],
 !
@@ -83,12 +88,12 @@
 !    echo -en "\e]PA5DCE33" #green
 !    echo -en "\e]P3FFAA3E" #brown
 !    echo -en "\e]PBFADD2D" #yellow
-!    echo -en "\e]P43A57D7" #darkblue
+!    echo -en "\e]P43753CC" #darkblue
 !    echo -en "\e]PC507CFF" #blue
 !    echo -en "\e]P5BE007F" #darkmagenta
-!    echo -en "\e]PDE671D3" #magenta
-!    echo -en "\e]P6258F8F" #darkcyan
-!    echo -en "\e]PE4DC5DC" #cyan
+!    echo -en "\e]PDE65CD0" #magenta
+!    echo -en "\e]P614BDCC" #darkcyan
+!    echo -en "\e]PE48F3F3" #cyan
 !    echo -en "\e]P7AEAEAE" #lightgrey
 !    echo -en "\e]PFDBDDE4" #white
 !    clear # default input colours

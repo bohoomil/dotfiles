@@ -1,0 +1,8 @@
+! xdvi !
+xdvi.shrinkFactor: 7
+xdvi.keepPosition: True
+xdvi.gsAlpha:      True
+xdvi.gamma:        1.200000
+xdvi.geometry:     802x1023
+
+! vim:ft=xdefaults

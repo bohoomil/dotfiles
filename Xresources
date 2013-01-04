@@ -1,15 +1,13 @@
-! .Xresources by bohoomil
-! Urxvt !
+! --- .Xresources for Arch Linux
+! --- Urxvt
 URxvt*geometry:        104x34
-! euphrasia fg/bg
-URxvt*background:      #090C19
-URxvt*foreground:      #E6E6E6
-URxvt*cursorColor:     #1AAA13
 URxvt.cursorBlink:     1
 URxvt.cursorUnderline: 0
 URxvt*urgentOnBell:    true
 URxvt*letterSpace:     -0.2
+!URxvt*renderFont:   true
 
+! --- borderless and no scrollbar
 URxvt*scrollstyle:        plain
 URxvt*scrollBar:          false
 URxvt*scrollBar_right:    false
@@ -19,7 +17,15 @@ URxvt*borderLess:         false
 URxvt*internalBorder:     2
 URxvt.intensityStyles:    1
 
-! xft settings !
+! --- clickable links, etc.
+URxvt.perl-ext-common: default,url-select,matcher
+URxvt.keysym.M-u:      perl:url-select:select_next
+URxvt.urlLauncher:     dwb
+URxvt.underlineURLs:   false
+URxvt.matcher.button:  1
+URxvt.matcher.rend.0:  fg33 bg1
+
+! --- xft settings
 Xft.dpi:       96
 Xft.antialias: 1
 Xft.rgba:      rgb
@@ -28,32 +34,17 @@ Xft.lcdfilter: lcddefault
 Xft.hinting:   1
 Xft.hintstyle: hintfull
 
-! clickable links, etc. !
-URxvt.perl-ext-common: default,url-select,matcher
-URxvt.keysym.M-u:      perl:url-select:select_next
-URxvt.urlLauncher:     dwb
-URxvt.underlineURLs:   false
-URxvt.matcher.button:  1
-URxvt.matcher.rend.0:  fg33 bg1
-
-! font & colour !
-#include "/home/bohoomil/.config/term-fonts/envy-code-r"
-#include "/home/bohoomil/.config/colours/euphrasia"
-
-! mouse cursor !
 Xcursor.theme:         Neutral++
-Xcursor.size:          24
+Xcursor.size:          32
 
-! default fonts for xorg apps !
+! --- default fonts for xorg apps
 *font: -*-fixed-medium-r-normal-*-*-130-*-*-*-*-iso10646-1
 *boldFont: -*-fixed-medium-r-normal-*-*-130-*-*-*-*-iso10646-1
 
-! xdvi !
-xdvi.shrinkFactor: 7
-xdvi.keepPosition: True
-xdvi.gsAlpha:      True
-xdvi.gamma:        1.200000
-xdvi.geometry:     802x1023
+! --- font & colour
+#include "/home/bohoomil/.config/term-fonts/envy-code-r"
+#include "/home/bohoomil/.config/colours/euphrasia"
 
+#include "/home/bohoomil/.config/xorg-defaults/Xdvi"
 #include "/home/bohoomil/.config/xorg-defaults/XCalc-col3"
 
