@@ -1,7 +1,7 @@
-#!/bin/sh
-#PATH=${PATH}:/bin:/usr/bin:/usr/local/bin
+#!/bin/bash
 
-#[ ${SHELL} = "/bin/bash" ] || exit "Bash required!"
+PATH=${PATH}:/bin:/usr/bin:/usr/local/bin
+export PATH=$PATH
 
 # --== ERRORS ==--
 
@@ -64,6 +64,10 @@ E_CODEC_M4Ae_NOT_FOUND=41
 E_CODEC_M4Ad_NOT_FOUND=42
 E_CANT_TAG_M4A=43
 
+E_CODEC_FFMPEG_NOT_FOUND=44
+E_CODEC_MPC_NOT_FOUND=45
+E_CODEC_TAK_NOT_FOUND=46
+
 E_OPTERROR=65
 
 # --== VARIABLES ==--
@@ -72,13 +76,14 @@ NO_ARGS=0
 
 NAME="CUE 2 Tracks"
 DESC="Tool for spliting audio CD image to tracks with cue sheet info."
-VER="0.2.11"
-AUTHOR="Sergey (sergey.dryabzhinsky@gmail.com)"
+VER="0.2.14"
+AUTHOR="Sergey <sergey.dryabzhinsky@gmail.com> and other AUTHORS"
 
 # (tool|tag|codec)_* - set to <file> if its exists, "" otherwise
 
 MIN_SHNTOOL_VERSION=300
 
+tool_BC=""
 tool_CBP=""
 tool_CP=""
 tool_ST=""
@@ -99,6 +104,8 @@ codec_WVu=""
 codec_OFR=""
 codec_SHN=""
 codec_TTA=""
+codec_MPC=""
+codec_TAK=""
 
 codec_MP3=""
 codec_OGGd=""
@@ -111,11 +118,12 @@ codec_OUT=""
 
 # (tool|tag|codec)_*_needed - set to 1 if its needed, 0 otherwise
 
+tool_BC_needed=1
 tool_CBP_needed=1
 tool_CP_needed=1
 tool_ST_needed=1
 tool_F_needed=1
-tool_IC_needed=0
+tool_IC_needed=1
 
 tag_APE_needed=0
 tag_FLAC_needed=0
@@ -136,6 +144,8 @@ codec_OGGd_needed=0
 codec_OGGe_needed=0
 codec_M4Ae_needed=0
 codec_M4Ad_needed=0
+codec_MPC_needed=0
+codec_TAK_needed=0
 
 cueFile=""
 inFile=""
@@ -224,15 +234,24 @@ checktool() {
 	tool="$1"
 	pk="$2"
 
-	print_message -n "\t${color_yellow}*${color_default} Checking for '${color_cyan}${tool}${color_default}'..." >&2
+	print_message -n "\t${color_yellow}*${color_default} Checking for '${color_cyan}${tool}${color_default}'..."
 
 	ctool=`which "${tool}" 2>/dev/null`
 	if [ ! -n "${ctool}" ]
 	then
-		print_message "\t[${color_red}failed${color_default}]! Install '${pk}'!\n" >&2
+		print_message "\t[${color_red}failed${color_default}]! Install '${pk}'!\n"
 		return ${E_TOOL_NOT_FOUND}
 	else
-		print_message "\t[${color_green}ok${color_default}]" >&2
+		print_message "\t[${color_green}ok${color_default}]"
+	fi
+}
+gettool() {
+	tool="$1"
+	ctool=`which "${tool}" 2>/dev/null`
+	if [ ! -n "${ctool}" ]
+	then
+		return ${E_TOOL_NOT_FOUND}
+	else
 		echo "${ctool}"
 	fi
 }
@@ -265,6 +284,8 @@ print_codecs() {
 \t\tmp3   : mpeg 1 layer 3 via lame,\n\
 \t\togg   : ogg vorbis\n\
 \t\tm4a   : aac with m4a container,\n\
+\t\tmpc   : MusePack,\n\
+\t\ttak   : Tom's lossless Audio Kompressor,\n\
 " >&2
 }
 
@@ -335,7 +356,7 @@ Options:\n\
 \t-n <level> : Nice level (process scheduling priority):\n\
 \t             From high (-19) to low (19)\n\
 \n\
-\tOptions only for mp3, ogg:\n\
+\tOptions only for mp3, ogg, mpc:\n\
 \t-Q <quality> : Set quality of codec compression (4 - default)\n\
 \tQuality may be:\n\
 \t\tMP3 :   0 - high,  9 - low\n\
@@ -382,6 +403,15 @@ check_outCodec() {
 			[ ${outCodecLevel} -eq 2 ] && outCodecParam=" flake -4 - %f"
 			codec_OUT="flake"
 		;;
+		"tak" )
+			codec_TAK_needed=1
+			if [ ${putTags} -eq 1 ]; then tag_APE_needed=1; fi
+			outExt="tak"
+			toolCodec="${outCodec}"
+			outCodecParam=" takc -e -v -pMax -md5 -silent -overwrite - %f"
+			[ ${outCodecLevel} -eq 1 ] && outCodecParam=" takc -e -v -md5 -silent -overwrite - %f"
+			codec_OUT="takc"
+		;;
 		"ape" )
 			codec_APE_needed=1
 			if [ ${putTags} -eq 1 ]; then tag_APE_needed=1; fi
@@ -413,6 +443,14 @@ check_outCodec() {
 			toolCodec="${outCodec}"
 			outExt="shn"
 			codec_OUT="shorten"
+		;;
+		"mpc" )
+			codec_MPC_needed=1
+			if [ ${putTags} -eq 1 ]; then tag_APE_needed=1; fi
+			toolCodec="cust"
+			outExt="mpc"
+			codec_OUT="mpcenc"
+            outCodecParam=" ext=mpc mpcenc --silent --overwrite --quality ${outCodecQuality} - %f"
 		;;
 		"mp3" )
 			codec_MP3_needed=1
@@ -539,34 +577,46 @@ check_inCodec() {
 
 # function for search tools
 search_tools() {
+	if [ ${tool_BC_needed} -eq 1 ]
+	then
+		checktool bc bc
+		tool_BC=`gettool bc`
+		[ -n "${tool_BC}" ] || return ${E_TOOL_NOT_FOUND}
+	fi
+
 	if [ ${tool_CBP_needed} -eq 1 ]
 	then
-		tool_CBP=`checktool cuebreakpoints cuetools`
+		checktool cuebreakpoints cuetools
+		tool_CBP=`gettool cuebreakpoints`
 		[ -n "${tool_CBP}" ] || return ${E_TOOL_CBP_NOT_FOUND}
 	fi
 
 	if [ ${tool_CP_needed} -eq 1 ]
 	then
-		tool_CP=`checktool cueprint cuetools`
+		checktool cueprint cuetools
+		tool_CP=`gettool cueprint`
 		[ -n "${tool_CP}" ] || return ${E_TOOL_CP_NOT_FOUND}
 	fi
 
 	if [ ${tool_ST_needed} -eq 1 ]
 	then
-		tool_ST=`checktool shntool shntool`
+		checktool shntool shntool
+		tool_ST=`gettool shntool`
 		[ -n "${tool_ST}" ] || return ${E_TOOL_ST_NOT_FOUND}
 		check_shntool_version || return ${E_TOOL_ST_NOT_FOUND}
 	fi
 
 	if [ ${tool_F_needed} -eq 1 ]
 	then
-		tool_F=`checktool file file`
+		checktool file file
+		tool_F=`gettool file`
 		[ -n "${tool_F}" ] || return ${E_TOOL_F_NOT_FOUND}
 	fi
 
 	if [ ${tool_IC_needed} -eq 1 ]
 	then
-		tool_IC=`checktool iconv glibc`
+		checktool iconv glibc
+		tool_IC=`gettool iconv`
 		[ -n "${tool_IC}" ] || return ${E_TOOL_IC_NOT_FOUND}
 	fi
 }
@@ -575,112 +625,159 @@ search_tools() {
 search_dencoders() {
 	if [ ${codec_WVp_needed} -eq 1 ]
 	then
-		codec_WVp=`checktool wavpack wavpack`
+		checktool wavpack wavpack
+		codec_WVp=`gettool wavpack`
 		[ -n "${codec_WVp}" ] || return ${E_CODEC_WVp_NOT_FOUND}
 	fi
 
 	if [ ${codec_WVu_needed} -eq 1 ]
 	then
-		codec_WVu=`checktool wvunpack wavpack`
+		checktool wvunpack wavpack
+		codec_WVu=`gettool wvunpack`
 		[ -n "${codec_WVu}" ] || return ${E_CODEC_WVu_NOT_FOUND}
 	fi
 
 	if [ ${codec_SHN_needed} -eq 1 ]
 	then
-		codec_SHN=`checktool shorten shorten`
+		checktool shorten shorten
+		codec_SHN=`gettool shorten`
 		[ -n "${codec_SHN}" ] || return ${E_CODEC_SHN_NOT_FOUND}
 	fi
 
 	if [ ${codec_APE_needed} -eq 1 ]
 	then
-		codec_APE=`checktool mac mac`
-		[ -n "${codec_APE}" ] || return ${E_CODEC_APE_NOT_FOUND}
+		checktool mac mac
+		codec_APE=`gettool mac`
+		if [ ! -n "${codec_APE}" ]; then
+            if [ "${inCodec}" = "ape" ]; then
+                checktool ffmpeg ffmpeg
+                codec_APE=`gettool ffmpeg`
+    		    if [ -n "${codec_APE}" ]; then
+                    inCodec="ape_ffmpeg"
+                    codec_IN="wav"
+                    inFile2WAV=1
+    		        print_message "\tSwitching to ${color_yellow}FFMPEG${color_default}, and recode input file to ${color_yellow}WAV${color_default}..."
+                else
+                    return ${E_CODEC_FFMPEG_NOT_FOUND}
+                fi
+            else
+                return ${E_CODEC_APE_NOT_FOUND}
+            fi
+        fi
 	fi
 
 	if [ ${codec_FLAC_needed} -eq 1 ]
 	then
-		codec_FLAC=`checktool flac flac`
+		checktool flac flac
+		codec_FLAC=`gettool flac`
 		[ -n "${codec_FLAC}" ] || return ${E_CODEC_FLAC_NOT_FOUND}
 	fi
 
 	if [ ${codec_FLAKE_needed} -eq 1 ]
 	then
-		codec_FLAKE=`checktool flake flake`
+		checktool flake flake
+		codec_FLAKE=`gettool flake`
 		[ -n "${codec_FLAKE}" ] || return ${E_CODEC_FLAKE_NOT_FOUND}
 	fi
 
 	if [ ${codec_OFR_needed} -eq 1 ]
 	then
-		codec_OFR=`checktool ofr optimfrog`
+		checktool ofr optimfrog
+		codec_OFR=`gettool ofr`
 		[ -n "${codec_OFR}" ] || return ${E_CODEC_OFR_NOT_FOUND}
 	fi
 
 	if [ ${codec_TTA_needed} -eq 1 ]
 	then
-		codec_TTA=`checktool ttaenc ttaenc`
+		checktool ttaenc ttaenc
+		codec_TTA=`gettool ttaenc`
 		[ -n "${codec_TTA}" ] || return ${E_CODEC_TTA_NOT_FOUND}
 	fi
 
 	if [ ${codec_MP3_needed} -eq 1 ]
 	then
-		codec_MP3=`checktool lame lame`
+		checktool lame lame
+		codec_MP3=`gettool lame`
 		[ -n "${codec_MP3}" ] || return ${E_CODEC_MP3_NOT_FOUND}
 	fi
 
 	if [ ${codec_M4Ae_needed} -eq 1 ]
 	then
-		codec_M4Ae=`checktool faac faac`
+		checktool faac faac
+		codec_M4Ae=`gettool faac`
 		[ -n "${codec_M4Ae}" ] || return ${E_CODEC_M4Ae_NOT_FOUND}
 	fi
 
 	if [ ${codec_M4Ad_needed} -eq 1 ]
 	then
-		codec_M4Ad=`checktool faad faad`
+		checktool faad faad
+		codec_M4Ad=`gettool faad`
 		[ -n "${codec_M4Ad}" ] || return ${E_CODEC_M4Ad_NOT_FOUND}
 	fi
 
 	if [ ${codec_OGGd_needed} -eq 1 ]
 	then
-		codec_OGGd=`checktool oggdec oggdec`
+		checktool oggdec oggdec
+		codec_OGGd=`gettool oggdec`
 		[ -n "${codec_OGGd}" ] || return ${E_CODEC_OGGd_NOT_FOUND}
 	fi
 
 	if [ ${codec_OGGe_needed} -eq 1 ]
 	then
-		codec_OGGe=`checktool oggenc oggenc`
+		checktool oggenc oggenc
+		codec_OGGe=`gettool oggenc`
 		[ -n "${codec_OGGe}" ] || return ${E_CODEC_OGGe_NOT_FOUND}
 	fi
+
+     if [ ${codec_MPC_needed} -eq 1 ]
+     then
+         checktool mpcenc musepack-tools
+         codec_MPC=`gettool mpcenc`
+         [ -n "${codec_MPC}" ] || return ${E_CODEC_MPC_NOT_FOUND}
+     fi
+
+     if [ ${codec_TAK_needed} -eq 1 ]
+     then
+         checktool takc tak
+         codec_TAK=`gettool takc`
+         [ -n "${codec_TAK}" ] || return ${E_CODEC_TAK_NOT_FOUND}
+     fi
 }
 
 # function for search taging tools
 search_tagers() {
 	if [ ${tag_APE_needed} -eq 1 ]
 	then
-		tag_APE=`checktool apetag apetag`
+		checktool apetag apetag
+		tag_APE=`gettool apetag`
 		[ -n "${tag_APE}" ] || return ${E_TAG_APE_NOT_FOUND}
 	fi
 
 	if [ ${tag_FLAC_needed} -eq 1 ]
 	then
-		tag_FLAC=`checktool metaflac flac`
+		checktool metaflac flac
+		tag_FLAC=`gettool metaflac`
 		[ -n "${tag_FLAC}" ] || return ${E_TAG_FLAC_NOT_FOUND}
 	fi
 
 	if [ ${tag_MP3_needed} -eq 1 ]
 	then
-		tag_MP3=`checktool id3v2 id3v2`
+		checktool id3v2 id3v2
+		tag_MP3=`gettool id3v2`
 		[ -n "${tag_MP3}" ] || return ${E_TAG_MP3_NOT_FOUND}
 	fi
-	
+
 	if [ ${tag_M4A_needed} -eq 1 ]
 	then
-		tag_M4A=`checktool mp4tags mpeg4ip-utils`
+		checktool mp4tags mpeg4ip-utils
+		tag_M4A=`gettool mp4tags`
 		[ -n "${tag_M4A}" ] || return ${E_TAG_M4A_NOT_FOUND}
 	fi
-	
+
 	if [ ${tag_OGG_needed} -eq 1 ]
 	then
-		tag_OGG=`checktool vorbiscomment vorbis-tools`
+		checktool vorbiscomment vorbis-tools
+		tag_OGG=`gettool vorbiscomment`
 		[ -n "${tag_OGG}" ] || return ${E_TAG_OGG_NOT_FOUND}
 	fi
 }
@@ -742,6 +839,8 @@ prepare_and_fix_cue() {
 		bnc=`basename "${cueFile}" .cue`
 		ncn="${tempDirName}/${bnc}.line.cue"
 		cp "${cueFile}" "${ncn}"
+        # Try to fix copied permissions @9
+        chmod 644 "${ncn}"
 		echo -e "\n" >> "${ncn}"
 		[ $? -ne 0 ] && return ${E_CANT_FIX_CUE}
 		cueFile="${ncn}"
@@ -810,37 +909,71 @@ recode_to_wav() {
 	print_message "\tRecoding '${color_cyan}${inFile}${color_default}' to WAV..."
 	case "${inCodec}" in
 		"flac" )
-			flac -d -f -o "${FullPathOUT}" "${FullPathIN}"
+			${codec_FLAC} -d -f -o "${FullPathOUT}" "${FullPathIN}"
+			errors=$?
+		;;
+		"flac_ffmpeg" )
+			ffmpeg -i "${FullPathIN}" "${FullPathOUT}"
 			errors=$?
 		;;
 		"ape" )
 			mac "${FullPathIN}" "${FullPathOUT}" -d
 			errors=$?
 		;;
+		"ape_ffmpeg" )
+			ffmpeg -i "${FullPathIN}" "${FullPathOUT}"
+			errors=$?
+		;;
 		"wv" )
 			wvunpack -y -o "${FullPathOUT}" "${FullPathIN}"
 			errors=$?
 		;;
+		"wv_ffmpeg" )
+			ffmpeg -i "${FullPathIN}" "${FullPathOUT}"
+			errors=$?
+		;;
 		"ofr" )
+			ffmpeg -i "${FullPathIN}" "${FullPathOUT}"
+			errors=$?
 		;;
 		"shn" )
 			shorten -x "${FullPathIN}" "${FullPathOUT}"
+			errors=$?
+		;;
+		"shn_ffmpeg" )
+			ffmpeg -i "${FullPathIN}" "${FullPathOUT}"
 			errors=$?
 		;;
 		"tta" )
 			ttaenc -d -o "${FullPathOUT}" "${FullPathIN}"
 			errors=$?
 		;;
+		"tta_ffmpeg" )
+			ffmpeg -i "${FullPathIN}" "${FullPathOUT}"
+			errors=$?
+		;;
 		"mp3" )
 			lame -S --decode "${FullPathIN}" "${FullPathOUT}"
+			errors=$?
+		;;
+		"mp3_ffmpeg" )
+			ffmpeg -i "${FullPathIN}" "${FullPathOUT}"
 			errors=$?
 		;;
 		"m4a" )
 			faad -q -o "${FullPathOUT}" "${FullPathIN}"
 			errors=$?
 		;;
+		"m4a_ffmpeg" )
+			ffmpeg -i "${FullPathIN}" "${FullPathOUT}"
+			errors=$?
+		;;
 		"ogg" )
 			oggdec -Q --decode -o "${FullPathOUT}" "${FullPathIN}"
+			errors=$?
+		;;
+		"ogg_ffmpeg" )
+			ffmpeg -i "${FullPathIN}" "${FullPathOUT}"
 			errors=$?
 		;;
 		"wav" )
@@ -922,7 +1055,7 @@ split_image() {
 						then
 							print_message "${bs}${color_green}100%${color_default}"
 						else
-							print_message "" 
+							print_message ""
 						fi
 						print_message -n "Track ${color_green}${lc}${color_default}: ${spl} : ${color_yellow}${prc}${color_default}"
 						lw=${#prc}
@@ -960,6 +1093,9 @@ split_image() {
 
 # function for reading album info
 read_album_info() {
+
+    echo "tool_CP=${tool_CP}; cueFile=${cueFile}"
+
 	test=`${tool_CP} -d %N "${cueFile}" 2>&1 | grep error`
 	if [ -n "${test}" ]
 	then
@@ -971,7 +1107,7 @@ read_album_info() {
 	then
 		tags_ALBUM_PERFORMER=`${tool_CP} -d %P "${cueFile}"`
 	else
-		tags_ALBUM_PERFORMER=${pre_ALBUM_PERFORMER}
+		tags_ALBUM_PERFORMER="${pre_ALBUM_PERFORMER}"
 	fi
 	print_message "\tAlbum Performer = ${color_cyan}${tags_ALBUM_PERFORMER}${color_default}"
 
@@ -979,7 +1115,7 @@ read_album_info() {
 	then
 		tags_ALBUM_COMPOSER=`${tool_CP} -d %C "${cueFile}"`
 	else
-		tags_ALBUM_COMPOSER=${pre_ALBUM_COMPOSER}
+		tags_ALBUM_COMPOSER="${pre_ALBUM_COMPOSER}"
 	fi
 	[ -n "${tags_ALBUM_COMPOSER}" ] && print_message "\tAlbum Performer = ${color_cyan}${tags_ALBUM_PERFORMER}${color_default}"
 
@@ -987,7 +1123,7 @@ read_album_info() {
 	then
 		tags_ALBUM_TITLE=`${tool_CP} -d %T "${cueFile}"`
 	else
-		tags_ALBUM_TITLE=${pre_ALBUM_TITLE}
+		tags_ALBUM_TITLE="${pre_ALBUM_TITLE}"
 	fi
 	print_message "\tAlbum Title = ${color_cyan}${tags_ALBUM_TITLE}${color_default}"
 
@@ -995,7 +1131,7 @@ read_album_info() {
 	then
 		tags_ALBUM_GENRE=`${tool_CP} -d %G "${cueFile}"`
 	else
-		tags_ALBUM_GENRE=${pre_ALBUM_GENRE}
+		tags_ALBUM_GENRE="${pre_ALBUM_GENRE}"
 	fi
 
 	[ -n "${tags_ALBUM_GENRE}" ] || tags_ALBUM_GENRE=`grep -m 1 GENRE "${cueFile}" | sed -r -e 's/.?*REM\ GENRE\ (.?*)/\1/g' -e 's:"::g' | tr -d [:cntrl:]`
@@ -1022,53 +1158,88 @@ read_album_info() {
 	print_message "\tNumber of Tracks = ${color_cyan}${tags_ALBUM_TRACKS}${color_default}"
 }
 
+
+tag_flac_track() {
+    tag_Name="$1"
+    tag_Value="$2"
+
+    ${tag_FLAC} \
+    --set-tag="${tag_Name}=${tag_Value}" \
+    "${tempDirName}/${tags_TRACK_ZNUMBER}.${outExt}" &>/dev/null
+    if [ $? -ne 0 ]; then
+        print_error "Cant tag '${color_cyan}${tempDirName}/${tags_TRACK_ZNUMBER}.${outExt}${color_default}'"
+        return ${E_CANT_TAG_FLAC}
+    fi
+}
+
+tag_ogg_track() {
+    tag_Name="$1"
+    tag_Value="$2"
+
+    ${tag_OGG} -a \
+    -t ${tag_Name}="${tag_Value}" \
+    "${tempDirName}/${tags_TRACK_ZNUMBER}.${outExt}" &>/dev/null
+    if [ $? -ne 0 ]; then
+        print_error "Cant tag '${color_cyan}${tempDirName}/${tags_TRACK_ZNUMBER}.${outExt}${color_default}'"
+        return ${E_CANT_TAG_OGG}
+    fi
+}
+
+tag_ape_track() {
+    tag_Name="$1"
+    tag_Value="$2"
+
+    ${tag_APE} -i "${tempDirName}/${tags_TRACK_ZNUMBER}.${outExt}" -m update \
+    -p ${tag_Name}="${tag_Value}" &>/dev/null
+    if [ $? -ne 0 ]; then
+        print_error "Cant tag '${color_cyan}${tempDirName}/${tags_TRACK_ZNUMBER}.${outExt}${color_default}'"
+        return ${E_CANT_TAG_APE}
+    fi
+}
+
+tag_m4a_track() {
+    tag_Name="$1"
+    tag_Value="$2"
+
+    ${tag_M4A} -${tag_Name} "${tag_Value}" "${tempDirName}/${tags_TRACK_ZNUMBER}.${outExt}" &>/dev/null
+    if [ $? -ne 0 ]; then
+        print_error "Cant tag '${color_cyan}${tempDirName}/${tags_TRACK_ZNUMBER}.${outExt}${color_default}'"
+        return ${E_CANT_TAG_M4A}
+    fi
+}
+
+
 # function for track taging
 tag_track() {
 	case "${outCodec}" in
 		"flac" | "flake" )
 			if [ ${onlyTest} -eq 0 ]
 			then
-				optional=""
-				[ -n "${tags_ALBUM_DISCID}" ] && optional="${optional} --set-tag=DISCID=${tags_ALBUM_DISCID}"
-				[ -n "${tags_ALBUM_NUMBER}" ] && optional="${optional} --set-tag=DISCNUMBER=${tags_ALBUM_NUMBER}"
-				[ -n "${tags_TRACK_COMPOSER}" ] && optional="${optional} --set-tag=COMPOSER=${tags_TRACK_COMPOSER}"
-				${tag_FLAC} \
-				--set-tag="TITLE=${tags_TRACK_TITLE}" \
-				--set-tag="ALBUM=${tags_ALBUM_TITLE}" \
-				--set-tag="ARTIST=${tags_TRACK_PERFORMER}" \
-				--set-tag="DATE=${tags_ALBUM_DATE}" \
-				--set-tag="TRACKNUMBER=${tags_TRACK_ZNUMBER}" \
-				--set-tag="GENRE=${tags_TRACK_GENRE}" \
-				--set-tag="COMMENT=${NAME} v${VER}" \
-				${optional} \
-				"${tempDirName}/${tags_TRACK_ZNUMBER}.${outExt}" &>/dev/null
-				if [ $? -ne 0 ]
-				then
-					print_error "Cant tag '${color_cyan}${tempDirName}/${tags_TRACK_ZNUMBER}.${outExt}${color_default}'"
-					return ${E_CANT_TAG_FLAC}
-				fi
+				[ -n "${tags_ALBUM_DISCID}" ] && ( tag_flac_track "DISCID" "${tags_ALBUM_DISCID}" || return ${E_CANT_TAG_FLAC} )
+				[ -n "${tags_ALBUM_NUMBER}" ] && ( tag_flac_track "DISCNUMBER" "${tags_ALBUM_NUMBER}" || return ${E_CANT_TAG_FLAC} )
+				[ -n "${tags_TRACK_COMPOSER}" ] && ( tag_flac_track "COMPOSER" "${tags_TRACK_COMPOSER}" || return ${E_CANT_TAG_FLAC} )
+				tag_flac_track "TITLE" "${tags_TRACK_TITLE}" || return ${E_CANT_TAG_FLAC}
+				tag_flac_track "ALBUM" "${tags_ALBUM_TITLE}" || return ${E_CANT_TAG_FLAC}
+				tag_flac_track "ARTIST" "${tags_TRACK_PERFORMER}" || return ${E_CANT_TAG_FLAC}
+				tag_flac_track "DATE" "${tags_ALBUM_DATE}" || return ${E_CANT_TAG_FLAC}
+				tag_flac_track "TRACKNUMBER" "${tags_TRACK_ZNUMBER}" || return ${E_CANT_TAG_FLAC}
+				tag_flac_track "GENRE" "${tags_TRACK_GENRE}" || return ${E_CANT_TAG_FLAC}
+				tag_flac_track "COMMENT" "${NAME} v${VER}" || return ${E_CANT_TAG_FLAC}
 			fi
 		;;
-		"ape" | "wv" )
+		"ape" | "wv" | "mpc" | "tak" )
 			if [ ${onlyTest} -eq 0 ]
 			then
-				[ -n "${tags_ALBUM_DISCID}" ] && optional="${optional} -p DISCID=${tags_ALBUM_DISCID}"
-				[ -n "${tags_ALBUM_NUMBER}" ] && optional="${optional} -p MEDIA=${tags_ALBUM_NUMBER}"
-				[ -n "${tags_TRACK_COMPOSER}" ] && optional="${optional} -p COMPOSER=${tags_TRACK_COMPOSER}"
-				${tag_APE} -i "${tempDirName}/${tags_TRACK_ZNUMBER}.${outExt}" -m update \
-				-p TITLE="${tags_TRACK_TITLE}" \
-				-p ALBUM="${tags_ALBUM_TITLE}" \
-				-p ARTIST="${tags_TRACK_PERFORMER}" \
-				-p YEAR="${tags_ALBUM_DATE}" \
-				-p TRACK="${tags_TRACK_ZNUMBER}" \
-				-p GENRE="${tags_TRACK_GENRE}" \
-				${optional} \
-				-p COMMENT="${NAME} v${VER}" &>/dev/null
-				if [ $? -ne 0 ]
-				then
-					print_error "Cant tag '${color_cyan}${tempDirName}/${tags_TRACK_ZNUMBER}.${outExt}${color_default}'"
-					return ${E_CANT_TAG_APE}
-				fi
+				[ -n "${tags_ALBUM_DISCID}" ] && ( tag_ape_track "DISCID" "${tags_ALBUM_DISCID}" || return ${E_CANT_TAG_APE} )
+				[ -n "${tags_ALBUM_NUMBER}" ] && ( tag_ape_track "MEDIA" "${tags_ALBUM_NUMBER}" || return ${E_CANT_TAG_APE} )
+				[ -n "${tags_TRACK_COMPOSER}" ] && ( tag_ape_track "COMPOSER" "${tags_TRACK_COMPOSER}" || return ${E_CANT_TAG_APE} )
+				tag_ape_track "TITLE" "${tags_TRACK_TITLE}" || return ${E_CANT_TAG_APE}
+				tag_ape_track "ALBUM" "${tags_ALBUM_TITLE}" || return ${E_CANT_TAG_APE}
+				tag_ape_track "ARTIST" "${tags_TRACK_PERFORMER}" || return ${E_CANT_TAG_APE}
+				tag_ape_track "YEAR" "${tags_ALBUM_DATE}" || return ${E_CANT_TAG_APE}
+				tag_ape_track "TRACK" "${tags_TRACK_ZNUMBER}" || return ${E_CANT_TAG_APE}
+				tag_ape_track "GENRE" "${tags_TRACK_GENRE}" || return ${E_CANT_TAG_APE}
+				tag_ape_track "COMMENT" "${NAME} v${VER}" || return ${E_CANT_TAG_APE}
 			fi
 		;;
 		"mp3" )
@@ -1097,51 +1268,33 @@ tag_track() {
 		"ogg" )
 			if [ ${onlyTest} -eq 0 ]
 			then
-				optional=""
-				[ -n "${tags_ALBUM_DISCID}" ] && optional="${optional} -t DISCID=${tags_ALBUM_DISCID}"
-				[ -n "${tags_ALBUM_NUMBER}" ] && optional="${optional} -t DISCNUMBER=${tags_ALBUM_NUMBER}"
-				[ -n "${tags_TRACK_COMPOSER}" ] && optional="${optional} -t COMPOSER=${tags_TRACK_COMPOSER}"
-				${tag_OGG} -w \
-				-t TITLE="${tags_TRACK_TITLE}" \
-				-t ALBUM="${tags_ALBUM_TITLE}" \
-				-t ARTIST="${tags_TRACK_PERFORMER}" \
-				-t DATE="${tags_ALBUM_DATE}" \
-				-t TRACKNUMBER="${tags_TRACK_ZNUMBER}" \
-				-t GENRE="${tags_TRACK_GENRE}" \
-				-t COMMENT="${NAME} v${VER}" \
-				${optional} \
-				 "${tempDirName}/${tags_TRACK_ZNUMBER}.${outExt}" &>/dev/null
-				if [ $? -ne 0 ]
-				then
-					print_error "Cant tag '${color_cyan}${tempDirName}/${tags_TRACK_ZNUMBER}.${outExt}${color_default}'"
-					return ${E_CANT_TAG_OGG}
-				fi
+				[ -n "${tags_ALBUM_DISCID}" ] && ( tag_ogg_track "DISCID" "${tags_ALBUM_DISCID}" || return ${E_CANT_TAG_OGG} )
+				[ -n "${tags_ALBUM_NUMBER}" ] && ( tag_ogg_track "DISCNUMBER" "${tags_ALBUM_NUMBER}" || return ${E_CANT_TAG_OGG} )
+				[ -n "${tags_TRACK_COMPOSER}" ] && ( tag_ogg_track "COMPOSER" "${tags_TRACK_COMPOSER}" || return ${E_CANT_TAG_OGG} )
+				tag_ogg_track "TITLE" "${tags_TRACK_TITLE}" || return ${E_CANT_TAG_OGG}
+				tag_ogg_track "ALBUM" "${tags_ALBUM_TITLE}" || return ${E_CANT_TAG_OGG}
+				tag_ogg_track "ARTIST" "${tags_TRACK_PERFORMER}" || return ${E_CANT_TAG_OGG}
+				tag_ogg_track "DATE" "${tags_ALBUM_DATE}" || return ${E_CANT_TAG_OGG}
+				tag_ogg_track "TRACKNUMBER" "${tags_TRACK_ZNUMBER}" || return ${E_CANT_TAG_OGG}
+				tag_ogg_track "GENRE" "${tags_TRACK_GENRE}" || return ${E_CANT_TAG_OGG}
+				tag_ogg_track "COMMENT" "${NAME} v${VER}" || return ${E_CANT_TAG_OGG}
 			fi
 		;;
 		"m4a" )
 			if [ ${onlyTest} -eq 0 ]
 			then
-				optional=""
 				optionalComment=""
 				[ -n "${tags_ALBUM_DISCID}" ] && optionalComment="${optionalComment}, DISCID=${tags_ALBUM_DISCID}"
-				[ -n "${tags_ALBUM_NUMBER}" ] && optionalComment="${optional} -disk ${tags_ALBUM_NUMBER}"
-				[ -n "${tags_TRACK_COMPOSER}" ] && optional="${optional} -writer ${tags_TRACK_COMPOSER}"
-				${tag_M4A} \
-				-song "${tags_TRACK_TITLE}" \
-				-album "${tags_ALBUM_TITLE}" \
-				-artist "${tags_TRACK_PERFORMER}" \
-				-year "${tags_ALBUM_DATE}" \
-				-track "${tags_TRACK_NUMBER}" \
-				-tracks "${tags_ALBUM_TRACKS}" \
-				-genre "${tags_TRACK_GENRE}" \
-				-comment "${NAME} v${VER}${optionalComment}" \
-				${optional} \
-				"${tempDirName}/${tags_TRACK_ZNUMBER}.${outExt}" # &>/dev/null
-				if [ $? -ne 0 ]
-				then
-					print_error "Cant tag '${color_cyan}${tempDirName}/${tags_TRACK_ZNUMBER}.${outExt}${color_default}'"
-					return ${E_CANT_TAG_M4A}
-				fi
+				[ -n "${tags_ALBUM_NUMBER}" ] && ( tag_m4a_track disk "${tags_ALBUM_NUMBER}" || return ${E_CANT_TAG_M4A} )
+				[ -n "${tags_TRACK_COMPOSER}" ] && ( tag_m4a_track writer "${tags_TRACK_COMPOSER}" || return ${E_CANT_TAG_M4A} )
+				tag_m4a_track song "${tags_TRACK_TITLE}" || return ${E_CANT_TAG_M4A}
+				tag_m4a_track album "${tags_ALBUM_TITLE}" || return ${E_CANT_TAG_M4A}
+				tag_m4a_track artist "${tags_TRACK_PERFORMER}" || return ${E_CANT_TAG_M4A}
+				tag_m4a_track year "${tags_ALBUM_DATE}" || return ${E_CANT_TAG_M4A}
+				tag_m4a_track track "${tags_TRACK_NUMBER}" || return ${E_CANT_TAG_M4A}
+				tag_m4a_track tracks "${tags_ALBUM_TRACKS}" || return ${E_CANT_TAG_M4A}
+				tag_m4a_track genre "${tags_TRACK_GENRE}" || return ${E_CANT_TAG_M4A}
+				tag_m4a_track comment "${NAME} v${VER}${optionalComment}" || return ${E_CANT_TAG_M4A}
 			fi
 		;;
 	esac
@@ -1263,10 +1416,10 @@ onexit() {
 	str=`ps ax | grep shntool | grep -v grep`
 	if [ -n "${str}" ]
 	then
-		killall -Iq ${codec_OUT}
-		killall -Iq ${codec_IN}
-		killall -Iq shntool
-		killall -Iq cuebreackpoints
+		killall -q -I -- ${codec_OUT}
+		killall -q -I -- ${codec_IN}
+		killall -q -I -- shntool
+		killall -q -I -- cuebreackpoints
 	fi
 	if [[ "${tempDirName}" != "." ]]
 	then
@@ -1274,7 +1427,8 @@ onexit() {
 	else
 		rm -f "${file_splitlog}" "${file_splitlogwork}"
 	fi
-	${PROMPT_COMMAND}
+  #${PROMPT_COMMAND}
+	history -a; history -c; history -r
 	[[ "$1" == "halt" ]] && exit ${E_UNK}
 	ecode=$1
 	[ ! -n "${ecode}" ] && ecode=0
@@ -1369,14 +1523,14 @@ do
 			splitInTest=1
 		;;
 		n )
-			niceness=`echo ${OPTARG} | sed -r 's/[^-0-9](.?*)$//'`
-			(( ${niceness} < -19 )) && niceness=-19
-			(( ${niceness} > 19 )) && niceness=19
+			niceness=`echo ${OPTARG} | sed -r 's/[^-0-9]//g'`
+			[ `echo "${niceness} < -19" | bc` -eq 1 ] && niceness=-19
+			[ `echo "${niceness} > 19" | bc` -eq 1 ] && niceness=19
 		;;
 		Q )
-			outCodecQuality=`echo ${OPTARG} | sed -r 's/[^-0-9](.?*)$//'`
-			(( ${outCodecQuality} < -1 )) && outCodecQuality=-1
-			(( ${outCodecQuality} > 10 )) && outCodecQuality=10
+			outCodecQuality=`echo ${OPTARG} | sed -r 's/[^-0-9\.]//g'`
+			[ `echo "${outCodecQuality} < -1" | bc` -eq 1 ] && outCodecQuality=-1
+			[ `echo "${outCodecQuality} > 10" | bc` -eq 1 ] && outCodecQuality=10
 			outCodecLevel=3
 		;;
 		M )
@@ -1387,9 +1541,9 @@ do
 			fi
 		;;
 		B )
-			outCodecBitRate=`echo ${OPTARG} | sed -r 's/[^-0-9](.?*)$//'`
-			(( ${outCodecBitRate} < 32 )) && outCodecBitRate=32
-			(( ${outCodecBitRate} > 500 )) && outCodecBitRate=500
+			outCodecBitRate=`echo ${OPTARG} | sed -r 's/[^0-9\.]//g'`
+			[ `echo "${outCodecBitRate} < 32" | bc` -eq 1 ] && outCodecBitRate=32
+			[ `echo "${outCodecBitRate} > 500" | bc` -eq 1 ] && outCodecBitRate=500
 			outCodecLevel=3
 		;;
 		i )
@@ -1442,7 +1596,7 @@ trap onhalt SIGINT
 [ ! ${niceness} -eq 0 ] && print_message "\tSetting niceness level to '${color_yellow}${niceness}${color_default}'\n"
 renice ${niceness} $$ &>/dev/null
 
-if [[ ! -e "${cueFile}" || ! -f "${cueFile}" ]]
+if [ ! -e "${cueFile}" -o ! -f "${cueFile}" ]
 then
 	print_error "File '${color_cyan}${cueFile}${color_default}' dont exists or not a regular file!"
 	onexit ${E_NOT_CUE_FILE}
@@ -1454,7 +1608,7 @@ then
 	then
 		inFileDir=`dirname "${inFile}"`
 		inFile=`basename "${inFile}"`
-	else	
+	else
 		print_error "File '${inFile}' not found! Setting to default path..."
 		inFile=""
 	fi
@@ -1462,13 +1616,13 @@ else
 	inFileDir=`dirname "${cueFile}"`
 fi
 
-[[ "${inFileDir}" == "." ]] && inFileDir=`pwd`
+[ "${inFileDir}" = "." ] && inFileDir=`pwd`
 
 tempDirName=`mktemp -q -d /tmp/${scriptName}-XXXXXX`
 [ -n "${tempDirName}" ] || tempDirName="."
 
 testformat=`echo ${outFormatStr} | sed -e 's:%n::' -e 's:%N::' -e 's:%t::'`
-if [[ "${outFormatStr}" == "${testformat}" ]]
+if [ "${outFormatStr}" = "${testformat}" ]
 then
 	print_error "Put any of '%n, %N, %t' changable tag descriptors or file writing errors may be occured! Setting to default '%N'..."
 	outFormatStr="%N"
@@ -1551,24 +1705,24 @@ esac
 # setup codecs quality limits
 case "${outCodec}" in
 	"mp3")
-		(( ${outCodecQuality} < 0 )) && outCodecQuality=0
-		(( ${outCodecQuality} > 9 )) && outCodecQuality=9
-		if (( ${outCodecBitRate} > 256 ))
+		[ `echo "${outCodecQuality} < 0" | bc` -eq 1 ] && outCodecQuality=0
+		[ `echo "${outCodecQuality} > 9" | bc` -eq 1 ] && outCodecQuality=9
+		if [ `echo "${outCodecBitRate} > 256" | bc` -eq 1 ]
 		then
 			outCodecBitRate=320
-		elif (( ${outCodecBitRate} > 192 ))
+		elif [ `echo "${outCodecBitRate} > 192" | bc` -eq 1 ]
 		then
 			outCodecBitRate=256
-		elif (( ${outCodecBitRate} > 128 ))
+		elif [ `echo "${outCodecBitRate} > 128" | bc` -eq 1 ]
 		then
 			outCodecBitRate=192
-		elif (( ${outCodecBitRate} > 96 ))
+		elif [ `echo "${outCodecBitRate} > 96" | bc` -eq 1 ]
 		then
 			outCodecBitRate=128
-		elif (( ${outCodecBitRate} > 64 ))
+		elif [ `echo "${outCodecBitRate} > 64" | bc` -eq 1 ]
 		then
 			outCodecBitRate=96
-		elif (( ${outCodecBitRate} > 32 ))
+		elif [ `echo "${outCodecBitRate} > 32" | bc` -eq 1 ]
 		then
 			outCodecBitRate=64
 		else
@@ -1576,16 +1730,16 @@ case "${outCodec}" in
 		fi
 	;;
 	"m4a")
-		(( ${outCodecQuality} < 10 )) && outCodecQuality=10
-		(( ${outCodecQuality} > 500 )) && outCodecQuality=500
-		(( ${outCodecBitRate} < 10 )) && outCodecBitRate=10
-		(( ${outCodecBitRate} > 500 )) && outCodecBitRate=500
+		[ `echo "${outCodecQuality} < 10" | bc` -eq 1 ] && outCodecQuality=10
+		[ `echo "${outCodecQuality} > 500" | bc` -eq 1 ] && outCodecQuality=500
+		[ `echo "${outCodecBitRate} < 10" | bc` -eq 1 ] && outCodecBitRate=10
+		[ `echo "${outCodecBitRate} > 500" | bc` -eq 1 ] && outCodecBitRate=500
 	;;
 	"ogg")
-		(( ${outCodecQuality} < -1 )) && outCodecQuality=-1
-		(( ${outCodecQuality} > 10 )) && outCodecQuality=10
-		(( ${outCodecBitRate} < 32 )) && outCodecBitRate=32
-		(( ${outCodecBitRate} > 500 )) && outCodecBitRate=500
+		[ `echo "${outCodecQuality} < -1" | bc` -eq 1 ] && outCodecQuality=-1
+		[ `echo "${outCodecQuality} > 10" | bc` -eq 1 ] && outCodecQuality=10
+		[ `echo "${outCodecBitRate} < 32" | bc` -eq 1 ] && outCodecBitRate=32
+		[ `echo "${outCodecBitRate} > 500" | bc` -eq 1 ] && outCodecBitRate=500
 	;;
 esac
 
@@ -1605,7 +1759,24 @@ run_section "Processing tracks..." process_tracks
 
 if [ ${onlyTest} -eq 1 ]
 then
-	print_message "\n${color_magenta}${NAME} executed in testing mode! To get real work rerun it with -R option.${color_default}"
+	print_message "\n${color_magenta}${NAME} executed in testing mode! To get real work rerun it with -R option or${color_default}"
+
+    answ="N"
+    print_message -n "\n${color_magenta}Apply selected options?${color_default}[y/${answ}]: "
+    read answ
+    answ=`echo ${answ} | tr [:upper:] [:lower:]`
+
+    if [ "${answ}" = "y" ]; then
+
+        onlyTest=0
+
+        run_section "Reading album info..." read_album_info
+        [ ${inFile2WAV} -ne 0 ] && run_section "Recode to WAV..." recode_to_wav
+        run_section "Start splitting..." split_image
+        run_section "Processing tracks..." process_tracks
+
+    fi
+
 fi
 
 onexit
