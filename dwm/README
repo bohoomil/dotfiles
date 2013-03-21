@@ -1,0 +1,13 @@
+Applied patches:
+
+1. statuscolours.diff
+2. monoclecount.diff
+3. noborder.diff
+4. centredfloating.diff
+5. clicktofocus.diff
+6. attachaside.diff
+7. moveresize.diff
+8. xkbkeysym.diff
+
+Launch and status bar scripts can be found in local/bin.
+

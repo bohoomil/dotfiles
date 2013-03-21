@@ -1,0 +1,178 @@
+#!/bin/bash
+# Credits and Thank Yous:
+# #######################
+#
+# CPU line:
+# Procyon (https://bbs.archlinux.org/viewtopic.php?pid=661592)
+#
+# Status bar options:
+# http://0mark.unserver.de/projects/dwm-sprinkles/tfm
+#
+# Battery, monitor brightness cripts & lots of details:
+# Jason Ryan (http://jasonwryan.com/)
+#
+# w0ng for providing examples that let
+# resolve a few issues
+#
+# A few kind guys whose names I cannot recall,
+# but whose work came of great help.
+
+C01="\x01" # norm [dgrey on black]
+C02="\x02" # sel  [bgrey on black]
+C03="\x03" # urg  [white on red]
+C04="\x04" # mid grey on black
+C05="\x05" # dark blue on black
+C06="\x06" # black0
+C07="\x07" # black8
+C08="\x08" # red1
+C09="\x09" # red9
+C10="\x0A" # green2
+C11="\x0B" # green10
+C12="\x0C" # yellow3
+C13="\x0D" # yellow11
+C14="\x0E" # blue4
+C15="\x0F" # blue12
+C16="\x10" # magenta5
+C17="\x11" # magenta13
+C18="\x12" # cyan6
+C19="\x13" # cyan14
+C20="\x14" # white7
+C21="\x15" # white15
+C22="\x16" # dwm norm bg
+C23="\x17" # xorg bg
+C24="\x18" # norm grey
+C25="\x19" # clock
+C26="\x1A" # dwm selbg
+
+sep1="${C05}|${C01}"
+sep2="${C26}÷${C01}"
+
+
+vpn(){
+	con="$(host google.com>/dev/null && echo -e ON || echo -e NO)"
+	loc="$("$HOME/.local/bin/loc.sh")"
+  # if vpn isn't working, display red alert
+  # (modify the '$loc == xx' variable so that
+  # it points your default location)
+	if [ $con == ON ] && [ $loc == xx ]; then
+		#red 9
+		echo -e "${C04}GEO ${C08}NO${C04}"
+	elif [ $con == NO ]; then
+		echo -e "${C04}GEO ${C11}--${C04}"
+	else
+		#blue4
+		echo -e "${C04}GEO ${C15}${loc}${C04}"
+	fi
+}
+
+cpu(){
+	proc="$(eval $(awk '/^cpu /{print "previdle=" $5 "; prevtotal=" $2+$3+$4+$5 }' /proc/stat); sleep 0.4; 
+	eval $(awk '/^cpu /{print "idle=" $5 "; total=" $2+$3+$4+$5 }' /proc/stat); 
+	INTERVALTOTAL=$((total-${prevtotal:-0})); 
+	echo "$((100*( (INTERVALTOTAL) - ($idle-${previdle:-0}) ) / (INTERVALTOTAL) ))")"
+	if [ "${proc}" -ge 0 ] && [ "${proc}" -le 9 ]; then
+		#green10
+		echo -e "${C04}CPU ${C11}${proc}%${C04}"
+	elif [ "${proc}" -ge 10 ] && [ "${proc}" -le 24 ]; then
+		#cyan14
+		echo -e "${C04}CPU ${C19}${proc}%${C04}"
+	elif [ "${proc}" -ge 25 ] && [ "${proc}" -le 49 ]; then
+		#yellow11
+		echo -e "${C04}CPU ${C13}${proc}%${C04}"
+	elif [ "${proc}" -ge 50 ] && [ "${proc}" -le 74 ]; then
+		#magenta13
+		echo -e "${C04}CPU ${C17}${proc}%${C04}"
+	else
+		#red9
+		echo -e "${C04}CPU ${C09}${proc}%${C04}"
+	fi
+}
+
+mem(){
+	ram="$(free -m |awk '/cache:/ { print $3"M" }')"
+	#yellow13
+	echo -e "${C04}MEM ${C12}${ram}${C04}"
+}
+
+hdd(){
+	hdd1="$(df /dev/sda1 | awk '/^\/dev/{printf $5"\n"}')"
+	hdd2="$(df /dev/sda3 | awk '/^\/dev/{printf $5"\n"}')"
+  #blue4
+	echo -e "${C04}SDA1${sep1}${C04}3${C01} ${C18}${hdd1}${sep1}${C18}${hdd2}${C04}"
+}
+
+hddtmp(){
+	hddt="$(curl --connect-timeout 1 -fsm 3 telnet://127.0.0.1:7634 | awk -F '|' '{ print $4 }')"
+  if [ $hddt -ge 49 ]; then
+    #magenta13
+    echo -e " ${C04}TMP ${C17}${hddt}°C${C04} "
+  else
+    exit
+  fi
+}
+
+eml(){
+	mlss=`cat $HOME/tmp/mls`
+	if [[ -z $mlss ]] || [[ $mlss -eq 0 ]]; then
+		#black0
+		echo -e "${C04}ELM ${C01}0${C04}"
+	else
+		#red2
+		echo -e "${C04}ELM ${C09}${mlss}${C04}"
+	fi
+}
+
+dte(){
+	dat="$(date "+%a %d.%m, %H:%M")"
+	# 
+	echo -e "${sep2} ${C25}${dat}${C04} "
+}
+
+vol(){
+	level="$(amixer get Master | tail -1 | sed 's/.*\[\([0-9]*%\)\].*/\1/')"
+	mix=`amixer get Master | tail -1`
+	if [[ $mix == *\[off\]* ]]
+	then
+		# red 9
+		echo -e "${C04}VOL ${C08}OFF${C04}"
+	elif [[ $mix == *\[on\]* ]]
+	then
+		# green 2
+		echo -e "${C04}VOL ${C10}${level}${C04}"
+	else
+		# yellow3
+		echo -e "${C04}VOL ${C12}---${C04}"
+	fi
+}
+
+bat(){
+	batst="$(battstat.sh)"
+	batt='/sys/class/power_supply/BAT0/'
+	state=$(<"${batt}"/status)
+	if [ $state = 'Discharging' ] || [ $state = 'Charging' ]; then
+		echo -e "${C04}BAT ${batst}  ${C04}"
+	fi
+}
+
+mon(){
+  brt="$(xbacklight | awk -F '.' '{ print $1 }')"
+	# cyan 6
+	echo -e "${C04}MON ${C18}${brt}%${C04}"
+}
+
+mpd(){
+	mpdstat="$(mpc | head -n 2 | tail -n 1 | sed 's/ .*//')"
+	if [ $mpdstat == "[playing]" ]; then
+		#magenta5
+    echo -e "${C16}MPD${C04}"
+	elif [ $mpdstat == "[paused]" ]; then
+		#yellow3
+    echo -e "${C12}MPD${C04}"
+	else
+		#black
+    echo -e "${C24}MPD${C04}"
+	fi
+}
+
+# Pipe to status bar
+xsetroot -name " $(cpu)  $(hdd) $(hddtmp) $(bat)$(vol)  $(mpd)  $(eml)  $(vpn) $(dte)"
