@@ -9,5 +9,7 @@ Applied patches:
 7. moveresize.diff
 8. xkbkeysym.diff
 
+...and a few minor tweaks (e.g. permanently disabled resize hints, highlighted layout notification, etc).
+
 Launch and status bar scripts can be found in local/bin.
 
