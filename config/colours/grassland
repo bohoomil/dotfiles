@@ -1,0 +1,47 @@
+! grassland by bohoomil
+
+*background:  #0d1926
+*foreground:  #d9e6f2
+*cursorColor: #238c0e
+
+! black
+*color0:  #00070d
+! dark gray
+*color8:  #666666
+
+! red
+*color1:  #a83a71
+! bright red
+*color9:  #d78bb1
+
+! green
+*color2:  #71a83a
+! bright green
+*color10: #b1d78b
+
+! yellow
+*color3:  #a8713a
+! bright yellow
+*color11: #d7b18b
+
+! blue
+*color4:  #3a71a8
+! bright blue
+*color12: #8bb1d7
+
+! magenta
+*color5:  #713aa8
+! bright magenta
+*color13: #b18bd7
+
+! cyan
+*color6:  #3aa871
+! bright cyan
+*color14: #8bd7b1
+
+! light gray
+*color7:  #a6a6a6
+! white
+*color15: #e6e6e6
+
+! vim:ft=xdefaults
