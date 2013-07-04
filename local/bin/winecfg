@@ -1,0 +1,8 @@
+#!/bin/sh
+cd ~/.wine/drive_c/windows/system32/
+if [ "$1" != "" ]; then
+filename=`echo z:$1 | sed 's/\\//\\\\/g'`
+schroot -p -- wine "$filename"
+else
+schroot -p -- wine winecfg.exe
+fi

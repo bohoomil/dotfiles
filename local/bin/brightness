@@ -1,0 +1,9 @@
+#!/bin/bash
+
+bright=$(</sys/class/backlight/acpi_video0/brightness)
+max_bright=$(</sys/class/backlight/acpi_video0/max_brightness)
+perc=$(( $bright * 100 / 15 ))
+
+#acpi_video0_notify "Brightness ${perc}" &
+
+printf '%s\n' "${perc}%"

@@ -1,6 +1,0 @@
-#!/bin/sh
-
-VBoxSDL --startvm Lenny-5.02
-
-exit 0
-

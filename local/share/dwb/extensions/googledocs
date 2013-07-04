@@ -78,11 +78,10 @@ var defaultConfig = {
   // "DOC", "DOCX", "XLS", "XLSX", "PPT", "PPTX", "ODT", "ODS",
   // "PDF", "PAGES", "AI", "PSD", "TIFF", "DXF", "SVG", "EPS",
   // "PS", "TTF", "OTF", "XPS", "ZIP" and "RAR".
-  filetypes: [ "doc", "docx", "xls", "xlsx", "odt", "ods" ],
+  filetypes: [ "doc", "docx", "xls", "xlsx", "odt", "ods" ]
 //>DEFAULT_CONFIG
 };
 
-var sigId = -1; 
 var reg; 
 
 function downloadCheck(w, d) {
@@ -94,23 +93,19 @@ function downloadCheck(w, d) {
   }
 }
 
-function disconnect() {
-  if (sigId >= 0) {
-    signals.disconnect(sigId);
-    sigId = -1;
-  }
-}
-return { 
-  init : function (c) {
-    config = extensions.getConfig(c, defaultConfig);
-    sigId = signals.connect("download", downloadCheck);
-    reg = new RegExp(".*\.(" + config.filetypes.join("|") + ")$", "i");
-    return true;
+var googledocs = { 
+    defaultConfig : defaultConfig,
+    init : function (c) {
+        config = c;
+        Signal.connect("download", downloadCheck);
+        reg = new RegExp(".*\.(" + config.filetypes.join("|") + ")$", "i");
+        return true;
 
-  },
-  end : function () {
-    disconnect();
-  }
+    },
+    end : function () {
+        Signal.disconnect(downloadCheck);
+    }
 };
+return googledocs;
 
 // vim: set ft=javascript:

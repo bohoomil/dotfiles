@@ -53,7 +53,6 @@ var cacheDataFile;
 var cacheData = {};
 const version = 1;
 var meta = {};
-var sigNavigation;
 var self = this;
 var config = { };
 
@@ -217,7 +216,7 @@ var save = function(wv, auto)
         io.notify("speeddial: " + wv.uri + " " + notice);
 };
 
-var checkSave = function(auto, webview) 
+var checkSave = function(auto, webview, uri) 
 {
     var wv = webview || tabs.current;
 
@@ -226,7 +225,8 @@ var checkSave = function(auto, webview)
         var sig = wv.connect("notify::load-status", function() {
             if (wv.loadStatus == LoadStatus.finished) 
             {
-                save(wv, auto);
+                if (wv.uri == uri)
+                    save(wv, auto);
                 wv.disconnect(sig);
             }
             else if (wv.loadStatus == LoadStatus.error) 
@@ -256,9 +256,10 @@ var snapshot = function(wv)
         io.debug({ message : "Cannot create snapshot"} );
 };
 
-var addDial = function(auto, webview) 
+var addDial = function(auto, webview, uri) 
 {
     webview = webview || tabs.current;
+    uri = uri || tabs.current.uri;
     if (! auto && ! cacheData[webview.uri] && config.limit > 0 && config.limit == getNItems()) 
     {
         var labels = [];
@@ -266,28 +267,28 @@ var addDial = function(auto, webview)
         for (var uri in cacheData)
             labels.push({ left : uri });
 
-        tabComplete("Maximum exceeded, delete:", labels, function(response) {
+        util.tabComplete("Maximum exceeded, delete:", labels, function(response) {
             if (response) 
             {
                 deleteItem(response);
-                checkSave(auto, webview);
+                checkSave(auto, webview, uri);
             }
         }, true);
     }
     else 
-        checkSave(auto, webview);
+        checkSave(auto, webview, uri);
 }
 
-var addDialBind = addDial.bind(null, false, null);
+var addDialBind = addDial.bind(null, false, null, null);
 
 var showDial = function() 
 {
-    tabs.current.setPrivate("pending", true, self);
+    script.setPrivate(tabs.current, "pending", true);
     tabs.current.loadUri(templatePath, function(wv) {
         if (wv.loadStatus == LoadStatus.finished) 
             wv.mainFrame.inject("addAll(" + JSON.stringify(cacheData) + ", " + config.nVert + ", " + config.nHorz + ")");
         if (wv.loadStatus == LoadStatus.finished || wv.loadStatus == LoadStatus.error) {
-            wv.setPrivate("pending", false, self);
+            script.setPrivate(wv, "pending", false);
             return true;
         }
     });
@@ -321,7 +322,7 @@ var onNavigation = function(wv, frame, request)
 
     uri = request.uri;
 
-    if (wv == tabs.current && wv.getPrivate("pending", self) != true && uri == templatePath) 
+    if (wv == tabs.current && script.getPrivate(wv, "pending") != true && uri == templatePath) 
     {
         showDial();
         return true;
@@ -332,7 +333,7 @@ var onNavigation = function(wv, frame, request)
         return true;
 
     if (config.autoUpdate && cacheData[uri]) 
-        addDial(true, wv);
+        addDial(true, wv, uri);
 };
 
 var init = function() 
@@ -340,7 +341,7 @@ var init = function()
     bind(config.add, addDialBind, config.cmdAdd);
     bind(config.show, showDial, config.cmdShow);
 
-    sigNavigation = signals.connect("navigation", onNavigation);
+    Signal.connect("navigation", onNavigation);
 
     templatePath = config.cachedir + "/speeddial.html";
     cacheDataFile = config.cachedir + "/.meta";
@@ -394,7 +395,7 @@ return {
     {
         unbind(showDial);
         unbind(addDialBind);
-        signals.disconnect(sigNavigation);
+        Signal.disconnect(sigNavigation);
     }
 };
 // vim:set ft=javascript:

@@ -1224,7 +1224,8 @@ tag_track() {
 				tag_flac_track "DATE" "${tags_ALBUM_DATE}" || return ${E_CANT_TAG_FLAC}
 				tag_flac_track "TRACKNUMBER" "${tags_TRACK_ZNUMBER}" || return ${E_CANT_TAG_FLAC}
 				tag_flac_track "GENRE" "${tags_TRACK_GENRE}" || return ${E_CANT_TAG_FLAC}
-				tag_flac_track "COMMENT" "${NAME} v${VER}" || return ${E_CANT_TAG_FLAC}
+				#tag_flac_track "COMMENT" "${NAME} v${VER}" || return ${E_CANT_TAG_FLAC}
+				tag_flac_track "COMMENT" "" || return ${E_CANT_TAG_FLAC}
 			fi
 		;;
 		"ape" | "wv" | "mpc" | "tak" )
@@ -1239,7 +1240,8 @@ tag_track() {
 				tag_ape_track "YEAR" "${tags_ALBUM_DATE}" || return ${E_CANT_TAG_APE}
 				tag_ape_track "TRACK" "${tags_TRACK_ZNUMBER}" || return ${E_CANT_TAG_APE}
 				tag_ape_track "GENRE" "${tags_TRACK_GENRE}" || return ${E_CANT_TAG_APE}
-				tag_ape_track "COMMENT" "${NAME} v${VER}" || return ${E_CANT_TAG_APE}
+				#tag_ape_track "COMMENT" "${NAME} v${VER}" || return ${E_CANT_TAG_APE}
+				tag_ape_track "COMMENT" "" || return ${E_CANT_TAG_APE}
 			fi
 		;;
 		"mp3" )
@@ -1277,7 +1279,8 @@ tag_track() {
 				tag_ogg_track "DATE" "${tags_ALBUM_DATE}" || return ${E_CANT_TAG_OGG}
 				tag_ogg_track "TRACKNUMBER" "${tags_TRACK_ZNUMBER}" || return ${E_CANT_TAG_OGG}
 				tag_ogg_track "GENRE" "${tags_TRACK_GENRE}" || return ${E_CANT_TAG_OGG}
-				tag_ogg_track "COMMENT" "${NAME} v${VER}" || return ${E_CANT_TAG_OGG}
+				#tag_ogg_track "COMMENT" "${NAME} v${VER}" || return ${E_CANT_TAG_OGG}
+				tag_ogg_track "COMMENT" "" || return ${E_CANT_TAG_OGG}
 			fi
 		;;
 		"m4a" )

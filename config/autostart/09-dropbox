@@ -1,0 +1,5 @@
+#!/bin/sh
+pidof -s dropbox >& /dev/null
+if [ $? -ne 0 ]; then
+  dropbox start 2>/dev/null
+fi

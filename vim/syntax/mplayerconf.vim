@@ -68,7 +68,7 @@ syn keyword mplayerconfOption   hardframedrop nomouseinput bandwidth dumpstream
                                 \ audio-delay audio-preload endpos ffourcc
                                 \ include info noautoexpand noskip o oac of
                                 \ ofps ovc skiplimit v vobsubout vobsuboutid
-                                \ lameopts lavcopts nuvopts xvidencopts msgmodule msgcolor msglevel
+                                \ lameopts lavcopts nuvopts xvidencopts msgmodule msgcolor msglevel heartbeat-cmd lirc ass ass-hinting ass-font-scale
 
 hi def link mplayerconfTodo     Todo
 hi def link mplayerconfComment  Comment

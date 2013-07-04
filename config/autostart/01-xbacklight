@@ -1,0 +1,2 @@
+#!/bin/sh
+xbacklight -set 9

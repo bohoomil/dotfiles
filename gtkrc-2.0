@@ -1,12 +1,11 @@
-gtk-font-name="Lucida Grande 8"
-gtk-icon-theme-name="Tango"
-gtk-fallback-icon-theme="gnome"
+gtk-font-name = "Lucida Grande Regular 8"
+gtk-theme-name = "MurrinaTangoDayMod"
+gtk-icon-theme-name = "lubuntu"
+gtk-fallback-icon-theme = "gnome"
 gtk-icon-sizes = "panel-menu=16,16:panel=16,16:gtk-button=22,22:gtk-large-toolbar=22,22"
-gtk-theme-name="ClearPlacid"
-gtk-cursor-theme-name="Neutral++"
-gtk-cursor-theme-size=22
-gtk-toolbar-style=GTK_TOOLBAR_ICONS
-gtk-toolbar-icon-size=GTK_ICON_SIZE_SMALL_TOOLBAR
-gtk-button-images=1
-gtk-menu-images=1
-
+gtk-cursor-theme-name = "Neutral++"
+gtk-cursor-theme-size = 32
+gtk-toolbar-style = GTK_TOOLBAR_ICONS
+gtk-toolbar-icon-size = GTK_ICON_SIZE_SMALL_TOOLBAR
+gtk-button-images = 1
+gtk-menu-images = 1

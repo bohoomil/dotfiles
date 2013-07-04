@@ -1,0 +1,3 @@
+#!/bin/sh
+urxvtc -geometry "70x10" -title "gparted pass" -e sh -c "sudo gparted"
+

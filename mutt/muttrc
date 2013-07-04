@@ -136,27 +136,30 @@ subscribe arch-announce@archlinux.org
 lists arch-general@archlinux.org       # Arch general list
 subscribe arch-general@archlinux.org
 
+lists aur-general@archlinux.org        # AUR general list
+subscribe aur-general@archlinux.org
+
 # --- bindings
-bind pager q            exit
-bind pager /            search
-bind pager <up>         previous-line
-bind pager <down>       next-line
-bind pager k            previous-line
-bind pager j            next-line
-bind pager gg           top
-bind pager G            bottom
-bind index gg           first-entry
-bind index G            last-entry
-bind index C            delete-pattern
-bind pager K            previous-undeleted
-bind pager J            next-undeleted
-bind index K            previous-unread
-bind index J            next-unread
-bind index W            clear-flag
-bind index w            set-flag
-bind index,pager R      group-reply
-bind compose p          pgp-menu
-bind attach <return>    view-mailcap
+bind pager q          exit
+bind pager /          search
+bind pager <up>       previous-line
+bind pager <down>     next-line
+bind pager k          previous-line
+bind pager j          next-line
+bind pager gg         top
+bind pager G          bottom
+bind index gg         first-entry
+bind index G          last-entry
+bind index C          delete-pattern
+bind pager K          previous-undeleted
+bind pager J          next-undeleted
+bind index K          previous-unread
+bind index J          next-unread
+bind index W          clear-flag
+bind index w          set-flag
+bind index,pager R    group-reply
+bind compose p        pgp-menu
+bind attach <return>  view-mailcap
 
 # --- misc.
 macro index \Cr "<tag-prefix><clear-flag>N" "mark tagged messages as read"

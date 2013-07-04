@@ -1,6 +1,6 @@
 # vim:fenc=utf-8:nu:ai:si:et:ts=4:sw=4:ft=tmux
 # Statusbar if tmux run in console
-# information normally in dwm bar
+# information normally found in dwm bar
 set -g status-attr bright
 set -g status-right-length 50
 set -g status-left-length 50

@@ -1,0 +1,5 @@
+#!/bin/sh
+WINEPREFIX="/home/bohoomil/.wine"
+MACPATH="/drive_c/Program Files/Monkey's Audio"
+schroot -pqd "$(pwd)" -- wine "${WINEPREFIX}${MACPATH}/Monkey's Audio.exe"
+

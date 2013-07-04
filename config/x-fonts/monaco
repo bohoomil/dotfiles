@@ -1,0 +1,16 @@
+
+URxvt.font:xft:MonacoPX:Regular:pixelsize=12:antialias=false:hinting=false:autohint=false \
+  -*-fixed-medium-r-semicondensed-*-*-*-75-75-*-*-iso10646-1 \
+  -*-clean-medium-r-normal-*-12-*-*-*-*-*-iso646.1991-irv \
+  -*-symbol-medium-r-*-*-*-*-*-*-*-*-*-*
+URxvt.boldFont:xft:MonacoPX:Regular:pixelsize=12:antialias=false:hinting=false:autohint=false \
+  -*-fixed-medium-r-semicondensed-*-*-*-75-75-*-*-iso10646-1 \
+  -*-clean-medium-r-normal-*-12-*-*-*-*-*-iso646.1991-irv
+URxvt.italicFont:xft:MonacoPX:Regular:pixelsize=12:antialias=false:hinting=false:autohint=false \
+  -*-fixed-medium-r-semicondensed-*-*-*-75-75-*-*-iso10646-1 \
+  -*-clean-medium-r-normal-*-12-*-*-*-*-*-iso646.1991-irv
+URxvt.boldItalicFont:xft:MonacoPX:Regular:pixelsize=12:antialias=false:hinting=false:autohint=false \
+  -*-fixed-medium-r-semicondensed-*-*-*-75-75-*-*-iso10646-1 \
+  -*-clean-medium-r-normal-*-12-*-*-*-*-*-iso646.1991-irv
+
+! vim:ft=xdefaults

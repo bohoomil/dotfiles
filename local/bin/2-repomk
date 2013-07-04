@@ -1,0 +1,47 @@
+#!/bin/sh
+
+count=$(ls -1 *.pkg.tar.xz 2>/dev/null | wc -l)
+whichone=$(pwd | awk -F '/' '{ printf $NF }')
+
+if [[ $count != 0 ]]; then
+  if [[ $whichone == x86_64 ]] || [[ $whichone == i686 ]]; then
+    echo -e "Creating $whichone repository ..."
+    echo -e "Signing packages ..."
+    for pkg in *.pkg.tar.xz; do gpg --detach-sign --default-key 962DDE58 $pkg; done
+    echo -e "Creating database ..."
+    repo-add -f infinality-bundle.db.tar.gz *.pkg.tar.cz
+    rm infinality-bundle.db
+    cp infinality-bundle.db.tar.gz infinality-bundle.db
+    cp infinality-bundle.db.tar.gz infinality-bundle.files
+    echo -e "Signing repository database ..."
+    gpg --detach-sign --default-key 962DDE58 infinality-bundle.db
+    echo -e "Repository $whichone created successfully."
+  elif [[ $whichone == zeus ]]; then
+    echo -e "Creating zeus repository ..."
+    echo -e "Signing packages ..."
+    for pkg in *.pkg.tar.xz; do gpg --detach-sign --default-key 962DDE58 $pkg; done
+    echo -e "Creating database ..."
+    repo-add -f zeus.db.tar.gz *.pkg.tar.xz
+    rm zeus.db
+    cp zeus.db.tar.gz zeus.db
+    cp zeus.db.tar.gz zeus.files
+    echo -e "Signing repository database ..."
+    gpg --detach-sign --default-key 962DDE58 zeus.db
+    echo -e "Repository zeus created successfully."
+  else
+    echo -e "Creating $whichone repository ..."
+    echo -e "Signing packages ..."
+    for pkg in *.pkg.tar.xz; do gpg --detach-sign --default-key 962DDE58 $pkg; done
+    echo -e "Creating database ..."
+    repo-add -f infinality-bundle-$whichone.db.tar.gz *.pkg.tar.xz
+    rm infinality-bundle-$whichone.db
+    cp infinality-bundle-$whichone.db.tar.gz infinality-bundle-$whichone.db
+    cp infinality-bundle-$whichone.db.tar.gz infinality-bundle-$whichone.files
+    echo -e "Signing repository database ..."
+    gpg --detach-sign --default-key 962DDE58 infinality-bundle-$whichone.db
+    echo -e "Repository $whichone created successfully."
+  fi
+else
+  echo -e "No packages found, exiting."
+fi
+

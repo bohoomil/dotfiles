@@ -4,26 +4,30 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-# prompt {{{
+# --- prompt {{{
 set_prompt_style () {
-  local USER_COLOR="\[\033[0;36m\]"  #Cyan
-  local HOST_COLOR="\[\033[1;36m\]"  #Cyan
-  local DIR_COLOR="\[\033[0;36m\]"   #Cyan
-  local RESET_COLOR="\[\033[0m\]"    #White
+  local USER_COLOR="\[\033[;33m\]"  #yellow
+  local HOST_COLOR="\[\033[1;36m\]" #cyan
+  local DIR_COLOR="\[\033[1;34m\]"  #blue
+  local RESET_COLOR="\[\033[0m\]"   #White
   local SYMBOL="\$"
 
   if [ `whoami` == "root" ] ; then
-    USER_COLOR="\[\033[0;31m\]"      #Light Red
+    USER_COLOR="\[\033[0;31m\]"    #Light Red
     DIR_COLOR=$USER_COLOR
     SYMBOL="\\$"
   fi
   
-  PS1="$HOST_COLOR[arch] $DIR_COLOR[\W] $USER_COLOR$SYMBOL$RESET_COLOR "
+  PS1="$DIR_COLOR[\W] $USER_COLOR$SYMBOL$RESET_COLOR "
 }
 set_prompt_style
+
+export PS2='continue> '
+export PS3='choose: '
+export PS4='|${BASH_SOURCE} ${LINENO}${FUNCNAME[0]:+ ${FUNCNAME[0]}()}|  '
 #}}}
 
-# bash options {{{
+# --- bash options {{{
 shopt -s autocd         # change to named directory
 shopt -s cdable_vars    # if cd arg is not valid, assumes its a var defining a dir
 shopt -s cdspell        # autocorrects cd misspellings
@@ -31,6 +35,7 @@ shopt -s checkwinsize   # update the value of LINES and COLUMNS after each comma
 shopt -s cmdhist        # save multi-line commands in history as single line
 shopt -s histappend     # append to (not overwrite) the history file
 shopt -s histreedit     # re-edit a failed history substitution
+shopt -s histverify
 shopt -s dotglob        # include dotfiles in pathname expansion
 shopt -s expand_aliases # expand aliases
 shopt -s extglob        # enable extended pattern-matching features
@@ -39,19 +44,15 @@ shopt -s progcomp       # programmable completion
 shopt -s hostcomplete   # attempt hostname expansion when @ is at the beginning ofa word
 shopt -s nocaseglob     # pathname expansion will be treated as case-insensitive
 
-# sudo completion
-complete -cf sudo
-
 # bash completion
 set show-all-if-ambiguous on
 
 if [ -f ~/.bash_aliases ]; then
   . ~/.bash_aliases
 fi
-
 #}}}
 
-# history {{{
+# --- history {{{
 # don't put duplicate lines in the history. See bash(1) for more options
 # ... or force ignoredups and ignorespace
 unset HISTFILESIZE
@@ -63,14 +64,14 @@ HISTSIZE=3000
 # don't append the following to history: consecutive duplicate
 # commands, ls, bg and fg, and exit
 #export HISTIGNORE='jobs:set -x:%1:%2'
-export HISTIGNORE="&:[ ]*:ls*:mc:vim .bashrc:vim .bash_history"
+export HISTIGNORE="&:[ ]*:mc:vim .bashrc:vim\ .bash_history:man\ *"
 
 # share history across all terminals
 PROMPT_COMMAND='history -a; history -c; history -r'
 export HISTSIZE PROMPT_COMMAND
 #}}}
 
-# various visual enhancements {{{
+# --- various visual enhancements {{{
 # visual bell
 set bell-style visible
 
@@ -81,7 +82,7 @@ export GREP_COLOR="1;31"
 [ -x /usr/bin/lesspipe.sh ] && eval "$(lesspipe.sh)"
 #}}}
 
-# functions {{{
+# --- functions {{{
 # Note-taking macro courtsey jwr
 
 n() {
@@ -161,8 +162,206 @@ nwf() {
   fi
 }
 
-forecast(){
-curl -s "http://api.wunderground.com/auto/wui/geo/ForecastXML/index.xml?query=${@:-}"|perl -ne '/([^<]+)/&&printf "%s: ",$1;/([^<]+)/&&print $1,"\n"'|sed "s/&/\ /g"|sed "s/deg;//g";
+signpkgs() {
+    for pkg in *.pkg.tar.xz; do gpg --detach-sign --default-key 962DDE58 $pkg; done
 }
+
+signpkg() {
+    gpg --detach-sign --default-key 962DDE58 $1
+}
+
+tmprmhome() {
+  find ~/ -name ".bash_history.tmp" -delete
+}
+
+tmprmsda2() {
+  find /mnt/sda2 -name ".bash_history.tmp" -delete
+}
+
+tmprmsda3() {
+  find /mnt/sda3 -name ".bash_history.tmp" -delete
+}
+
+usrsyms() {
+  find /usr/share -type l ! -exec test -r {} \; -print
+}
+
 #}}}
+
+# --- enhanced completion function {{{
+#  This is a 'universal' completion function - it works when commands have
+#+ a so-called 'long options' mode , ie: 'ls --all' instead of 'ls -a'
+#  Needs the '-o' option of grep
+#+ (try the commented-out version if not available).
+
+#  First, remove '=' from completion word separators
+#+ (this will allow completions like 'ls --color=auto' to work correctly).
+
+COMP_WORDBREAKS=${COMP_WORDBREAKS/=/}
+
+_get_longopts() {
+  #$1 --help | sed  -e '/--/!d' -e 's/.*--\([^[:space:].,]*\).*/--\1/'| \
+  #grep ^"$2" |sort -u ;
+  $1 --help | grep -o -e "--[^[:space:].,]*" | grep -e "$2" |sort -u
+}
+
+_longopts() {
+  local cur
+  cur=${COMP_WORDS[COMP_CWORD]}
+
+  case "${cur:-*}" in
+    -*)      ;;
+     *)      return ;;
+  esac
+
+  case "$1" in
+    \~*)     eval cmd="$1" ;;
+      *)     cmd="$1" ;;
+  esac
+  COMPREPLY=( $(_get_longopts ${1} ${cur} ) )
+}
+complete  -o default -F _longopts configure bash
+complete  -o default -F _longopts wget id info a2ps ls recode
+
+_tar() {
+  local cur ext regex tar untar
+
+  COMPREPLY=()
+  cur=${COMP_WORDS[COMP_CWORD]}
+
+  # If we want an option, return the possible long options.
+  case "$cur" in
+      -*)     COMPREPLY=( $(_get_longopts $1 $cur ) ); return 0;;
+  esac
+
+  if [ $COMP_CWORD -eq 1 ]; then
+    COMPREPLY=( $( compgen -W 'c t x u r d A' -- $cur ) )
+    return 0
+  fi
+
+  case "${COMP_WORDS[1]}" in
+    ?(-)c*f)
+      COMPREPLY=( $( compgen -f $cur ) )
+      return 0
+      ;;
+      +([^Izjy])f)
+      ext='tar'
+      regex=$ext
+      ;;
+    *z*f)
+      ext='tar.gz'
+      regex='t\(ar\.\)\(gz\|Z\)'
+      ;;
+    *[Ijy]*f)
+      ext='t?(ar.)bz?(2)'
+      regex='t\(ar\.\)bz2\?'
+      ;;
+    *)
+      COMPREPLY=( $( compgen -f $cur ) )
+      return 0
+      ;;
+    esac
+
+  if [[ "$COMP_LINE" == tar*.$ext' '* ]]; then
+    # Complete on files in tar file.
+    #
+    # Get name of tar file from command line.
+    tar=$( echo "$COMP_LINE" | \
+     sed -e 's|^.* \([^ ]*'$regex'\) .*$|\1|' )
+    # Devise how to untar and list it.
+    untar=t${COMP_WORDS[1]//[^Izjyf]/}
+
+    COMPREPLY=( $( compgen -W "$( echo $( tar $untar $tar \
+     2>/dev/null ) )" -- "$cur" ) )
+     return 0
+  else
+    # File completion on relevant files.
+    COMPREPLY=( $( compgen -G $cur\*.$ext ) )
+  fi
+  return 0
+}
+complete -F _tar -o default tar
+
+_make() {
+  local mdef makef makef_dir="." makef_inc gcmd cur prev i;
+  COMPREPLY=();
+  cur=${COMP_WORDS[COMP_CWORD]};
+  prev=${COMP_WORDS[COMP_CWORD-1]};
+  case "$prev" in
+    -*f)
+      COMPREPLY=($(compgen -f $cur ));
+      return 0
+      ;;
+  esac;
+  case "$cur" in
+    -*)
+      COMPREPLY=($(_get_longopts $1 $cur ));
+      return 0
+      ;;
+  esac;
+
+  # ... make reads
+  #          GNUmakefile,
+  #     then makefile
+  #     then Makefile ...
+  if [ -f ${makef_dir}/GNUmakefile ]; then
+    makef=${makef_dir}/GNUmakefile
+  elif [ -f ${makef_dir}/makefile ]; then
+    makef=${makef_dir}/makefile
+  elif [ -f ${makef_dir}/Makefile ]; then
+    makef=${makef_dir}/Makefile
+  else
+    makef=${makef_dir}/*.mk # Local convention.
+  fi
+
+  #  Before we scan for targets, see if a Makefile name was
+  #+ specified with -f.
+  for (( i=0; i < ${#COMP_WORDS[@]}; i++ )); do
+    if [[ ${COMP_WORDS[i]} == -f ]]; then
+    # eval for tilde expansion
+    eval makef=${COMP_WORDS[i+1]}
+    break
+    fi
+  done
+  [ ! -f $makef ] && return 0
+
+  # Deal with included Makefiles.
+  makef_inc=$( grep -E '^-?include' $makef |
+    sed -e "s,^.* ,"$makef_dir"/," )
+  for file in $makef_inc; do
+    [ -f $file ] && makef="$makef $file"
+  done
+
+  #  If we have a partial word to complete, restrict completions
+  #+ to matches of that word.
+  if [ -n "$cur" ]; then gcmd='grep "^$cur"' ; else gcmd=cat ; fi
+
+  COMPREPLY=( $( awk -F':' '/^[a-zA-Z0-9][^$#\/\t=]*:([^=]|$)/ \
+     {split($1,A,/ /);for(i in A)print A[i]}' \
+     $makef 2>/dev/null | eval $gcmd  ))
+}
+complete -F _make -X '+($*|*.[cho])' make gmake pmake
+
+_killall() {
+  local cur prev
+  COMPREPLY=()
+  cur=${COMP_WORDS[COMP_CWORD]}
+
+  #  Get a list of processes
+  #+ (the first sed evaluation
+  #+ takes care of swapped out processes, the second
+  #+ takes care of getting the basename of the process).
+  COMPREPLY=( $( ps -u $USER -o comm  | \
+    sed -e '1,1d' -e 's#[]\[]##g' -e 's#^.*/##'| \
+    awk '{if ($0 ~ /^'$cur'/) print $0}' ))
+  return 0
+}
+complete -F _killall killall killps
+
+# Local Variables:
+# mode:shell-script
+# sh-shell:bash
+# End:
+#}}}
+
 # vim:ft=sh:

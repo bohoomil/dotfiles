@@ -1,0 +1,48 @@
+#!/bin/sh
+# elvis: pin		-- Search Pinboard bookmarks (http://pinboard.in)
+# author: jason ryan • http://jasonwryan.com
+
+. surfraw || exit 1
+
+w3_config_hook () {
+def   SURFRAW_pinboard_results "$SURFRAW_results"
+def   SURFRAW_pinboard_tags search
+}
+
+w3_usage_hook () {
+    cat <<EOF
+Usage: $w3_argv0 [options] [search words]...
+Description:
+  Surfraw search Pinboard bookmarks (http://pinboard.in)
+
+Local options:
+  -tags=tag  | -t=tag   Restrict search to tag
+  Environment: SURFRAW_pinboard_tags
+
+  Default: $SURFRAW_pinboard_results
+  Environment: SURFRAW_pinboard_results
+EOF
+    w3_global_usage
+}
+
+w3_parse_option_hook () {
+    opt="$1"
+    optarg="$2"
+    case "$opt" in
+	-tag=*) setopt   SURFRAW_pinboard_tags $optarg	;;
+	-t=*) setopt     SURFRAW_pinboard_tags $optarg	;;
+	*) return 1 ;;
+    esac
+    return 0
+}
+
+w3_config
+w3_parse_args "$@"
+# w3_args now contains a list of arguments
+
+if [ -z "$w3_args" ]; then
+    w3_browse_url "http://pinboard.in/t:${SURFRAW_pinboard_tags}/"
+	else
+    escaped_args=$(w3_url_of_arg $w3_args)
+    w3_browse_url "http://pinboard.in/search/?query=${escaped_args}&all=Search+All"
+fi

@@ -70,7 +70,7 @@ syn keyword gtkrcStockName gtk-add gtk-apply gtk-bold gtk-cancel gtk-cdrom gtk-c
 syn cluster gtkrcPRIVATE add=gtkrcStockName
 
 " Gtk Settings
-syn keyword gtkrcSettingsName gtk-double-click-time gtk-cursor-blink gtk-cursor-blink-time gtk-split-cursor gtk-cursor-theme-name gtk-cursor-theme-size gtk-theme-name gtk-key-theme-name gtk-icon-theme-name gtk-menu-bar-accel gtk-dnd-drag-threshold gtk-font-name gtk-color-palette gtk-entry-select-on-focus gtk-can-change-accels gtk-toolbar-style gtk-toolbar-icon-size
+syn keyword gtkrcSettingsName gtk-double-click-time gtk-cursor-blink gtk-cursor-blink-time gtk-split-cursor gtk-cursor-theme-name gtk-cursor-theme-size gtk-theme-name gtk-key-theme-name gtk-fallback-icon-theme gtk-icon-theme-name gtk-icon-sizes gtk-menu-bar-accel gtk-dnd-drag-threshold gtk-font-name gtk-color-palette gtk-entry-select-on-focus gtk-can-change-accels gtk-toolbar-style gtk-toolbar-icon-size gtk-button-images gtk-menu-images
 syn cluster gtkrcPRIVATE add=gtkrcSettingsName
 
 " Catch errors caused by wrong parenthesization

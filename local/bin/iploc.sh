@@ -2,7 +2,7 @@
 #
 # by bohoomil
 # display your IP and geolocation
-# (may prove your vpn is working)
+# (test if your vpn is working)
 # prerequisite: GeoIP
 
 myip=$(dig myip.opendns.com @resolver1.opendns.com +short)

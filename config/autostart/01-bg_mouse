@@ -1,0 +1,4 @@
+#!/bin/sh
+xsetroot -cursor_name left_ptr
+hsetroot -fill /mnt/sda2/artwork/wallpapers/inuse/winter_fog.jpg
+

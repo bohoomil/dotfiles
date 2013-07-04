@@ -79,6 +79,8 @@ syn keyword tmuxOptsSetw word-separators window-status-content-attr
 syn keyword tmuxOptsSetw window-status-content-bg window-status-content-fg
 syn keyword tmuxOptsSetw word-separators window-status-bell-attr
 syn keyword tmuxOptsSetw window-status-bell-bg window-status-bell-fg
+syn keyword tmuxOptsSetw window-status-last-bg window-status-last-fg
+syn keyword tmuxOptsSetw window-status-last-attr
 
 syn keyword tmuxOptsSetw window-status-alert-fg window-status-alert-bg window-status-alert-attr
 syn keyword tmuxOptsSetw word-separators window-status-alert-alert

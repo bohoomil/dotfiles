@@ -1,6 +1,6 @@
 /* See LICENSE file for copyright and license details. */
 /* appearance */
-static const char font[] = "-xos4-terminus-medium-r-normal-*-12-120-72-72-c-*-iso10646-1";
+static const char font[] = "-*-terminus-*-*-*-*-*-120-*-*-*-*-iso10646-1";
 
 #define NUMCOLORS 25
 static const char colors[NUMCOLORS][ColLast][25] = {
@@ -40,17 +40,18 @@ static const Bool clicktofocus     = True;  /* Change focus only on click */
 #include "addons.c"
 
 /* tagging */
-static const char *tags[] = { "[A]", "[B]", "[C]", "[D]" };
+static const char *tags[] = { "[1]", "[2]", "[3]", "[4]" };
 
 static const Rule rules[] = {
   /* class - instance - title - tags mask - isfloating - iscentred - monitor */
+  { "Termite",           NULL,    NULL,         1 << 3,   False,   False, -1 },
   {  NULL,               NULL,   "tmux",        1 << 3,   False,   False, -1 },
   { "dwb",               NULL,    NULL,         1 << 0,   False,   False, -1 },
   { "Firefox",           NULL,    NULL,         1 << 0,   False,   False, -1 },
   { "Firefox",       "Toplevel",  NULL,         1 << 0,    True,    True, -1 },
   { "Firefox",           NULL, "Preferences",   1 << 0,    True,    True, -1 },
   {  NULL,               NULL, "About Mozilla", 1 << 0,    True,    True, -1 },
-  {  NULL,               NULL,  "gparted pass",      0,    True,   False, -1 },
+  {  NULL,               NULL, "gparted pass",       0,    True,   False, -1 },
   { "Xsane",             NULL,    NULL,         1 << 1,    True,   False, -1 },
   { "MPlayer",           NULL,    NULL,         1 << 2,   False,   False, -1 },
   { "mplayer2",          NULL,    NULL,         1 << 2,   False,   False, -1 },
@@ -69,16 +70,16 @@ static const Rule rules[] = {
 };
 
 /* layout(s) */
-static const float mfact      = 0.61;  /* master area size [0.05..0.95] */
+static const float mfact      = 0.62;  /* master area size [0.05..0.95] 61 */
 static const int nmaster      = 1;
 static const Bool resizehints = False;
 
 static const Layout layouts[] = {
   /* symbol   arrange function */
-  { "[T]",    tile },    /* first entry is default */
-  { "[F]",    NULL },    /* no layout function means floating behavior */
-  { "[M]",    monocle },
-  { "[S]",    bstack },
+  { "[|]",    tile },    /* first entry is default */
+  { "[/]",    NULL },    /* no layout function means floating behavior */
+  { "[X]",    monocle },
+  { "[_]",    bstack },
 };
 
 /* key definitions (as in heresy) */
@@ -95,6 +96,7 @@ static const Layout layouts[] = {
 /* commands */
 static const char *dmenu[] = { "dmenu-dwm", NULL };
 static const char *tmux[]  = { "urxvtc", "-title", "tmux", "-cd", "/home/bohoomil", "-e", "tmux", NULL };
+//static const char *tmux[]  = { "termite", "-d", "/home/bohoomil", "-e", "tmux", NULL };
 static const char *ff[]    = { "firefox", "-P", "default", NULL };
 static const char *dwb[]   = { "dwb", NULL };
 static const char *pad[]   = { "urxvtc", "-geometry", "81x16+1+801", "-name", "pad", NULL };

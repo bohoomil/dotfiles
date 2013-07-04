@@ -1,6 +1,6 @@
 set adjust-open	            "width"
 set scroll-wrap		          "false"
-set font                    "Envy Code R Regular 10"
+set font                    "MonacoPX 9"
 set default-bg              "#090C19"
 set default-fg              "#E6E6E6"
 set statusbar-bg            "#090C19"
@@ -16,10 +16,10 @@ set notification-error-fg   "#DC2F32"
 set notification-warning-bg "#090C19"
 set notification-warning-fg "#E671D3"
 set highlight-color         "#1AAA13"
-set highlight-active-color  "#DC2F32"
+set highlight-active-color  "#B32323"
 set recolor                  1
 set recolor-keephue          1
-set recolor-darkcolor       "#1A1A1A"
+set recolor-darkcolor       "#080808"
 set recolor-lightcolor      "#F2F2F2"
 set tabbar-bg               "#505050"
 set tabbar-fg               "#707070"
@@ -28,6 +28,9 @@ set tabbar-focus-fg         "#CACCC2"
 set pages-per-row	           1
 set page-padding             5
 set window-title-basename    1
+set window-height            883
+"set window-width             990
+set window-width             850
 
 map <PageUp> scroll full-up
 map <PageDown> scroll full-down

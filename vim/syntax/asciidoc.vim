@@ -158,7 +158,7 @@ syn region asciidocGlossary start="\S" end=":-\s*$" oneline
 "syn match asciidocInclude "sys2::\[\]"
 
 "Styles
-highlight asciidocAdmonitionNote term=reverse ctermfg=white ctermbg=darkgreen guifg=white guibg=darkgreen
+highlight asciidocAdmonitionNote term=reverse ctermfg=white ctermbg=green guifg=white guibg=green
 highlight asciidocAdmonitionWarn term=reverse ctermfg=white ctermbg=red guifg=white guibg=red
 highlight asciidocBackslash ctermfg=darkmagenta guifg=darkmagenta
 highlight asciidocBiblio term=bold ctermfg=darkcyan cterm=bold guifg=darkcyan gui=bold
@@ -214,7 +214,7 @@ highlight asciidocSect4Old term=underline ctermfg=darkmagenta guifg=darkmagenta
 "Links
 highlight asciidocEmail term=underline ctermfg=darkred cterm=underline guifg=darkred gui=underline
 highlight asciidocLink term=underline ctermfg=darkred cterm=underline guifg=darkred gui=underline
-highlight asciidocOneLineTitle ctermfg=darkyellow guifg=darkyellow gui=underline
+highlight asciidocOneLineTitle ctermfg=yellow guifg=yellow gui=underline
 highlight asciidocTwoLineTitle ctermfg=darkyellow guifg=darkyellow gui=underline
 highlight asciidocURL term=underline ctermfg=darkred cterm=underline guifg=darkred gui=underline
 
@@ -233,7 +233,7 @@ highlight link asciidocTableBlock2 NONE
 highlight link asciidocTableBlock NONE
 highlight asciidocTableDelimiter2 term=standout ctermfg=darkcyan guifg=darkcyan
 highlight asciidocTableDelimiter term=standout ctermfg=darkcyan guifg=darkcyan
-highlight asciidocTable_OLD term=standout ctermfg=darkyellow guifg=darkyellow
+highlight asciidocTable_OLD term=standout ctermfg=yellow guifg=yellow
 highlight asciidocTablePrefix2 term=standout ctermfg=darkcyan guifg=darkcyan
 highlight asciidocTablePrefix term=standout ctermfg=darkcyan guifg=darkcyan
 
@@ -245,7 +245,7 @@ highlight asciidocCommentLine term=standout ctermfg=darkblue guifg=darkblue
 highlight asciidocAnchorMacro term=standout ctermfg=darkred guifg=darkred
 highlight link asciidocIndexTerm Macro
 highlight asciidocMacro term=underline ctermfg=darkred cterm=underline guifg=darkred gui=underline
-highlight asciidocMacroAttributes term=bold ctermfg=darkyellow guifg=darkyellow
+highlight asciidocMacroAttributes term=bold ctermfg=yellow guifg=yellow
 highlight asciidocRefMacro term=standout ctermfg=darkred guifg=darkred
 
 "Other

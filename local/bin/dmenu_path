@@ -1,0 +1,9 @@
+#!/bin/sh
+DMCACHERUN=${XDG_CACHE_HOME:-$HOME/.cache/dmenu}/dmenu_run
+IFS=:
+
+if ! test -f "$DMCACHERUN" || find $PATH -type d -newer "$DMCACHERUN" | grep -q .; then
+	find $PATH ! -type d \( -perm -1 -o -perm -10 -o -perm -100 \) | sed 's/.*\///' | sort -u > "$DMCACHERUN"
+fi
+
+cat "$DMCACHERUN"

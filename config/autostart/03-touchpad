@@ -1,2 +1,2 @@
 #!/bin/sh
-syndaemon -t -k -i 2 -d &
+syndaemon -k -i 1 -d &

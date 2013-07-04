@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export LANG=C
+
+sudo mkarchroot -C /mnt/sda2/ArchBuilds/configs/pacman-i686.conf -M /mnt/sda2/ArchBuilds/configs/makepkg-i686.conf -c /mnt/sda2/pacman_cache $CHROOT/i686/root base base-devel sudo git

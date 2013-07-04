@@ -1,0 +1,97 @@
+!! euphrasia v2 by bohoomil
+
+! euphrasia fg/bg
+URxvt*background:      #090C19
+URxvt*foreground:      #E6E6E6
+URxvt*cursorColor:     #1AAA13
+
+! X.org apps bg/fg
+*background: #D0CECB
+*foreground: #090C19
+
+! black
+*color0:  #222946
+! dark grey
+*color8:  #8C8B89
+
+! red
+*color1:  #B32323
+! bright red
+*color9:  #DC2C2C
+
+! green
+*color2:  #1AAA13
+! bright green
+*color10: #5DCE33
+
+! yellow
+*color3:  #FF9F3E
+! bright yellow
+*color11: #E6CB29
+
+! blue
+*color4:  #4957F3
+! bright blue
+*color12: #4D79FF
+
+! magenta
+*color5:	#BF3E94
+! bright magenta
+*color13:	#B641CC
+
+! cyan
+*color6:  #09A5B3
+! bright cyan
+*color14: #3CB6F3
+
+! light grey
+*color7:  #AEAEAE
+! white
+*color15: #DBDDE4
+
+!! Colours for the Linux console
+!! for use with conpalette
+!! (https://github.com/hinrik/conpalette):
+!
+!		'euphrasia' => [
+!			'000000', #black
+!			'B32323', #darkred
+!			'1AAA13', #darkgreen
+!			'FF9F3E', #brown
+!			'4957F3', #darkblue
+!			'BF3E94', #darkmagenta
+!			'09A5B3', #darkcyan
+!			'AEAEAE', #lightgrey
+!			
+!			'8C8B89', #darkgrey
+!			'DC2C2C', #red
+!			'5DCE33', #green
+!			'E6CB29', #yellow
+!			'4D79FF', #blue
+!			'AA3DBF', #magenta
+!			'3CB6F3', #cyan
+!			'DBDDE4', #white
+!		],
+!
+!! ... or in .profile/.bash_profile/.bashrc, etc.:
+!
+!if [ "$TERM" = "linux" ]; then
+!    echo -en "\e]P0000000" #black
+!    echo -en "\e]P88C8B89" #darkgrey
+!    echo -en "\e]P1B32323" #darkred
+!    echo -en "\e]P9DC2C2C" #red
+!    echo -en "\e]P21AAA13" #darkgreen
+!    echo -en "\e]PA5DCE33" #green
+!    echo -en "\e]P3FF9F3E" #brown
+!    echo -en "\e]PBE6CB29" #yellow
+!    echo -en "\e]P44957F3" #darkblue
+!    echo -en "\e]PC4D79FF" #blue
+!    echo -en "\e]P5BF3E94" #darkmagenta
+!    echo -en "\e]PDB641CC" #magenta
+!    echo -en "\e]P609A5B3" #darkcyan
+!    echo -en "\e]PE3CB6F3" #cyan
+!    echo -en "\e]P7AEAEAE" #lightgrey
+!    echo -en "\e]PFDBDDE4" #white
+!    clear # default input colours
+!fi
+! vim:ft=xdefaults
