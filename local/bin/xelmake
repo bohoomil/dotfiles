@@ -1,0 +1,25 @@
+#!/bin/sh
+# by bohoomil
+# xelmake -- a trivial wrapper for xelatex
+
+input="$1"
+
+if [[ -z "$1" ]]; then
+  echo -e 'I need some input.'
+  exit 1
+fi
+
+echo -e "Input file is: $input"
+
+output=$(echo "$input" | sed 's/\.tex//')
+
+# do the job
+xelatex "$input"
+
+if [[ $? -ne 0 ]]; then
+  echo -e 'Check logs -- something went wrong.'
+  exit 1
+else
+  xdg-open $output.pdf &
+  rm *.log *.aux *.out
+fi

@@ -1,7 +1,6 @@
 #!/bin/bash
 
 export LANG=C
-
 sudo arch-nspawn $CHROOT/i686/root pacman -Syu
 sudo makechrootpkg -n -u -c -r $CHROOT/i686 -- -s --noconfirm -L --holdver -i
 
