@@ -1,0 +1,14 @@
+--- a/dwm.c	2014-06-17 20:46:23.260085299 +0200
++++ b/dwm.c	2014-06-17 20:47:37.900086497 +0200
+@@ -360,8 +360,9 @@ applysizehints(Client *c, int *x, int *y
+ 		*h = bh;
+ 	if(*w < bh)
+ 		*w = bh;
+-	if(resizehints || c->isfloating || !c->mon->lt[c->mon->sellt]->arrange) {
+-		/* see last two sentences in ICCCM 4.1.2.3 */
++	/* never respect resize hints */
++  	if(resizehints || c->isfloating) {
++	/* see last two sentences in ICCCM 4.1.2.3 */
+ 		baseismin = c->basew == c->minw && c->baseh == c->minh;
+ 		if(!baseismin) { /* temporarily remove base dimensions */
+ 			*w -= c->basew;

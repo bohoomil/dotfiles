@@ -1,0 +1,11 @@
+--- a/dwm.c	2014-06-17 21:47:37.000000000 +0200
++++ b/dwm.c	2014-06-17 21:52:45.840149177 +0200
+@@ -50,7 +50,7 @@
+ #define LENGTH(X)               (sizeof X / sizeof X[0])
+ #define MAX(A, B)               ((A) > (B) ? (A) : (B))
+ #define MIN(A, B)               ((A) < (B) ? (A) : (B))
+-#define MAXCOLORS				9
++#define MAXCOLORS				        25
+ #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
+ #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
+ #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)

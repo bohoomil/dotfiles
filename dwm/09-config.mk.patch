@@ -1,0 +1,34 @@
+--- a/config.mk	2011-12-19 16:02:46.000000000 +0100
++++ b/config.mk	2014-06-14 21:52:12.000000000 +0200
+@@ -4,24 +4,20 @@ VERSION = 6.0
+ # Customize below to fit your system
+ 
+ # paths
+-PREFIX = /usr/local
++PREFIX = /usr
+ MANPREFIX = ${PREFIX}/share/man
+ 
+-X11INC = /usr/X11R6/include
+-X11LIB = /usr/X11R6/lib
+-
+-# Xinerama
+-XINERAMALIBS = -L${X11LIB} -lXinerama
+-XINERAMAFLAGS = -DXINERAMA
++X11INC = /usr/include/X11
++X11LIB = /usr/lib/X11
+ 
+ # includes and libs
+-INCS = -I. -I/usr/include -I${X11INC}
+-LIBS = -L/usr/lib -lc -L${X11LIB} -lX11 ${XINERAMALIBS}
++INCS = -I. -I/usr/include -I${X11INC} -I/usr/include/freetype2
++LIBS = -L${X11LIB} -lX11 -lutil -lXext -lXft -lfontconfig
+ 
+ # flags
+-CPPFLAGS = -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS}
++CPPFLAGS += -DVERSION=\"${VERSION}\"
+ #CFLAGS = -g -std=c99 -pedantic -Wall -O0 ${INCS} ${CPPFLAGS}
+-CFLAGS = -std=c99 -pedantic -Wall -Os ${INCS} ${CPPFLAGS}
++CFLAGS = -std=c99 -pedantic -Wall -Wno-deprecated-declarations -Os ${INCS} ${CPPFLAGS}
+ #LDFLAGS = -g ${LIBS}
+ LDFLAGS = -s ${LIBS}
+ 

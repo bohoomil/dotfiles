@@ -1,0 +1,97 @@
+--- a/config.def.h	2011-12-19 16:02:46.000000000 +0100
++++ b/config.def.h	2014-06-17 21:44:02.086807441 +0200
+@@ -1,17 +1,27 @@
+ /* See LICENSE file for copyright and license details. */
+ 
+ /* appearance */
+-static const char font[]            = "-*-terminus-medium-r-*-*-16-*-*-*-*-*-*-*";
+-static const char normbordercolor[] = "#444444";
+-static const char normbgcolor[]     = "#222222";
+-static const char normfgcolor[]     = "#bbbbbb";
+-static const char selbordercolor[]  = "#005577";
+-static const char selbgcolor[]      = "#005577";
+-static const char selfgcolor[]      = "#eeeeee";
+-static const unsigned int borderpx  = 1;        /* border pixel of windows */
+-static const unsigned int snap      = 32;       /* snap pixel */
+-static const Bool showbar           = True;     /* False means no bar */
+-static const Bool topbar            = True;     /* False means bottom bar */
++static const char font[] = "Dejavu Sans Mono:medium:size=10.5";
++#define NUMCOLORS 9
++static const char colors[NUMCOLORS][ColLast][9] = {
++// border  foreground  background
++{ "#212121", "#696969", "#121212" }, // 0 = normal
++{ "#696969", "#E0E0E0", "#121212" }, // 1 = selected
++{ "#212121", "#CF4F88", "#121212" }, // 2 = red
++{ "#212121", "#53A6A6", "#121212" }, // 3 = green
++{ "#212121", "#914E89", "#121212" }, // 4 = yellow
++{ "#212121", "#4779B3", "#121212" }, // 5 = blue
++{ "#212121", "#47959E", "#121212" }, // 6 = cyan
++{ "#212121", "#7E62B3", "#121212" }, // 7 = magenta
++{ "#212121", "#899CA1", "#121212" }, // 8 = grey
++};
++static const unsigned int borderpx   = 1;        /* border pixel of windows */
++static const unsigned int snap       = 32;       /* snap pixel */
++static const Bool showbar            = True;     /* False means no bar */
++static const Bool topbar             = True;     /* False means bottom bar */
++/* False means using the scroll wheel on a window will not change focus */
++static const Bool focusonwheelscroll = False;
++#include "addons.c"
+ 
+ /* tagging */
+ static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+@@ -31,6 +41,7 @@ static const Layout layouts[] = {
+ 	/* symbol     arrange function */
+ 	{ "[]=",      tile },    /* first entry is default */
+ 	{ "><>",      NULL },    /* no layout function means floating behavior */
++  { "[S]",      bstack },
+ 	{ "[M]",      monocle },
+ };
+ 
+@@ -46,7 +57,7 @@ static const Layout layouts[] = {
+ #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
+ 
+ /* commands */
+-static const char *dmenucmd[] = { "dmenu_run", "-fn", font, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
++static const char *dmenucmd[] = { "dmenu_run", "-fn", font, "-nb", colors[0][ColBG], "-nf", colors[0][ColFG], "-sb", colors[1][ColBG], "-sf", colors[1][ColFG], NULL };
+ static const char *termcmd[]  = { "uxterm", NULL };
+ 
+ static Key keys[] = {
+@@ -66,14 +77,18 @@ static Key keys[] = {
+ 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
+ 	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
+ 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
++	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[3]} },
+ 	{ MODKEY,                       XK_space,  setlayout,      {0} },
+ 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
++  { MODKEY|ShiftMask,             XK_f,      togglefullscreen, {0}},
+ 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
+ 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
+ 	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
+ 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
+ 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
+ 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
++  { MODKEY|ControlMask,           XK_j,      pushdown,         {0}},
++  { MODKEY|ControlMask,           XK_k,      pushup,           {0}},
+ 	TAGKEYS(                        XK_1,                      0)
+ 	TAGKEYS(                        XK_2,                      1)
+ 	TAGKEYS(                        XK_3,                      2)
+@@ -84,6 +99,19 @@ static Key keys[] = {
+ 	TAGKEYS(                        XK_8,                      7)
+ 	TAGKEYS(                        XK_9,                      8)
+ 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
++  /* moveresize */
++  { MODKEY,             XK_Left,  moveresize, {.v = "-10x 0y 0w 0h"  }},
++  { MODKEY,             XK_Right, moveresize, {.v = "10x 0y 0w 0h"   }},
++  { MODKEY,             XK_Down,  moveresize, {.v = "0x 10y 0w 0h"   }},
++  { MODKEY,             XK_Up,    moveresize, {.v = "0x -10y 0w 0h"  }},
++  { MODKEY|ControlMask, XK_Left,  moveresize, {.v = "0X 0y 0w 0h"    }},
++  { MODKEY|ControlMask, XK_Right, moveresize, {.v = "9000X 0y 0w 0h" }},
++  { MODKEY|ControlMask, XK_Down,  moveresize, {.v = "0x 9000Y 0w 0h" }},
++  { MODKEY|ControlMask, XK_Up,    moveresize, {.v = "0x 15Y 0w 0h"   }},
++  { MODKEY|ShiftMask,   XK_Left,  moveresize, {.v = "0x 0y -10w 0h"  }},
++  { MODKEY|ShiftMask,   XK_Right, moveresize, {.v = "0x 0y 20w 0h"   }},
++  { MODKEY|ShiftMask,   XK_Down,  moveresize, {.v = "0x 0y 0w 20h"   }},
++  { MODKEY|ShiftMask,   XK_Up,    moveresize, {.v = "0x 0y 0w -10h"  }},
+ };
+ 
+ /* button definitions */

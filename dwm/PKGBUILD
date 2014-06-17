@@ -13,36 +13,77 @@ arch=('i686' 'x86_64')
 groups=('custom')
 license=('MIT')
 options=(zipman)
-depends=('libx11' 'libxinerama')
+depends=('libx11' 'libxft')
+install='dwm.install'
 source=(http://dl.suckless.org/dwm/dwm-$pkgver.tar.gz
-	config.h
-  dwm.c.patch
-  addons.c)
+        #config.h
+        #25-colours.patch
+        01-statuscolorxft.patch
+        02-borderless-monocle.patch
+        03-centredfloating.patch
+        04-attachaside.patch
+        05-focusonclick.patch
+        06-never-respect-resize-hints.patch
+        07-addons.patch
+        08-highlight-layout.patch
+        09-config.mk.patch
+        10-config.def.h.patch
+        dwm.desktop)
+sha1sums=('35346f873a27f219ae266594b3690407f95d06ef'
+          'dc468a2df36af7dbc2c4517a316e65d5b370c11e'
+          '0e9f065e8a99cdd09b51dfc9247ad72d6322ca59'
+          'c3e0ba555ec0ae6c5545a18b2e1bf168b6cf64da'
+          '0535f88e4b59823052f9dde8fdfab4d011c27876'
+          '971a7f07018c0480850937946de206e7190cd64f'
+          '2f39bbef5a1dc0adf6e4275f21d664feb5760126'
+          '2955d3f4c5d3e73c7165d6e59a55eb9a6e1ea999'
+          '0b217201348e81d7e3c321c5d0e8f97f083c8c43'
+          '5b08a3a60fb085ca6341f987fd7b90fe10d9b080'
+          '1380e1433f9c426b2d6c6ebfc7e29e045802f167'
+          '9dc7ba48e3270d0e6273b4f3ca7d22cb1eb1599b')
+
+prepare() {
+  cd "${srcdir}"/"${pkgname}"-"${pkgver}"
+
+  patches=(01-statuscolorxft.patch
+           02-borderless-monocle.patch
+           03-centredfloating.patch
+           04-attachaside.patch
+           05-focusonclick.patch
+           06-never-respect-resize-hints.patch
+           07-addons.patch
+           08-highlight-layout.patch
+           09-config.mk.patch
+           10-config.def.h.patch)
+
+  for patch in "${patches[@]}"; do
+    patch -Np1 -i "${srcdir}"/"${patch}"
+  done
+
+  # use 25 colours
+  if [ -f "${srcdir}"/25-colours.patch ]; then
+    patch -Np1 -i "${srcdir}"/25-colours.patch
+  fi
+
+  # use custom config.h
+  if [ -f "${srcdir}"/config.h ]; then
+    cp "${srcdir}"/config.h .
+  fi
+}
 
 build() {
-  cd $srcdir/$pkgname-$pkgver
-  cp $srcdir/addons.c addons.c
-  cp $srcdir/config.h config.h
-  patch < $srcdir/dwm.c.patch
+  cd "${srcdir}"/"${pkgname}"-"${pkgver}"
 
-  cp $srcdir/config.h config.h
-  sed -i 's/CPPFLAGS =/CPPFLAGS +=/g' config.mk
-  sed -i 's/^CFLAGS = -g/#CFLAGS += -g/g' config.mk
-  sed -i 's/^#CFLAGS = -std/CFLAGS += -std/g' config.mk
-  sed -i 's/^LDFLAGS = -g/#LDFLAGS += -g/g' config.mk
-  sed -i 's/^#LDFLAGS = -s/LDFLAGS += -s/g' config.mk
-  make X11INC=/usr/include/X11 X11LIB=/usr/lib/X11
+  make
 }
 
 package() {
-  cd $srcdir/$pkgname-$pkgver
+  cd "${srcdir}"/"${pkgname}"-"${pkgver}"
+
   make PREFIX=/usr DESTDIR=$pkgdir install
-  #install -m644 -D LICENSE $pkgdir/usr/share/licenses/$pkgname/LICENSE
-  #install -m644 -D README $pkgdir/usr/share/doc/$pkgname/README
-  #install -m644 -D $srcdir/dwm.desktop $pkgdir/usr/share/xsessions/dwm.desktop
+
+  install -m644 -D LICENSE $pkgdir/usr/share/licenses/$pkgname/LICENSE
+  install -m644 -D README $pkgdir/usr/share/doc/$pkgname/README
+  install -m644 -D $srcdir/dwm.desktop $pkgdir/usr/share/xsessions/dwm.desktop
 }
 
-md5sums=('8bb00d4142259beb11e13473b81c0857'
-         'SKIP'
-         'SKIP'
-         'SKIP')

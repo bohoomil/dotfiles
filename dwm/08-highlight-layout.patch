@@ -1,0 +1,11 @@
+--- a/dwm.c	2014-06-17 21:52:45.000000000 +0200
++++ b/dwm.c	2014-06-17 22:07:07.573496332 +0200
+@@ -750,7 +750,7 @@ drawbar(Monitor *m) {
+ 		dc.x += dc.w;
+ 	}
+ 	dc.w = blw = TEXTW(m->ltsymbol);
+-	drawtext(m->ltsymbol, dc.colors[0], False);
++	drawtext(m->ltsymbol, dc.colors[1], False); // highlight layout symbol
+ 	dc.x += dc.w;
+ 	x = dc.x;
+ 	if(m == selmon) { /* status is only drawn on selected monitor */

@@ -1,15 +1,9 @@
-Applied patches:
 
-1. statuscolours.diff
-2. monoclecount.diff
-3. noborder.diff
-4. centredfloating.diff
-5. clicktofocus.diff
-6. attachaside.diff
-7. moveresize.diff
-8. xkbkeysym.diff
-
-...and a few minor tweaks (e.g. permanently disabled resize hints, highlighted layout notification, etc).
+1. Xinerama support is disabled.
+2. If you are going to use a custom config.h, uncomment the file name in src
+array.
+3. If you want to use more than 9 colours, modify the 25-colours.patch
+accordingly and uncomment the file name in the src array.
 
 Launch and status bar scripts can be found in local/bin.
 
