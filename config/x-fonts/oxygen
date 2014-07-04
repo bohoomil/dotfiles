@@ -1,7 +1,0 @@
-
-URxvt.font:xft:Oxygen Mono:style=regular:pixelsize=12:antialias=false
-URxvt.boldFont:xft:Oxygen Mono:style=regular:pixelsize=12:antialias=false
-URxvt.italicFont:xft:Oxygen Mono:style=regular:pixelsize=12:antialias=false
-URxvt.boldItalicFont:xft:Oxygen Mono:style=regular:pixelsize=12:antialias=false
-
-! vim:ft=xdefaults
