@@ -1,7 +1,0 @@
-
-URxvt.font:xft:Menlo for Powerline:style=RegularForPowerline:pixelsize=12:antialias=false
-URxvt.boldFont:xft:Menlo for Powerline:style=RegularForPowerline:pixelsize=12:antialias=false
-URxvt.italicFont:xft:Menlo for Powerline:style=RegularForPowerline:pixelsize=12:antialias=false
-URxvt.boldItalicFont:xft:Menlo for Powerline:style=RegularForPowerline:pixelsize=12:antialias=false
-
-! vim:ft=xdefaults
