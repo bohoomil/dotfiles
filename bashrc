@@ -4,30 +4,49 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-# --- prompt {{{
-set_prompt_style () {
-  local USER_COLOR="\[\033[;33m\]"  #yellow
-  local HOST_COLOR="\[\033[1;36m\]" #cyan
-  local DIR_COLOR="\[\033[1;34m\]"  #blue
-  local RESET_COLOR="\[\033[0m\]"   #White
-  local SYMBOL="\$"
+if [ "$COLORTERM" == "xterm" ] || [ "$COLORTERM" == "xfce4-terminal" ]; then
+    export TERM=xterm-256color
+fi
 
-  if [ `whoami` == "root" ] ; then
-    USER_COLOR="\[\033[0;31m\]"    #Light Red
-    DIR_COLOR=$USER_COLOR
-    SYMBOL="\\$"
-  fi
-  
-  PS1="$DIR_COLOR[\W] $USER_COLOR$SYMBOL$RESET_COLOR "
-}
-set_prompt_style
+if [ -f ~/.bash_aliases ]; then
+  . ~/.bash_aliases
+fi
+
+. ~/.config/git/git-prompt.sh
+. ~/.config/git/git-completion.bash
+
+# --- prompt {{{
+#GIT_PS1_SHOWCOLORHINTS=true
+GIT_PS1_SHOWDIRTYSTATE=true
+GIT_PS1_SHOWSTASHSTATE=true
+GIT_PS1_SHOWUNTRACKEDFILES=true
+GIT_PS1_SHOWUPSTREAM=auto
+
+HOST_COLOR='\[\033[1;36m\]'      # b.cyan
+RESET_COLOR='\[\033[0m\]'        # white
+ERROR_COLOR='\[\033[1;31m\]'
+GIT_COLOR='\[\033[1;33m\]'       # b.yellow
+GIT_STAT='$(__git_ps1 " [%s]")'
+
+if [ `whoami` == "root" ] ; then
+  USER_COLOR='\[\033[0;31m\]'    # b.red
+  DIR_COLOR=$USER_COLOR
+  SYMBOL='\\$'
+else
+  USER_COLOR='\[\033[1;32m\]'    # b.green
+  DIR_COLOR='\[\033[1;34m\]'     # b.blue
+  SYMBOL='\$'
+fi
+
+#export PS1="$DIR_COLOR[\W] $USER_COLOR$SYMBOL$RESET_COLOR "
+export PS1="$DIR_COLOR[\W]$GIT_COLOR$GIT_STAT $USER_COLOR$SYMBOL$RESET_COLOR "
 
 export PS2='continue> '
 export PS3='choose: '
 export PS4='|${BASH_SOURCE} ${LINENO}${FUNCNAME[0]:+ ${FUNCNAME[0]}()}|  '
 #}}}
 
-# --- bash options {{{
+# --- options {{{
 shopt -s autocd         # change to named directory
 shopt -s cdable_vars    # if cd arg is not valid, assumes its a var defining a dir
 shopt -s cdspell        # autocorrects cd misspellings
@@ -46,10 +65,6 @@ shopt -s nocaseglob     # pathname expansion will be treated as case-insensitive
 
 # bash completion
 set show-all-if-ambiguous on
-
-if [ -f ~/.bash_aliases ]; then
-  . ~/.bash_aliases
-fi
 #}}}
 
 # --- history {{{
@@ -64,14 +79,14 @@ HISTSIZE=3000
 # don't append the following to history: consecutive duplicate
 # commands, ls, bg and fg, and exit
 #export HISTIGNORE='jobs:set -x:%1:%2'
-export HISTIGNORE="&:[ ]*:mc:vim .bashrc:vim\ .bash_history:man\ *"
+export HISTIGNORE="&:[ ]*"
 
 # share history across all terminals
 PROMPT_COMMAND='history -a; history -c; history -r'
 export HISTSIZE PROMPT_COMMAND
 #}}}
 
-# --- various visual enhancements {{{
+# --- misc. visual enhancements {{{
 # visual bell
 set bell-style visible
 
@@ -79,7 +94,7 @@ eval $(dircolors -b ~/.dir_colors)
 export GREP_COLOR="1;31"
 
 # make less more friendly for non-text input files, see lesspipe(1)
-[ -x /usr/bin/lesspipe.sh ] && eval "$(lesspipe.sh)"
+[ -x $HOME/.local/bin/lesspipe.sh ] && eval "$($HOME/.local/bin/lesspipe.sh)"
 #}}}
 
 # --- functions {{{
@@ -88,23 +103,23 @@ export GREP_COLOR="1;31"
 n() {
   local arg files=()
   for arg; do
-    files+=( ~/"documents/0_notes/$arg" )
+    files+=( "/mnt/sda3/documents/0_notes/$arg" )
   done
   ${EDITOR:-vi} "${files[@]}"
 }
 
 nls() {
-  tree -CR --noreport $HOME/documents/0_notes | awk '{
+  tree -CR --noreport /mnt/sda3/documents/0_notes | awk '{
   if (NF==1) print $1;
   else if (NF==2) print $2;
   else if (NF==3) printf "  %s\n", $3
-  }'
+  }' | $VIEWER
 }
 
 # TAB completion for notes
 _notes() {
-  local files=($HOME/documents/0_notes/**/"$2"*)
-  [[ -e ${files[0]} ]] && COMPREPLY=( "${files[@]##~/documents/0_notes}" )
+  local files=(/mnt/sda3/documents/0_notes/**/"$2"*)
+  [[ -e ${files[0]} ]] && COMPREPLY=( "${files[@]##/mnt/sda3/documents/0_notes}" )
 }
 
 complete -o default -F _notes n
@@ -113,7 +128,7 @@ complete -o default -F _notes n
 # usage: calc <equation>
 calc() { echo "$*" | bc; }
 
-extract() {
+Ex() {
   if [ -f $1 ] ; then
     case $1 in
       *.tar.bz2)  tar xjf $1        ;;
@@ -186,6 +201,29 @@ usrsyms() {
   find /usr/share -type l ! -exec test -r {} \; -print
 }
 
+# navigation
+export MARKPATH=$HOME/.marks
+function j {
+    cd -P "$MARKPATH/$1" 2>/dev/null || echo "No such mark: $1"
+}
+function m {
+    mkdir -p "$MARKPATH"; ln -s "$(pwd)" "$MARKPATH/$1"
+}
+function mx {
+    rm -i "$MARKPATH/$1"
+}
+function ms {
+    ls -l "$MARKPATH" | sed 's/  / /g' | cut -d' ' -f8- | sed 's/ -/\t-/g' && echo
+}
+
+_completemarks() {
+  local curw=${COMP_WORDS[COMP_CWORD]}
+  local wordlist=$(find $MARKPATH -type l -printf "%f\n")
+  COMPREPLY=($(compgen -W '${wordlist[@]}' -- "$curw"))
+  return 0
+}
+
+complete -F _completemarks j mx
 #}}}
 
 # --- enhanced completion function {{{
