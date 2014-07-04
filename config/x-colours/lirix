@@ -1,0 +1,52 @@
+!! lirix by bohoomil
+
+! lirix fg/bg
+URxvt*background:  #00243f
+URxvt*foreground:  #d9d9d9
+URxvt*cursorColor: #1aaa13
+
+! X.org apps bg/fg
+*background: #d0cecb
+*foreground: #060912
+
+! black
+*color0:  #13334d
+! dark grey
+*color8:  #737580
+
+! red
+*color1:  #cc553d
+! bright red
+*color9:  #e64560
+
+! green
+*color2:  #55ab55
+! bright green
+*color10: #3ed43e
+
+! yellow
+*color3:  #b39e36
+! bright yellow
+*color11: #d9af48
+
+! blue
+*color4:  #6281b3
+! bright blue
+*color12: #7e8fe6
+
+! magenta
+*color5:  #ae7fc4
+! bright magenta
+*color13: #e65c89
+
+! cyan
+*color6:  #45b0a2
+! bright cyan
+*color14: #62b4c4
+
+! light grey
+*color7:  #bcbcbc
+! white
+*color15: #d0d0d0
+
+! vim:ft=xdefaults
