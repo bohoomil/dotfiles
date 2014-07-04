@@ -1,7 +1,0 @@
-
-URxvt.font:xft:ayuthaya:style=regular:pixelsize=13:antialias=false
-URxvt.boldFont:xft:ayuthaya:style=regular:pixelsize=13:antialias=false
-URxvt.italicFont:xft:ayuthaya:pixelsize=13:antialias=false
-URxvt.boldItalicFont:xft:ayuthaya:pixelsize=13:antialias=false
-
-! vim:ft=xdefaults
