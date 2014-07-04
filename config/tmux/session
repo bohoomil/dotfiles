@@ -1,13 +1,14 @@
-#set-option -g default-terminal screen-256color
+
 setw -g automatic-rename on
 
 #session initialization
-new 
-splitw -h -p 50 -t 0 
-neww 
-splitw -h -p 50 -t 0 
+
+new
+splitw -h -p 50 -t 0
+neww
+splitw -h -p 50 -t 0
 splitw -v -d -p 50 -t 1
-neww 
+neww
 selectw -t 1
 
 # vim:fenc=utf-8:nu:ai:si:et:ts=4:sw=4:ft=tmux

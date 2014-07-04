@@ -1,5 +1,11 @@
-# vim:fenc=utf-8:nu:ai:si:et:ts=4:sw=4:ft=tmux
+
 # Statusbar if tmux run in console
+
+# command/message line colors
+set -g message-fg black
+set -g message-bg green
+set -g message-attr none
+
 # information normally found in dwm bar
 set -g status-attr bright
 set -g status-right-length 50
@@ -10,10 +16,11 @@ set-window-option -g window-status-fg black
 set-window-option -g window-status-bg default
 set-window-option -g window-status-attr bright
 
-# message colours
-set -g message-fg black
-set -g message-bg green
-set -g message-attr bright
+set-window-option -g window-status-activity-fg black
+set-window-option -g window-status-activity-bg green
+set-window-option -g window-status-activity-attr bright
 
 set -g status-left "#[fg=cyan,nobright] #H #[fg=black,bright]• #[fg=magenta,nobright]GEO: #($HOME/.local/bin/loc.sh) #[fg=black,bright]• #[fg=green,nobright]TMP: #(nc localhost 7634 | awk -F \'|\' \'{print $4\"°C\"}\')#[fg=black,bright] "
 set -g status-right "#[fg=yellow,nobright]EML: #(tmuxmail.sh)#[fg=black,bright] • #[fg=magenta]#(awk \'{ print $1,$2,$3 }\' </proc/loadavg)#[fg=black] • #[fg=cyan]%H:%M #[default] "
+
+# vim:fenc=utf-8:nu:ai:si:et:ts=4:sw=4:ft=tmux
