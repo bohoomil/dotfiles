@@ -25,4 +25,4 @@ literal_block_env: verbatim
 #documentclass: artikel3
 #fontenconding: T1
 #stylesheet: soulutf8,textcomp,amsmath,xspace
-latex_preamble: \defaultfontfeatures{Mapping=tex-text,Numbers=OldStyle,Ligatures=TeX} \setmaimainfont{Charis SIL} \setsansfont{Droid Sans} \setmonofont[HyphenChar=none]{Droid Sans Mono Slashed}
+latex_preamble: \defaultfontfeatures{Mapping=tex-text,Numbers=OldStyle,Ligatures=TeX} \setmaimainfont{Crimson} \setsansfont{Droid Sans} \setmonofont[HyphenChar=none]{Droid Sans Mono Slashed}
