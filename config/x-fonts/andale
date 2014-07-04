@@ -1,7 +1,7 @@
 
-URxvt.font:xft:andale mono:pixelsize=14:antialias=false
-URxvt.boldFont:xft:andale mono:pixelsize=14:antialias=false
-URxvt.italicFont:xft:andale mono:pixelsize=14:antialias=false
-URxvt.boldItalicFont:xft:andale mono:pixelsize=14:antialias=false
+URxvt.font:xft:andale mono:pixelsize=14
+URxvt.boldFont:xft:andale mono:pixelsize=14
+URxvt.italicFont:xft:andale mono:pixelsize=14
+URxvt.boldItalicFont:xft:andale mono:pixelsize=14
 
 ! vim:ft=xdefaults
