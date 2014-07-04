@@ -1,15 +1,16 @@
 pcm.dsp0 {
-    type plug
-    slave.pcm "dmix"
-    # A hint is required for listing the device in some GUIs, e.g. Phonon configuration.
-    hint {
-         show on
-         description "dmix dsp0"
-    }
+  type plug
+  slave.pcm "dmix"
+  # A hint is required for listing the device
+  # in some GUIs, e.g. Phonon configuration.
+  hint {
+    show on
+    description "dmix dsp0"
+  }
 }
 # mixer0 can stay unchanged, because
 # it isn't used anyway, I guess ;)
 ctl.mixer0 {
-    type hw
-    card 0
+  type hw
+  card 0
 }
