@@ -1,6 +1,6 @@
 ! --- .Xresources by bohoomil
-! --- Urxvt
-URxvt*geometry:           88x54
+! --- URxvt defaults
+URxvt*geometry:           80x44
 URxvt*cursorBlink:        1
 URxvt*cursorUnderline:    0
 URxvt*urgentOnBell:       true
@@ -12,33 +12,31 @@ URxvt.transparent:        false
 ! --- clickable links, etc.
 URxvt.perl-ext-common:     default,url-select,matcher
 URxvt.keysym.M-u:          perl:url-select:select_next
-URxvt.url-select.launcher: dwb
+URxvt.url-select.launcher: firefox
 URxvt.underlineURLs:       false
 URxvt.matcher.button:      1
 URxvt.matcher.rend.0:      fg33 bg1
-
-! --- Xft settings
-!all rgba:       unknown rgb bgr vrgb vbgr none
-!all hintstyles: hintfull hintmedium hintslight hintnone
-!all lcdfilter:  lcdnone lcddefault lcdlight lcdlegacy
-Xft.dpi:       96
-Xft.antialias: 1
-Xft.rgba:      rgb
-Xft.autohint:  0
-Xft.lcdfilter: lcddefault
-Xft.hinting:   1
-Xft.hintstyle: hintfull
 
 ! --- default fonts for xorg apps
 *font:     -*-fixed-medium-r-normal-*-*-130-*-*-*-*-iso10646-1
 *boldFont: -*-fixed-medium-r-normal-*-*-130-*-*-*-*-iso10646-1
 
+! -- mouse
 Xcursor.theme: Neutral++
-Xcursor.size:  32
+Xcursor.size:  22
+
+! -- xvkbd
+xvkbd.windowGeometry: 500x240+0+16
+xvkbd.resizable: false
+xvkbd.autoRepeat: false
+xvkbd.keypad: false
+xvkbd.customization: -latin1
+
+! -- Tk theme
+*TkTheme: clam
 
 ! --- font, colour, X.org apps
-#include "/home/bohoomil/.config/x-fonts/monaco"
-#include "/home/bohoomil/.config/x-colours/euphrasia2"
+#include "/usr/local/etc/X11/fonts/envy-code-r"
+#include "/usr/local/etc/X11/colours/lirix"
 
-#include "/home/bohoomil/.config/x-defaults/Xdvi"
-#include "/home/bohoomil/.config/x-defaults/XCalc-col3"
+#include "/usr/local/etc/X11/app-defaults/Xdvi"
