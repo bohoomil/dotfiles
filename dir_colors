@@ -71,9 +71,9 @@ MULTIHARDLINK  00       # regular file with more than one link
 FIFO           40;33    # pipe
 SOCK           01;35    # socket
 DOOR           01;35    # door
-BLK            40;31;01 # block device driver
-CHR            40;33;01 # character device driver
-ORPHAN         40;31;01 # symlink to nonexistent file, or non-stat'able file
+BLK            01;31    # block device driver
+CHR            01;33    # character device driver
+ORPHAN         01;31    # symlink to nonexistent file, or non-stat'able file
 SETUID         37;41    # file that is setuid (u+s)
 SETGID         30;43    # file that is setgid (g+s)
 CAPABILITY     30;41    # file with capability
@@ -83,7 +83,7 @@ STICKY         01;37;44 # dir with the sticky bit set (+t) and not other-writabl
 
 # executables (bright green)
 EXEC           01;32
-.cmd           01;32 
+.cmd           01;32
 .exe           01;32
 .com           01;32
 .btm           01;32
@@ -163,28 +163,28 @@ EIGHTBIT 1
 .zwc           38;5;240
 
 # image formats
-.jpg           01;35
-.jpeg          01;35
-.gif           01;35
-.bmp           01;35
-.pbm           01;35
-.pgm           01;35
-.ppm           01;35
-.tga           01;35
-.xbm           01;35
-.xpm           01;35
-.tif           01;35
-.tiff          01;35
-.png           01;35
-.svg           01;35
-.svgz          01;35
-.mng           01;35
-.pcx           01;35
-.xcf           01;35
-.xwd           01;35
-.yuv           01;35
-.cgm           01;35
-.emf           01;35
+.jpg           38;5;132
+.jpeg          38;5;132
+.gif           38;5;132
+.bmp           38;5;132
+.pbm           38;5;132
+.pgm           38;5;132
+.ppm           38;5;132
+.tga           38;5;132
+.xbm           38;5;132
+.xpm           38;5;132
+.tif           38;5;132
+.tiff          38;5;132
+.png           38;5;140
+.svg           38;5;132
+.svgz          38;5;132
+.mng           38;5;132
+.pcx           38;5;132
+.xcf           38;5;132
+.xwd           38;5;132
+.yuv           38;5;132
+.cgm           38;5;132
+.emf           38;5;132
 
 # media        cyan
 .asx           00;36
@@ -217,24 +217,24 @@ EIGHTBIT 1
 .vob           38;5;29
 .rm            38;5;61
 .rmvb          38;5;61
-.asf           38;5;65
-.dl            38;5;65
-.m2v           38;5;65
-.m4v           38;5;65
-.mkv           38;5;65
-.mp4           38;5;65
-.mp4v          38;5;65
-.nuv           38;5;65
-.wmv           38;5;65
-.flc           38;5;137
-.fli           38;5;137
-.flv           38;5;137
-.webm          38;5;137
-.ql            38;5;137
-.qt            38;5;137
-.swf           38;5;137
+.asf           38;5;169
+.dl            38;5;169
+.m2v           38;5;169
+.m4v           38;5;169
+.mkv           38;5;169
+.mp4           38;5;169
+.mp4v          38;5;169
+.nuv           38;5;169
+.wmv           38;5;169
+.flc           38;5;167
+.fli           38;5;167
+.flv           38;5;167
+.webm          38;5;167
+.ql            38;5;167
+.qt            38;5;167
+.swf           38;5;167
 
-# audio        blue
+# audio
 .aac           00;34
 .ape           00;34
 .au            00;34
@@ -257,24 +257,23 @@ EIGHTBIT 1
 .pfm          38;5;239
 .otf          38;5;61
 .dfont        38;5;61
-.TTF          38;5;30
 .ttf          38;5;30
 .ttc          38;5;74
 .pcf          38;5;65
 .psf          38;5;64
 
-# all of the rest
+# misc
 .PL            00;36
 .asm           00;36
 .asoundrc      00;36
 .awk           00;36
 
 # home configs
-.bash          00;31
-.bashrc        00;31
-.bash_history  00;31
-.bash_profile  00;31
-.zshrc         00;31
+.bash          38;5;68
+.bashrc        38;5;68
+.bash_history  38;5;68
+.bash_profile  38;5;68
+.zshrc         38;5;68
 .gtkrc-2.0     00;31
 .gtk-bookmarks 00;31
 .conkyrc       00;31
@@ -335,6 +334,7 @@ EIGHTBIT 1
 .mi            00;33
 .mkd           00;33
 .msmtprc       00;33
+.inputrc       00;33
 .mtx           00;33
 .muttrc        00;33
 .nfo           00;33
@@ -367,27 +367,42 @@ EIGHTBIT 1
 .tfm           01;35
 .tfnt          01;35
 .theme         01;35
-.viminfo       01;35
+.viminfo       38;5;23
 .xml           01;35
 .yml           01;35
 .zsh           38;5;25
 .gpg           38;5;208
 
-.urlview       01;35
-.vim           01;34
-.vimrc         01;34
-.NERDTreeBookmarks 01;35
-.docutils      01;35
-.xinitrc       01;31 
-.Xauthority    01;31
-.Xmodmap       00;31
-.Xresources    01;33
-.gitconfig     01;33
-.gitk          01;33
-.rarreg.key    00;32
+.urlview        01;35
+.vim            01;34
+.vimrc          01;34
+.NERDTreeBookmarks 38;5;23
+.docutils       01;35
+.latexmkrc      01;35
+.xinitrc        01;31
+.Xauthority     01;31
+.gpg-agent-info 01;31
+.Xmodmap        00;31
+.Xresources     01;33
+.gitconfig      01;33
+.gitk           01;33
+.hgk            01;33
+.rarreg.key     00;32
+.pinforc        00;32
+.tigrc          00;32
+.tarsnaprc      00;32
+.torrent        38;5;67
+
+# sysd file types
+*.mount         01;32
+*.path          01;33
+*.rules         00;34
+*.socket        00;35
+*.service       00;33
+*.target        00;35
 
 #...and the files they point to
-MISSING        01;05;37;41 
+MISSING        01;05;37;41
 # Extra command line options for ls go here.
 # Basically these ones are:
 # -F = show '/' for dirs, '*' for executables, etc.
