@@ -1,0 +1,53 @@
+!! variation by bohoomil
+
+! variation fg/bg
+URxvt*background:  #060912
+URxvt*foreground:  #d9d9d9
+URxvt*cursorColor: #1aaa13
+
+! X.org apps bg/fg
+*background: #d0cecb
+*foreground: #060912
+
+! black
+!*color0:  #1a1f36
+*color0:  #121626
+! dark grey
+*color8:  #8c8b89
+
+! red
+*color1:  #a63131
+! bright red
+*color9:  #cc475d
+
+! green
+*color2:  #3b8c38
+! bright green
+*color10: #5eb33e
+
+! yellow
+*color3:  #b37b2d
+! bright yellow
+*color11: #cca851
+
+! blue
+*color4:  #3a63a6
+! bright blue
+*color12: #8496cc
+
+! magenta
+*color5:  #a562b3
+! bright magenta
+*color13: #bf567d
+
+! cyan
+*color6:  #4682B4
+! bright cyan
+*color14: #69a3bf
+
+! light grey
+*color7:  #aeaeae
+! white
+*color15: #dbdde4
+
+! vim:ft=xdefaults
