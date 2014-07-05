@@ -1,0 +1,35 @@
+! --- .Xresources by bohoomil
+! --- Urxvt
+URxvt*geometry:           80x44
+URxvt*cursorBlink:        1
+URxvt*cursorUnderline:    0
+URxvt*urgentOnBell:       true
+URxvt*letterSpace:        -0.2
+URxvt*internalBorder:     2
+URxvt*scrollBar:          false
+URxvt.transparent:        false
+
+!! --- clickable links, etc.
+URxvt.perl-ext-common:     default,url-select,matcher
+URxvt.keysym.M-u:          perl:url-select:select_next
+URxvt.url-select.launcher: firefox
+URxvt.underlineURLs:       false
+URxvt.matcher.button:      1
+URxvt.matcher.rend.0:      fg33 bg1
+
+! --- default fonts for xorg apps
+*font:     -*-fixed-medium-r-normal-*-*-130-*-*-*-*-iso10646-1
+*boldFont: -*-fixed-medium-r-normal-*-*-130-*-*-*-*-iso10646-1
+
+! -- mouse
+Xcursor.theme: Neutral++
+Xcursor.size:  22
+
+! -- Tk theme
+*TkTheme: clam
+
+! --- font, colours, X.org apps
+#include "/usr/local/etc/X11/fonts/envy-code-r"
+#include "/usr/local/etc/X11/colours/lirix"
+
+#include "/usr/local/etc/X11/app-defaults/Xdvi"
