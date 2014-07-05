@@ -1,0 +1,17 @@
+show_hidden=0
+show_backup=0
+always_open_dirs=0
+always_open_files=0
+open_last=1
+dmenu_caseinsens=1
+dmenu_onbottom=0
+dmenfnt='dwmfnt-10:bold'
+dmenu_bg='#00243f'
+dmenu_fg='#8A9499'
+dmenu_sbg='#3D6B99'
+dmenu_sfg='#eeeeee'
+editor="vim-bin"
+executor='xdg-open'
+filemanager="urxvt-fm"
+last_dir="/home/bohoomil"
+
