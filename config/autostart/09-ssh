@@ -1,6 +1,0 @@
-#!/bin/sh
-pidof -s ssh-agent >& /dev/null
-if [ $? -ne 0 ]; then
-  ssh-agent
-fi
-
