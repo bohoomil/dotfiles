@@ -19,7 +19,7 @@
     #   %I  iconname (without its path)
     #   %p  progress value if set ([  0%] to [100%]) or nothing
     # Markup is allowed
-    format = "<b>::</b> %s <b>::</b> %b"
+    format = "%a <b>:: %s :: %b</b>"
 
     # Sort messages by urgency
     sort = yes
@@ -59,7 +59,7 @@
     # right side of the screen.  Y is measured from the top and down respectevly.
     # The width can be negative. In this case the actual width is the
     # screen width minus the width defined in within the geometry option.
-    geometry = "800x3+800+0"
+    geometry = "900x3+700+0"
 
     # The transparency of the window. range: [0; 100]
     # This option will only work if a compositing windowmanager is present (e.g. xcompmgr, compiz, etc..)
@@ -191,32 +191,35 @@
   summary = "*New*"
   foreground = "#f2c261"
   timeout = 10
-  format = "%a <b>::</b> %s <b>::</b> %b"
 
 [dropbox_added]
   appname = Dropbox
   summary = "*added*"
   foreground = "#9079f2"
   timeout = 10
-  format = "%a <b>::</b> %s <b>::</b> %b"
 
 [dropbox_deleted]
   appname = Dropbox
   summary = "*deleted*"
-  foreground = "#f24986"
+  foreground = "#ff3377"
   timeout = 10
-  format = "%a <b>::</b> %s <b>::</b> %b"
 
 [ff_download]
   appname = Firefox
   summary = "*Download*"
-  foreground = "#ff694d"
+  foreground = "#ff4826"
   timeout = 10
-  format = "%a <b>::</b> %s <b>::</b> %b"
+
+[autosuspend]
+  appname = xautolock
+  summary = "*sleep*"
+  foreground = "#ff3355"
+  timeout = 18
+  format = "%a <b>:: %s :: %b</b>"
 
 [empty]
   summary = "empty"
-  foreground = "#E6A1BA"
+  foreground = "#e6a1ba"
 
 #[espeak]
 #    summary = "*"
