@@ -1,5 +1,5 @@
 [global]
-    font = MonacoPX 9
+    font = dwmfnt 10
 
     # allow a small subset of html markup:
     # <b>bold</b>
@@ -41,11 +41,12 @@
     # set to -1 to disable
     show_age_threshold = 60
 
-    # split long notifications into multiple lines
+    # split notifications into multiple lines if they don't fit into geometry
     word_wrap = yes
 
     # ignore newlines '\n' in notifications
     ignore_newline = no
+
 
     # the geometry of the window
     # geometry [{width}]x{height}][+/-{x}+/-{y}]
@@ -58,7 +59,6 @@
     # right side of the screen.  Y is measured from the top and down respectevly.
     # The width can be negative. In this case the actual width is the
     # screen width minus the width defined in within the geometry option.
-    #geometry = "0x3-30+20"
     geometry = "800x3+800+0"
 
     # The transparency of the window. range: [0; 100]
@@ -68,7 +68,7 @@
     # Don't remove messages, if the user is idle (no mouse or keyboard input)
     # for longer than idle_threshold seconds.
     # Set to 0 to disable.
-    idle_threshold = 0
+    idle_threshold = 120
 
     # Which monitor should the notifications be displayed on.
     monitor = 0
@@ -83,10 +83,12 @@
     #
     # If this option is set to mouse or keyboard, the monitor option will be
     # ignored.
+    #follow = mouse
     follow = none
 
     # should a notification popped up from history be sticky or
     # timeout as if it would normally do.
+    #sticky_history = yes
     sticky_history = no
 
     # The height of a single line. If the height is smaller than the font height,
@@ -99,7 +101,7 @@
     separator_height = 2
 
     # padding between text and separator
-    padding = 0
+    padding = 1
 
     # horizontal padding
     horizontal_padding = 10
@@ -121,11 +123,11 @@
     dmenu = /usr/bin/dmenu -p dunst:
 
     # browser for opening urls in context menu
-    browser = /usr/bin/dwb
+    browser = /usr/bin/firefox -new-tab
 
 [frame]
     width = 1
-    color = "#0D3333"
+    color = "#3d6b99"
 
 [shortcuts]
     # shortcuts are specified as [modifier+][modifier+]...key
@@ -146,21 +148,20 @@
     # context menu
     context = ctrl+shift+period
 
+
 [urgency_low]
-    # IMPORTANT: colors have to be defined in quotation marks.
-    # Otherwise the '#' and following  would be interpreted as a comment.
-    background = "#000000"
-    foreground = "#ACB4BF"
-    timeout = 7
+    background = "#00243F"
+    foreground = "#a9f2b5"
+    timeout = 5
 
 [urgency_normal]
-    background = "#0C0C19"
-    foreground = "#FFFFFF"
+    background = "#00243F"
+    foreground = "#b8c8e6"
     timeout = 7
 
 [urgency_critical]
-    background = "#000000"
-    foreground = "#dc2f32"
+    background = "#00243F"
+    foreground = "#e63a55"
     timeout = 0
 
 # Every section that isn't one of the above is interpreted as a rules
@@ -181,14 +182,41 @@
 # NOTE: It might be helpful to run dunst -print in a terminal in order to find
 # fitting options for rules.
 
-[scrot]
-  summary = "Scrot"
-  foreground = "#B3FF18"
+[teiler]
+  summary = "teiler"
+  foreground = "#b0e645"
 
-[dropbox]
+[thunderbird]
+  appname = Thunderbird
+  summary = "*New*"
+  foreground = "#f2c261"
+  timeout = 10
+  format = "%a <b>::</b> %s <b>::</b> %b"
+
+[dropbox_added]
   appname = Dropbox
-  summary = *dropbox*
-  foreground = "#18B2FF"
+  summary = "*added*"
+  foreground = "#9079f2"
+  timeout = 10
+  format = "%a <b>::</b> %s <b>::</b> %b"
+
+[dropbox_deleted]
+  appname = Dropbox
+  summary = "*deleted*"
+  foreground = "#f24986"
+  timeout = 10
+  format = "%a <b>::</b> %s <b>::</b> %b"
+
+[ff_download]
+  appname = Firefox
+  summary = "*Download*"
+  foreground = "#ff694d"
+  timeout = 10
+  format = "%a <b>::</b> %s <b>::</b> %b"
+
+[empty]
+  summary = "empty"
+  foreground = "#E6A1BA"
 
 #[espeak]
 #    summary = "*"
