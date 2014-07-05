@@ -179,6 +179,7 @@ shell/i/.ha
 
 # rar
 regex/i/\.r(ar|[0-9][0-9])$
+  #Open=rar va -c- %f 2>/dev/null || unrar va -c- %f
   Open=%cd %p/urar://
   View=$VIEWER %f
 
@@ -315,135 +316,22 @@ type/^ELF
   View=(file %f && echo && nm -C %f) | $VIEWER
 #}}}
 
-### Documentation ----------- ### {{{
-
-# Texinfo
-#regex/\.(te?xi|texinfo)$
-
-# GNU Info page
-type/^Info\ text
-  Open=/usr/bin/pinfo -f %f
-
-shell/.info
-  Open=/usr/bin/pinfo -f %f
-
-# Manual page
-regex/(([^0-9]|^[^\.]*)\.([1-9][A-Za-z]*|[ln])|\.man)$
-  Open=(zsoelim %f | nroff -c -mandoc) | $VIEWER
-  View=$VIEWER %f
-
-# Perl pod page
-shell/.pod
-  Open=(pod2man %f | nroff -c -mandoc) | $VIEWER
-  View=(pod2man %f | nroff -c -mandoc) | $VIEWER
-
-# Troff with me macros.
-# Exception - "read.me" is not a nroff file.
-shell/read.me
-  Open=$EDITOR %f
-  View=$VIEWER %f
-
-shell/.me
-  Open=nroff -c -me %f | $VIEWER
-  View=nroff -c -me %f | $VIEWER
-
-# Troff with ms macros.
-shell/.ms
-  Open=nroff -c -ms %f | $VIEWER
-  View=nroff -c -ms %f | $VIEWER
-
-# Manual page - compressed
-regex/([^0-9]|^[^\.]*)\.([1-9][A-Za-z]*|[ln])\.g?[Zz]$
-  Open=(gzip -dc %f | zsoelim | nroff -c -mandoc) | $VIEWER
-  View=(gzip -dc %f | zsoelim | nroff -c -mandoc) | $VIEWER
-
-regex/([^0-9]|^[^\.]*)\.([1-9][A-Za-z]*|[ln])\.bz$
-  Open=(bzip -dc %f | zsoelim | nroff -c -mandoc) | $VIEWER
-  View=(bzip -dc %f | zsoelim | nroff -c -mandoc) | $VIEWER
-
-regex/([^0-9]|^[^\.]*)\.([1-9][A-Za-z]*|[ln])\.bz2$
-  Open=(bzip2 -dc %f | zsoelim | nroff -c -mandoc) | $VIEWER
-  View=(bzip2 -dc %f | zsoelim | nroff -c -mandoc) | $VIEWER
-
-regex/([^0-9]|^[^\.]*)\.([1-9][A-Za-z]*|[ln])\.lzma$
-  Open=(lzma -dc %f | zsoelim | nroff -c -mandoc) | $VIEWER
-  View=(lzma -dc %f | zsoelim | nroff -c -mandoc) | $VIEWER
-
-regex/([^0-9]|^[^\.]*)\.([1-9][A-Za-z]*|[ln])\.xz$
-  Open=(xz -dc %f | zsoelim | nroff -c -mandoc) | $VIEWER
-  View=(xz -dc %f | zsoelim | nroff -c -mandoc) | $VIEWER
-
-# CHM
-shell/i/.chm
-  #View=chm_http %f | w3m http://localhost:8080/
-  Open=chmsee %f >/dev/null 2>&1 &
-#}}}
-
 ### Images ------------------ ### {{{
-
-type/^GIF
+regex/i/\.(gif|jpg|jpe[g]|bmp|[pjm]ng|tiff|p[bgp]m|x[bp]m|ico)$
   View=(identify %f; test -x /usr/bin/exiv2 && echo && exiv2 %f 2>/dev/null) | $VIEWER
   Open=sxiv %f * >/dev/null 2>&1 &
 
-type/^JPEG
+regex/i/\.(webp|Netpbm)$
   View=(identify %f; test -x /usr/bin/exiv2 && echo && exiv2 %f 2>/dev/null) | $VIEWER
-  Open=sxiv %f * >/dev/null 2>&1 &
+  Open=display %f &
 
-type/^PC\ bitmap
-  View=(identify %f; test -x /usr/bin/exiv2 && echo && exiv2 %f 2>/dev/null) | $VIEWER
-  Open=sxiv %f * >/dev/null 2>&1 &
-
-type/^PNG
-  View=(identify %f; test -x /usr/bin/exiv2 && echo && exiv2 %f 2>/dev/null) | $VIEWER
-  Open=sxiv %f * >/dev/null 2>&1 &
-
-type/^JNG
-  View=(identify %f; test -x /usr/bin/exiv2 && echo && exiv2 %f 2>/dev/null) | $VIEWER
-  Open=sxiv %f * >/dev/null 2>&1 &
-
-type/^MNG
-  View=(identify %f; test -x /usr/bin/exiv2 && echo && exiv2 %f 2>/dev/null) | $VIEWER
-  Open=sxiv %f * >/dev/null 2>&1 &
-
-type/^TIFF
-  View=(identify %f; test -x /usr/bin/exiv2 && echo && exiv2 %f 2>/dev/null) | $VIEWER
-  Open=sxiv %f * >/dev/null 2>&1 &
-
-type/^PBM
-  View=(identify %f; test -x /usr/bin/exiv2 && echo && exiv2 %f 2>/dev/null) | $VIEWER
-  Open=sxiv %f * >/dev/null 2>&1 &
-
-type/^PGM
-  View=(identify %f; test -x /usr/bin/exiv2 && echo && exiv2 %f 2>/dev/null) | $VIEWER
-  Open=sxiv %f * >/dev/null 2>&1 &
-
-type/^PPM
-  View=(identify %f; test -x /usr/bin/exiv2 && echo && exiv2 %f 2>/dev/null) | $VIEWER
-  Open=sxiv %f * >/dev/null 2>&1 &
-
-type/^Netpbm
-  View=(identify %f; test -x /usr/bin/exiv2 && echo && exiv2 %f 2>/dev/null) | $VIEWER
-  Open=sxiv %f * >/dev/null 2>&1 &
-
-shell/.xbm
-  View=(identify %f; test -x /usr/bin/exiv2 && echo && exiv2 %f 2>/dev/null) | $VIEWER
-  Open=sxiv %f * >/dev/null 2>&1 &
-
-shell/.xpm
-  View=(identify %f; test -x /usr/bin/exiv2 && echo && exiv2 %f 2>/dev/null) | $VIEWER
-  Open=sxiv %f * >/dev/null 2>&1 &
-
-shell/.ico
-  View=(identify %f; test -x /usr/bin/exiv2 && echo && exiv2 %f 2>/dev/null) | $VIEWER
-  Open=sxiv %f * >/dev/null 2>&1 &
- 
-shell/.psd
+regex/i/\.(psd|xcf)$
   View=(identify %f; test -x /usr/bin/exiv2 && echo && exiv2 %f 2>/dev/null) | $VIEWER
   Open=gimp %f &
 
-shell/.xcf
-  View=(identify %f; test -x /usr/bin/exiv2 && echo && exiv2 %f 2>/dev/null) | $VIEWER
-  Open=gimp %f &
+regex/i/\.pcx
+#  View=(identify %f; test -x /usr/bin/exiv2 && echo && exiv2 %f 2>/dev/null) | $VIEWER
+  Open=gimmage %f >/dev/null 2>&1 &
 
 shell/i/.svg
   View=(identify %f; test -x /usr/bin/exiv2 && echo && exiv2 %f 2>/dev/null) | $VIEWER
@@ -451,34 +339,13 @@ shell/i/.svg
 #}}}
 
 ### Fonts ------------------- ### {{{
-
-shell/.ttf
+regex/i/\.(tt[fc]|otf|dfont|pf[ab]|bdf)$
   View=fc-query %f | $VIEWER
-  Open=gnome-font-viewer %f >/dev/null 2>&1
-
-shell/.otf
-  View=fc-query %f | $VIEWER
-  Open=gnome-font-viewer %f >/dev/null 2>&1
-
-shell/.dfont
-  View=fc-query %f | $VIEWER
-  Open=gnome-font-viewer %f >/dev/null 2>&1
-
-shell/.ttc
-  View=fc-query %f | $VIEWER
-  Open=gnome-font-viewer %f >/dev/null 2>&1
-
-shell/.pfa
-  View=fc-query %f | $VIEWER
-  Open=gnome-font-viewer %f >/dev/null 2>&1
-
-shell/.pfb
-  View=fc-query %f | $VIEWER
-  Open=gnome-font-viewer %f >/dev/null 2>&1
+  Open=LC_ALL=pl_PL.UTF8 gnome-font-viewer %f >/dev/null 2>&1
 
 regex/\.pcf(\.gz)$
   View=$VIEWER %f
-  Open=gnome-font-viewer %f >/dev/null 2>&1
+  Open=LC_ALL=pl_PL.UTF8 gnome-font-viewer %f >/dev/null 2>&1
 
 shell/.afm
   View=$VIEWER %f
@@ -486,8 +353,7 @@ shell/.afm
 #}}}
 
 ### Sound files ------------- ### {{{
-
-regex/i/\.(wav|snd|voc|au|smp|aiff|snd|m4a|ape|aac|wv)$
+regex/i/\.(wav|wav[22]|snd|voc|au|smp|aiff|snd|m4a|ape|aac|wv|mp[23]|og[gax]|spx|flac|wma)$
   View=mediainfo %f | $VIEWER
   Open=mplayer -vo null -nosub %f
 
@@ -495,104 +361,24 @@ regex/i/\.(mod|s3m|xm|it|mtm|669|stm|ult|far)$
   View=mediainfo %f | $VIEWER
   Open=mikmod %f
 
-shell/i/.waw22
-  View=mediainfo %f | $VIEWER
-  Open=mplayer -vo null -nosub %f
-
-shell/i/.mp3
-  Open=mplayer -vo null -nosub %f
-  View=mediainfo %f | $VIEWER
-
-regex/i/\.og[gax]$
-  Open=mplayer -vo null -nosub %f
-  View=ogginfo %f | $VIEWER
-
-regex/i/\.(spx|flac)$
-  Open=mplayer -vo null -nosub %f
-  View=mediainfo %f | $VIEWER
-
 regex/i/\.(midi?|rmid?)$
   View=mediainfo %f | $VIEWER
   Open=timidity %f
-
-shell/i/.wma
-  Open=mplayer -vo null -nosub %f
-  View=mediainfo %f | $VIEWER
 #}}}
 
 ### Play lists -------------- ### {{{
-
 regex/i/\.(m3u|pls)$
   Open=mplayer -vo null -playlist %f
 #}}}
 
 ### Video ------------------- ### {{{
+# mts => MPEG-2 TS container + H.264 codec
+regex/i/\.(avi|divx|mkv|mov|qt|mp4|m4v|mpe?g|mts|rmvb|ra?m$|ts|vob|wmv|fl[icv]|ogv|webm|as[fx])$
+  Open=([ -n "$DISPLAY" ] && detach mplayer %f >/dev/null 2>&1 || mplayer -vo null %f)
+  View=mediainfo %f | $VIEWER
 
 shell/i/.3gp
-  Open=([ -n "$DISPLAY" ] && detach mplayer %f >/dev/null 2>&1 || mplayer -vo null %f)
-  View=mediainfo %f | $VIEWER
-
-shell/i/.avi
-  Open=([ -n "$DISPLAY" ] && detach mplayer %f >/dev/null 2>&1 || mplayer -vo null %f)
-  View=mediainfo %f | $VIEWER
-
-regex/i/\.as[fx]$
-  Open=([ -n "$DISPLAY" ] && detach mplayer %f >/dev/null 2>&1 || mplayer -vo null %f)
-  View=mediainfo %f | $VIEWER
-
-shell/i/.divx
-  Open=([ -n "$DISPLAY" ] && detach mplayer %f >/dev/null 2>&1 || mplayer -vo null %f)
-  View=mediainfo %f | $VIEWER
-
-shell/i/.mkv
-  Open=([ -n "$DISPLAY" ] && detach mplayer %f >/dev/null 2>&1 || mplayer -vo null %f)
-  View=mediainfo %f | $VIEWER
-
-regex/i/\.(mov|qt)$
-  Open=([ -n "$DISPLAY" ] && detach mplayer %f >/dev/null 2>&1 || mplayer -vo null %f)
-  View=mediainfo %f | $VIEWER
-
-regex/i/\.(mp4|m4v|mpe?g)$
-  Open=([ -n "$DISPLAY" ] && detach mplayer %f >/dev/null 2>&1 || mplayer -vo null %f)
-  View=mediainfo %f | $VIEWER
-
-# MPEG-2 TS container + H.264 codec
-shell/i/.mts
-  Open=([ -n "$DISPLAY" ] && detach mplayer %f >/dev/null 2>&1 || mplayer -vo null %f)
-  View=mediainfo %f | $VIEWER
-
-shell/i/.rmvb
-  Open=([ -n "$DISPLAY" ] && detach mplayer %f >/dev/null 2>&1 || mplayer -vo null %f)
-  View=mediainfo %f | $VIEWER
-
-shell/i/.ts
-  Open=([ -n "$DISPLAY" ] && detach mplayer %f >/dev/null 2>&1 || mplayer -vo null %f)
-  View=mediainfo %f | $VIEWER
-
-shell/i/.vob
-  Open=([ -n "$DISPLAY" ] && detach mplayer %f >/dev/null 2>&1 || mplayer -vo null %f)
-  View=mediainfo %f | $VIEWER
-
-shell/i/.wmv
-  Open=([ -n "$DISPLAY" ] && detach mplayer %f >/dev/null 2>&1 || mplayer -vo null %f)
-  View=mediainfo %f | $VIEWER
-
-regex/i/\.fl[icv]$
-  Open=([ -n "$DISPLAY" ] && detach mplayer %f >/dev/null 2>&1 || mplayer -vo null %f)
-  View=mediainfo %f | $VIEWER
-
-shell/i/.ogv
-  Open=([ -n "$DISPLAY" ] && detach mplayer %f >/dev/null 2>&1 || mplayer -vo null %f)
-  View=mediainfo %f | $VIEWER
-
-regex/i/\.ra?m$
-  #Open=/usr/lib/mc/ext.d/video.sh open ram
-  Open=([ -n "$DISPLAY" ] && detach mplayer %f >/dev/null 2>&1 || mplayer -vo null %f)
-  View=mediainfo %f | $VIEWER
-
-# WebM
-shell/i/.webm
-  Open=([ -n "$DISPLAY" ] && detach mplayer %f >/dev/null 2>&1 || mplayer -vo null %f)
+  Open=xdg-open %f
   View=mediainfo %f | $VIEWER
 
 #}}}
@@ -606,8 +392,8 @@ type/^PostScript
 
 # PDF
 type/^PDF
-  Open=([ -n "$DISPLAY" ] && zathura %f >/dev/null 2>&1 || pdftotext -layout -nopgbrk %f - | $VIEWER) &
-  View=pdftotext -layout -nopgbrk %f - | $VIEWER
+  Open=([ -n "$DISPLAY" ] && zathura %f >/dev/null 2>&1 || pdftotext -layout -nopgbrk -eol unix %f - | $VIEWER) &
+  View=pdftotext -layout -nopgbrk -eol unix %f - | $VIEWER
 
 # html
 regex/i/\.html?$
@@ -635,7 +421,7 @@ shell/i/.gnumeric
 # Microsoft Word Document
 regex/i/\.(do[ct]|wri)$
   Open=loffice %f >/dev/null 2>&1 &
-  View=antiword -t %f
+  View=antiword -t %f | $VIEWER
 type/^Microsoft\ Word
   Open=/usr/lib/mc/ext.d/doc.sh open msdoc
   View=%view{ascii} /usr/lib/mc/ext.d/doc.sh view msdoc
@@ -672,13 +458,13 @@ shell/i/.dvi
 
 # TeX
 shell/i/.tex
-  #Include=editor
   Open=$EDITOR
   View=$VIEWER %f
 
 # DjVu
 regex/i/\.djvu?$
-  Open=/usr/lib/mc/ext.d/doc.sh open djvu
+  Open=([ -n "$DISPLAY" ] && zathura %f >/dev/null 2>&1 &)
+  #Open=/usr/lib/mc/ext.d/doc.sh open djvu
   View=%view{ascii} /usr/lib/mc/ext.d/doc.sh view djvu
 
 # Comic Books
@@ -687,11 +473,22 @@ regex/i/\.cb[zr]$
 
 # Epub
 shell/i/.epub
-  Open=/usr/lib/mc/ext.d/doc.sh open epub
+  Open=([ -n "$DISPLAY" ] && lucidor %f >/dev/null 2>&1 &)
   View=%view{ascii} /usr/lib/mc/ext.d/doc.sh view epub
 #}}}
 
 ### Miscellaneous ----------- ### {{{
+
+# SHELL scripts 
+regex/i/\.(sh|zsh|install)$
+  View=$VIEWER %f
+
+regex/PKGBUILD
+  View=$VIEWER %f
+
+# XML
+shell/.xml
+  View=$VIEWER %f
 
 # Compiled Java classes
 shell/.class
@@ -813,11 +610,76 @@ type/^Parity\ Archive\ Volume\ Set
   Open=/usr/lib/mc/ext.d/archive.sh open par2
 #}}}
 
+### Documentation ----------- ### {{{
+
+# Texinfo
+#regex/\.(te?xi|texinfo)$
+
+# GNU Info page
+type/^Info\ text
+  Open=/usr/bin/pinfo -f %f
+
+shell/.info
+  Open=/usr/bin/pinfo -f %f
+
+# Manual page
+regex/(([^0-9]|^[^\.]*)\.([1-9][A-Za-z]*|[ln])|\.man)$
+  Open=(zsoelim %f | nroff -c -mandoc) | $VIEWER
+  View=$VIEWER %f
+
+# Perl pod page
+shell/.pod
+  Open=(pod2man %f | nroff -c -mandoc) | $VIEWER
+  View=(pod2man %f | nroff -c -mandoc) | $VIEWER
+
+# Troff with me macros.
+# Exception - "read.me" is not a nroff file.
+shell/read.me
+  Open=$EDITOR %f
+  View=$VIEWER %f
+
+shell/.me
+  Open=nroff -c -me %f | $VIEWER
+  View=nroff -c -me %f | $VIEWER
+
+# Troff with ms macros.
+shell/.ms
+  Open=nroff -c -ms %f | $VIEWER
+  View=nroff -c -ms %f | $VIEWER
+
+# Manual page - compressed
+regex/([^0-9]|^[^\.]*)\.([1-9][A-Za-z]*|[ln])\.g?[Zz]$
+  Open=(gzip -dc %f | zsoelim | nroff -c -mandoc) | $VIEWER
+  View=(gzip -dc %f | zsoelim | nroff -c -mandoc) | $VIEWER
+
+regex/([^0-9]|^[^\.]*)\.([1-9][A-Za-z]*|[ln])\.bz$
+  Open=(bzip -dc %f | zsoelim | nroff -c -mandoc) | $VIEWER
+  View=(bzip -dc %f | zsoelim | nroff -c -mandoc) | $VIEWER
+
+regex/([^0-9]|^[^\.]*)\.([1-9][A-Za-z]*|[ln])\.bz2$
+  Open=(bzip2 -dc %f | zsoelim | nroff -c -mandoc) | $VIEWER
+  View=(bzip2 -dc %f | zsoelim | nroff -c -mandoc) | $VIEWER
+
+regex/([^0-9]|^[^\.]*)\.([1-9][A-Za-z]*|[ln])\.lzma$
+  Open=(lzma -dc %f | zsoelim | nroff -c -mandoc) | $VIEWER
+  View=(lzma -dc %f | zsoelim | nroff -c -mandoc) | $VIEWER
+
+regex/([^0-9]|^[^\.]*)\.([1-9][A-Za-z]*|[ln])\.xz$
+  Open=(xz -dc %f | zsoelim | nroff -c -mandoc) | $VIEWER
+  View=(xz -dc %f | zsoelim | nroff -c -mandoc) | $VIEWER
+
+# CHM
+shell/i/.chm
+  #View=chm_http %f | w3m http://localhost:8080/
+  Open=chmsee %f >/dev/null 2>&1 &
+#}}}
+
 ### Default ----------------- ### {{{
 
 # Default target for anything not described above
 default/*
   Open=
+  #View=fold -s %f | $VIEWER
   View=$VIEWER %f
 #}}}
 
