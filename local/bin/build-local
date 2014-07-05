@@ -1,0 +1,6 @@
+#!/bin/bash
+
+export LANG=C
+sudo arch-nspawn $CHROOT/x86_64/root pacman -Syu
+sudo makechrootpkg -n -u -c -r $CHROOT/x86_64 -- -s --noconfirm -L --holdver
+

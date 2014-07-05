@@ -1,0 +1,4 @@
+#!/bin/sh
+
+opera -geometry 990x884+0-0
+

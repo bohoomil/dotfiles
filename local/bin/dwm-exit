@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+killall dunst && killall xcmenu && killall dropbox && killall dwm-start

@@ -135,7 +135,7 @@ filetype () {
        type=" Excel document"
   elif [[ "$type" = *LaTeX\ 2e\ document* ]]; then
        type=" LaTeX document"
-  elif [[ "$type" = *Bourne-Again\ shell\ script* || ("$name" = *PKGBUILD) ]]; then
+  elif [[ "$type" = *Bourne-Again\ shell\ script* || ("$name" = *PKGBUILD*) || ("$name" = *.install) ]]; then
        type=" BASH shell script"
   elif [[ "$type" = *POSIX\ shell\ script* ]]; then
        type=" POSIX shell script"
@@ -469,7 +469,8 @@ isfinal() {
       lang="-l ${lang#.}"
       lang=${lang%%-l }
       if cmd_exist pygmentize; then
-        pygmentize -f terminal -O encoding=utf-8,bg=dark -g -Pm "$2"
+        #pygmentize -f terminal -O encoding=utf-8,bg=$PYGMENTS_BG -g -Pm "$2"
+        pygmentize -f terminal256 -O encoding=utf-8,style=$PYGMENTS_STYLE -g -Pm "$2"
         if [[ $? = 0 ]]; then
           return
         fi
@@ -594,7 +595,7 @@ isfinal() {
     elif cmd_exist rar; then
       msg "use rar_file${sep}contained_file to view a file in the archive"
       istemp "rar v" "$2"
-    fi 
+    fi
   elif [[ "$1" = *7-zip\ archive* || "$1" = *7z\ archive* ]] && cmd_exist 7za; then
     typeset res
     res=$(istemp "7za l" "$2")
@@ -731,17 +732,21 @@ isfinal() {
     msg "append $sep to filename to view the raw data"
     nodash strings "$2"
   elif [[ "$1" = *BASH\ shell\ script* ]] || [[ "$1" = *POSIX\ shell\ script* ]] && cmd_exist pygmentize; then
-    pygmentize -f terminal -O encoding=utf-8,bg=light -l sh -Pm "$2"
+    #pygmentize -f terminal -O encoding=utf-8,bg=$PYGMENTS_BG -g -Pm "$2"
+    pygmentize -f terminal256 -O encoding=utf-8,style=$PYGMENTS_STYLE -l sh -g -Pm "$2"
   elif [[ "$1" = *LaTeX\ document* ]] && cmd_exist pygmentize; then
-    pygmentize -f terminal -O encoding=utf-8,bg=dark -l tex -Pm "$2"
+    #pygmentize -f terminal -O encoding=utf-8,bg=$PYGMENTS_BG -g -Pm "$2"
+    pygmentize -f terminal256 -O encoding=utf-8,style=$PYGMENTS_STYLE -l tex -Pm "$2"
   elif [[ "$1" = *XML\ document* ]] && cmd_exist pygmentize; then
-     pygmentize -f terminal -O encoding=utf-8,bg=dark -l xml -Pm "$2"
+    #pygmentize -f terminal -O encoding=utf-8,bg=$PYGMENTS_BG -g -Pm "$2"
+    pygmentize -f terminal256 -O encoding=utf-8,style=$PYGMENTS_STYLE -l xml -Pm "$2"
   else
     set "plain text" "$2"
   fi
   if [[ "$1" = *plain\ text* ]]; then
     if cmd_exist pygmentize; then
-      pygmentize -f terminal -O encoding=utf-8,bg=dark -g -Pm "$2"
+      #pygmentize -f terminal -O encoding=utf-8,bg=$PYGMENTS_BG -g -Pm "$2"
+      pygmentize -f terminal256 -O encoding=utf-8,style=$PYGMENTS_STYLE -g -Pm "$2"
       if [[ $? = 0 ]]; then
         return
       fi
@@ -749,7 +754,7 @@ isfinal() {
   fi
   if [[ "$2" = - ]]; then
     cat
-  fi  
+  fi
 }
 
 IFS=$sep a="$@"

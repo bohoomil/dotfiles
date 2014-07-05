@@ -1,0 +1,6 @@
+#!/bin/sh
+# synchronize local with remote
+
+rsync -a -v -e "ssh -p XXXXX" -h --progress --delete /mnt/sda2/ib-repo/ \
+  <username>@aaa.bbb.ccc.ddd:/home/www/html/repo
+

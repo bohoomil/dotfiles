@@ -1,0 +1,95 @@
+#!/bin/bash
+# simple web radio player
+# bohoomil <bohoomil[at]gmail.com>
+
+RED='\E[01;31m'
+GRE='\E[01;32m'
+YEL='\E[01;33m'
+BLU='\E[00;34m'
+CYA='\E[00;36m'
+RES='\E[0m'
+
+PS3="Type a number: "
+
+option=$1
+
+radios_list=('ČRo Vltava'
+             'ČRo D-dur'
+             'ČRo Jazz'
+             'Klassik Radio'
+             'NDR Kultur'
+             quit)
+
+mplayer_cmd(){
+  /usr/bin/mplayer --noconfig=all --novideo --ao=alsa --cache=720 --msgcolor --msgmodule --msglevel=cache=1:cplayer=4:demux=4:demuxer=0:network=-1:statusline=5:global=-1:header=-1:fixme=-1:open=-1:playtree=-1 -playlist "$1"
+}
+
+head_main(){
+  echo -e "$CYA:: \$SHELL Radio Player ::$RES"
+  echo -e ''
+}
+
+head_station(){
+  echo -e ''
+  echo -e "$RED:: playing $preset ::$RES"
+  echo -e ''
+}
+
+player_menu(){
+  select preset in "${radios_list[@]}"; do
+    case "$preset" in
+      'ČRo Vltava')
+        head_station
+        mplayer_cmd http://www.play.cz/radio/cro3-128.aac.m3u
+        clear
+        head_main
+        player_menu
+        ;;
+      'ČRo D-dur')
+        head_station
+        mplayer_cmd http://www.play.cz/radio/croddur128.aac.m3u
+        clear
+        head_main
+        player_menu
+        ;;
+      'ČRo Jazz')
+        head_station
+        mplayer_cmd http://www.rozhlas.cz/audio/download/aac-crojazz-128.m3u
+        clear
+        head_main
+        player_menu
+        ;;
+      'Klassik Radio')
+        head_station
+        mplayer_cmd http://edge.live.mp3.mdn.newmedia.nacamar.net/klassikradio128/livestream.mp3.m3u
+        clear
+        head_main
+        player_menu
+        ;;
+      'NDR Kultur')
+        head_station
+        mplayer_cmd http://www.ndr.de/resources/metadaten/audio/m3u/ndrkultur.m3u
+        clear
+        head_main
+        player_menu
+        ;;
+      quit)
+        echo -e ''
+        echo -e "$RED:: Quitting ::$RES"
+        echo -e ''
+        break
+        exit 1
+        ;;
+      *)
+        continue
+        ;;
+    esac
+    break
+  done
+  exit 0
+}
+
+clear
+head_main
+player_menu
+

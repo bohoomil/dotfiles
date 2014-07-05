@@ -1,9 +1,16 @@
 #!/bin/sh
-edit="urxvtc -geometry 110x68 -e vim"
+
+if [ $? -ne 0 ]; then
+  edit='urxvt -fn xft:luximono:style=Regular:pixelsize=15:antialias=false -fb xft:luximono:style=Regular:pixelsize=15:antialias=false -fi xft:luximono:style=Italic:pixelsize=15:antialias=false -fbi xft:luximono:style=Italic:pixelsize=15:antialias=false -geometry 120x48 -e vim -T screen-256color'
+else
+  edit='urxvtc -fn xft:luximono:style=Regular:pixelsize=15:antialias=false -fb xft:luximono:style=Regular:pixelsize=15:antialias=false -fi xft:luximono:style=Italic:pixelsize=15:antialias=false -fbi xft:luximono:style=Italic:pixelsize=15:antialias=false -geometry 120x48 -e vim -T screen-256color'
+fi
 
 if [ ! -f "$1" ]; then
-	$edit 
+	$edit
 else
 	$edit "$1"
 fi
+
+exit 0
 

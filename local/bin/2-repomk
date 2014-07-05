@@ -1,88 +1,120 @@
-#!/bin/sh
+#!/bin/bash
 
 count=$(ls -1 *.pkg.tar.xz 2>/dev/null | wc -l)
-whichone=$(pwd | awk -F '/' '{ printf $NF }')
+
+dir=$(pwd)
+
+fonts=/mnt/sda2/ib-repo/fonts
+i686=/mnt/sda2/ib-repo/i686
+x86_64=/mnt/sda2/ib-repo/x86_64
+multi=/mnt/sda2/ib-repo/multilib/x86_64
+
 GPG_TTY=$(tty)
 export GPG_TTY
 GPGKEY="962DDE58"
-GPGPASS="****************"
+GPGPASS="xxxxxxxxxxxxxxxx"
 
-if [[ $count != 0 ]]; then
-  if [[ $whichone == x86_64 ]] || [[ $whichone == i686 ]]; then
-    echo -e "Creating $whichone repository ..."
-    #
-    echo -e "Signing packages ..."
+if [[ "$count" != 0 ]]; then
+  if [[ "$dir" == "$fonts" ]]; then
+    echo -e 'Creating fonts repository ...'
+
+    echo -e 'Signing packages ...'
     for pkg in *.pkg.tar.xz; do
       sigfile="${pkg}.sig"
       if [[ ! -f $sigfile ]]; then
         gpg --detach-sign --use-agent -u ${GPGKEY} --passphrase ${GPGPASS} --batch "$pkg"
       fi
     done
-    #
+
     if ! gpg --verify "$sigfile" >/dev/null 2>&1; then
-      echo -e "Signature "$sigfile" is incorrect!" "$pkg"
+      echo -e "Signature $sigfile is incorrect! $pkg"
       exit 1
     fi
-    #
-    echo -e "Creating & signing database ..."
+
+    echo -e 'Creating & signing database ...'
+    repo-add --verify --sign --key ${GPGKEY} -f -n infinality-bundle-fonts.db.tar.gz *.pkg.tar.xz
+
+    rm infinality-bundle-fonts.db infinality-bundle-fonts.db.sig
+    cp infinality-bundle-fonts.db.tar.gz infinality-bundle-fonts.db
+    cp infinality-bundle-fonts.db.tar.gz infinality-bundle-fonts.files
+    cp infinality-bundle-fonts.db.tar.gz.sig infinality-bundle-fonts.db.sig
+
+    echo -e 'Repository fonts created successfully.'
+  elif [[ "$dir" == "$i686" ]]; then
+    echo -e 'Creating i686 repository ...'
+
+    echo -e 'Signing packages ...'
+    for pkg in *.pkg.tar.xz; do
+      sigfile="${pkg}.sig"
+      if [[ ! -f $sigfile ]]; then
+        gpg --detach-sign --use-agent -u ${GPGKEY} --passphrase ${GPGPASS} --batch "$pkg"
+      fi
+    done
+
+    if ! gpg --verify "$sigfile" >/dev/null 2>&1; then
+      echo -e "Signature $sigfile is incorrect! $pkg"
+      exit 1
+    fi
+
+    echo -e 'Creating & signing database ...'
     repo-add --verify --sign --key ${GPGKEY} -f -n infinality-bundle.db.tar.gz *.pkg.tar.xz
-    #
+
     rm infinality-bundle.db infinality-bundle.db.sig
     cp infinality-bundle.db.tar.gz infinality-bundle.db
     cp infinality-bundle.db.tar.gz infinality-bundle.files
     cp infinality-bundle.db.tar.gz.sig infinality-bundle.db.sig
-    #
-    echo -e "Repository $whichone created successfully."
-  elif [[ $whichone == zeus ]]; then
-    echo -e "Creating zeus repository ..."
-    #
-    echo -e "Signing packages ..."
+
+    echo -e 'Repository i686 created successfully.'
+  elif [[ "$dir" == "$x86_64" ]]; then
+    echo -e 'Creating x86_64 repository ...'
+
+    echo -e 'Signing packages ...'
     for pkg in *.pkg.tar.xz; do
       sigfile="${pkg}.sig"
       if [[ ! -f $sigfile ]]; then
         gpg --detach-sign --use-agent -u ${GPGKEY} --passphrase ${GPGPASS} --batch "$pkg"
       fi
     done
-    #
+
     if ! gpg --verify "$sigfile" >/dev/null 2>&1; then
-      echo -e "Signature "$sigfile" is incorrect!" "$pkg"
+      echo -e "Signature $sigfile is incorrect! $pkg"
       exit 1
     fi
-    #
-    echo -e "Creating & signing database ..."
-    repo-add --verify --sign --key ${GPGKEY} -f -n zeus.db.tar.gz *.pkg.tar.xz
-    #
-    rm zeus.db zeus.db.sig
-    cp zeus.db.tar.gz zeus.db
-    cp zeus.db.tar.gz zeus.files
-    cp zeus.db.tar.gz.sig zeus.db.sig
-    #
-    echo -e "Repository zeus created successfully."
-  else
-    echo -e "Creating $whichone repository ..."
-    #
-    echo -e "Signing packages ..."
+
+    echo -e 'Creating & signing database ...'
+    repo-add --verify --sign --key ${GPGKEY} -f -n infinality-bundle.db.tar.gz *.pkg.tar.xz
+
+    rm infinality-bundle.db infinality-bundle.db.sig
+    cp infinality-bundle.db.tar.gz infinality-bundle.db
+    cp infinality-bundle.db.tar.gz infinality-bundle.files
+    cp infinality-bundle.db.tar.gz.sig infinality-bundle.db.sig
+
+    echo -e 'Repository x86_64 created successfully.'
+  elif [[ "$dir" == "$multi" ]]; then
+    echo -e 'Creating multilib repository ...'
+
+    echo -e 'Signing packages ...'
     for pkg in *.pkg.tar.xz; do
       sigfile="${pkg}.sig"
       if [[ ! -f $sigfile ]]; then
         gpg --detach-sign --use-agent -u ${GPGKEY} --passphrase ${GPGPASS} --batch "$pkg"
       fi
     done
-    #
+
     if ! gpg --verify "$sigfile" >/dev/null 2>&1; then
-      echo -e "Signature "$sigfile" is incorrect!" "$pkg"
+      echo -e "Signature $sigfile is incorrect! $pkg"
       exit 1
     fi
-    #
-    echo -e "Creating & signing database ..."
-    repo-add --verify --sign --key ${GPGKEY} -f -n infinality-bundle-$whichone.db.tar.gz *.pkg.tar.xz
-    #
-    rm infinality-bundle-$whichone.db infinality-bundle-$whichone.db.sig
-    cp infinality-bundle-$whichone.db.tar.gz infinality-bundle-$whichone.db
-    cp infinality-bundle-$whichone.db.tar.gz infinality-bundle-$whichone.files
-    cp infinality-bundle-$whichone.db.tar.gz.sig infinality-bundle-$whichone.db.sig
-    #
-    echo -e "Repository $whichone created successfully."
+
+    echo -e 'Creating & signing database ...'
+    repo-add --verify --sign --key ${GPGKEY} -f -n infinality-bundle-multilib.db.tar.gz *.pkg.tar.xz
+
+    rm infinality-bundle-multilib.db infinality-bundle-multilib.db.sig
+    cp infinality-bundle-multilib.db.tar.gz infinality-bundle-multilib.db
+    cp infinality-bundle-multilib.db.tar.gz infinality-bundle-multilib.files
+    cp infinality-bundle-multilib.db.tar.gz.sig infinality-bundle-multilib.db.sig
+
+    echo -e 'Repository multilib created successfully.'
   fi
 else
   echo -e "No packages found, exiting."

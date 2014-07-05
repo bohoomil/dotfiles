@@ -1,7 +1,4 @@
 #!/bin/sh
 
-urxvtc -fn "xft:PragmataPro:style=Regular:pixelsize=14:antialias=false"  -fb "xft:PragmataPro:style=Regular:pixelsize=14:antialias=false" -fi "xft:PragmataPro:style=Italic:pixelsize=14:antialias=false" -fbi "xft:PragmataPro:style=Italic:pixelsize=14:antialias=false" -title "mutt" -e mutt
+urxvtc -fn "xft:luximono:style=Regular:pixelsize=14"  -fb "xft:luximono:style=Regular:pixelsize=14" -fi "xft:luximono:style=Italic:pixelsize=14" -fbi "xft:luximono:style=Italic:pixelsize=14" -geometry 138x51 -title "mutt" -e mutt
 
-#-title "dvtm" -geometry 83x33+0+15 -e dvtm -m ^a
-#-title "tmux" -e tmux -f $HOME/.tmux.conf
-#geometry 102x33+0+0

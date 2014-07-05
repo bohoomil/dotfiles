@@ -15,7 +15,13 @@
 # resolve a few issues
 #
 # A few kind guys whose names I cannot recall,
-# but whose work came of great help.
+# but whose works came of great help.
+
+# Dependencies:
+# * dunst -- simple front end for notification daemon
+# * batstat.sh -- display battery status
+# * loc.sh -- check VPN status (run as 5s loop via .xinitrc)
+# * wth.sh -- weather forecast script (run via crontab)
 
 C01="\x01" # norm [dgrey on black]
 C02="\x02" # sel  [bgrey on black]
@@ -43,13 +49,16 @@ C23="\x17" # xorg bg
 C24="\x18" # norm grey
 C25="\x19" # dwm selbg
 
-sep1="${C05}|${C01}"
+sep1="${C25}|${C01}"
 sep2=" ${C25}÷${C01} "
+sep3=" ${C25}•${C01} "
+sep4a=" ${C25}[${C01}"
+sep4b="${C25}]${C01}"
 
 cpu(){
-  proc="$(eval $(awk '/^cpu /{print "previdle=" $5 "; prevtotal=" $2+$3+$4+$5 }' /proc/stat); sleep 0.4; 
-  eval $(awk '/^cpu /{print "idle=" $5 "; total=" $2+$3+$4+$5 }' /proc/stat); 
-  INTERVALTOTAL=$((total-${prevtotal:-0})); 
+  proc="$(eval $(awk '/^cpu /{ print "previdle=" $5 "; prevtotal=" $2+$3+$4+$5 }' /proc/stat); sleep 0.4;
+  eval $(awk '/^cpu /{ print "idle=" $5 "; total=" $2+$3+$4+$5 }' /proc/stat);
+  INTERVALTOTAL=$((total-${prevtotal:-0}));
   echo "$((100*( (INTERVALTOTAL) - ($idle-${previdle:-0}) ) / (INTERVALTOTAL) ))")"
   if [[ "${proc}" -ge 0 ]] && [[ "${proc}" -le 9 ]]; then
     #green10
@@ -58,11 +67,11 @@ cpu(){
     #cyan14
     echo -e "  ${C24}CPU ${C19}${proc}%${C24}"
   elif [[ "${proc}" -ge 25 ]] && [[ "${proc}" -le 49 ]]; then
-    #yellow3
-    echo -e "  ${C24}CPU ${C12}${proc}%${C24}"
-  elif [[ "${proc}" -ge 50 ]] && [[ "${proc}" -le 74 ]]; then
     #magenta5
     echo -e "  ${C24}CPU ${C16}${proc}%${C24}"
+  elif [[ "${proc}" -ge 50 ]] && [[ "${proc}" -le 74 ]]; then
+    #magenta13
+    echo -e "  ${C24}CPU ${C17}${proc}%${C24}"
   else
     #red9
     echo -e "  ${C24}CPU ${C09}${proc}%${C24}"
@@ -76,34 +85,36 @@ mem(){
 }
 
 hdd(){
-  hdd1="$(df /dev/sda1 | awk '/^\/dev/{printf $5"\n"}')"
-  hdd2="$(df /dev/sda2 | awk '/^\/dev/{printf $5"\n"}')"
-  hdd3="$(df /dev/sda3 | awk '/^\/dev/{printf $5"\n"}')"
+  hdd1="$(df /dev/sda1 | awk '/^\/dev/{ print $5"\n" }')"
+  hdd2="$(df /dev/sda2 | awk '/^\/dev/{ print $5"\n" }')"
+  hdd3="$(df /dev/sda3 | awk '/^\/dev/{ print $5"\n" }')"
   #blue4
-  echo -e "  ${C24}SDA${sep1}${C24}1${C01}${sep1}${C24}2${C01}${sep1}${C24}3${C01}  ${C18}${hdd1}${sep1}${C18}${hdd2}${sep1}${C24}${C18}${hdd3}${C24}"
+  echo -e "  ${C24}SDA${sep1}${C24}1:${C20}${hdd1}${sep1}${C24}2:${C20}${hdd2}${C01}${sep1}${C24}3:${C20}${hdd3}${C24}"
 }
 
 hddtmp(){
   hddt="$(curl --connect-timeout 1 -fsm 3 telnet://127.0.0.1:7634 | awk -F '|' '{ print $4 }')"
   if [[ $hddt -ge 49 ]]; then
     #magenta13
-    echo -e "  ${C24}TMP ${C17}${hddt}°C${C24}"
+    echo -e "  ${C24}TMP ${C09}${hddt}°C${C24}"
   else
     exit
   fi
 }
 
 bat(){
-  batst="$(battstat.sh)"
+  batst="$(batstat.sh)"
   batt='/sys/class/power_supply/BAT0/'
   state=$(<"${batt}"/status)
-  if [[ $state == 'Discharging' ]] || [[ $state == 'Charging' ]]; then
+  # uncomment to monitor both charging and discharging
+  #if [[ $state == 'Discharging' ]] || [[ $state == 'Charging' ]]; then
+  if [[ $state == 'Discharging' ]]; then
     echo -e "  ${C24}BAT ${batst}${C24}"
   fi
 }
 
 vol(){
-  level="$(awk -F"[][]" '/dB/ {print $2}' <(amixer get Master))"
+  level="$(awk -F"[][]" '/dB/ { print $2 }' <(amixer get Master))"
   mix=`amixer get Master | tail -1`
   if [[ $mix == *\[off\]* ]]; then
     #red 9
@@ -126,39 +137,59 @@ mon(){
 mpd(){
   mpdstat="$(mpc | head -n 2 | tail -n 1 | sed 's/ .*//')"
   if [[ $mpdstat == "[playing]" ]]; then
-    #magenta13
-    echo -e "  ${C17}MPD${C24}"
+    #green10
+    echo -e "  ${C11}MPD${C24}"
   elif  [[ $mpdstat == "[paused]" ]]; then
     #yellow3
-    echo -e "  ${C12}MPD${C24}"
-  fi
-}
-
-eml(){
-  mlss=`cat $HOME/tmp/mls`
-  if [[ $mlss -gt 0 ]]; then
-    #red 9
-    echo -e "  ${C24}ELM ${C09}${mlss}${C24}"
+    echo -e "  ${C25}MPD${C24}"
   fi
 }
 
 vpn(){
-  con="$(host google.com>/dev/null && echo -e ON || echo -e NO)"
-  loc="$("$HOME/.local/bin/loc.sh")"
-  if [[ $con == ON ]] && [[ $loc == xx ]]; then
-    #red 9
-    echo -e "  ${C24}VPN ${C09}NO${C24}"
-  elif [[ $con == NO ]]; then
-    #red 1
-    echo -e "  ${C24}NET ${C08}--${C24}"
+  loc="$(cat $HOME/tmp/loc)"
+  if [[ -s "$HOME/tmp/loc" ]]; then
+    if [[ $? -eq 0 ]]; then
+      if [[ $loc == "XX" ]]; then # XX = two-letter critical country code
+        echo -e "  ${C24}VPN ${C09}NO${C24}"
+      # uncomment for info on every location,
+      # not only the critical one
+      #else
+        #echo -e "  ${C24}VPN ${C10}$loc${C24}"
+      fi
+    else
+      echo -e "  ${C24}NET ${C08}--${C24}"
+    fi
   fi
+}
+
+eml(){
+  maildirs="/mnt/sda3/mail/*/INBOX/new/"
+  mlss="$(find $maildirs -type f | wc -l)"
+  if [[ $mlss -gt 0 ]]; then
+    #red 9
+    echo -e "${sep4a}${C12}MAIL ${C09}${mlss}${C24}${sep4b}"
+  fi
+}
+
+wth(){
+  forecast=$(cat $HOME/tmp/wth)
+  #bgray
+  echo -e "${sep3}${C02}$forecast${C24}${sep4b}"
 }
 
 dte(){
   dat="$(date "+%a %d.%m, %H:%M")"
   #bgray
-  echo -e "${sep2}${C02}${dat}${C24}"
+  echo -e "${sep4a}${C02}${dat}${C24}"
+}
+
+
+dtewth(){
+  dat="$(date "+%a %d.%m, %H:%M")"
+  forecast=$(cat $HOME/tmp/wth)
+  #bgray
+  echo -e "${sep4a}${C20}${dat}${C24}${sep3}${C20}${forecast}${C24}${sep4b}"
 }
 
 # pipe it
-xsetroot -name " $(cpu)$(hdd)$(hddtmp)$(bat)$(vol)$(mpd)$(eml)$(vpn)$(dte)"
+xsetroot -name " $(cpu)$(hdd)$(hddtmp)$(bat)$(vol)$(mpd)$(eml)$(vpn)$(trash)$(dtewth)"

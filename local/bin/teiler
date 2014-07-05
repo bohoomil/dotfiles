@@ -1,0 +1,91 @@
+#!/bin/bash
+# teiler - A script to share (german word: teilen) screenshots/casts for tiling WMs - Pun intended
+# (c) Rasmus Steinke <rasi at xssn dot at>
+# Additional Ideas, testing and some code by Zeltak <zeltak at gmail dot com>
+#
+# Requirements:
+# xclip, dzen2, dmenu, ffmpeg, scrot, bc, some notification daemon,
+# xfce4-screenshooter+a proper clipboard manager for image clipboard support
+
+
+if [[ -f $HOME/.config/teiler/config ]];
+  then echo "Config found"
+else
+  echo "No config found" && notify-send "teiler" "No config found"
+  echo "Please copy config.example to ~/.config/teiler/config" && notify-send "Please copy config.example to ~/.config/teiler/config"
+  echo "Terminating..."
+  echo " "
+  killall teiler
+fi
+
+command -v dmenu >/dev/null 2>&1 || { notify-send "teiler" "dmenu is  not installed. Aborting." >&2; exit 1; }
+command -v dzen2 >/dev/null 2>&1 || { notify-send "teiler" "dzen2 is not installed. Aborting" >&2; exit 1; }
+
+UP1=`command -v scp`
+UP2=`command -v fb`
+if [[ -n "$UP1" || -n "$UP2" ]];
+then echo "found"
+else echo "not found" && notify-send "teiler" "No supported Uploader found"; exit
+fi
+
+command -v scrot >/dev/null 2>&1 || { notify-send "teiler" "scrot is not installed. Aborting" >&2; exit 1; }
+command -v bc >/dev/null 2>&1 || { notify-send "teiler" "bc is not installed. Aborting" >&2; exit 1; }
+
+source ~/.config/teiler/config
+# Needed for the countdown
+# Based on some script by  Marco Fontani - MFONTANI at cpan dot org
+set -bm
+function countdown () {
+    seq 1 ${1:-10} | tac | \
+        perl -ne'BEGIN{$|++;$msg=shift}$m=int($_/60);$s=int($_-$m*60);printf("$m:%02d -- $msg\n",$s);sleep 1;' \
+        "${2:-ready...}"
+}
+
+# Outsource the notfiy-send to its own function
+function notify() {
+  notify-send -u low --hint=int:transient:1 -t ${1} "teiler" "${2}"
+}
+function notify_ul() {
+  notify-send -u low --hint=int:transient:1 -t ${1} "teiler" "${2}\n$(xclip -o)"
+}
+
+# Some variables to clean up the code a bit
+COUNTD="countdown $COUNTER1 GO | dzen2 -fn \"$DZEN2_FONT\" -fg \"$NF\" -ta c -w \"$DZEN2_W\" -bg \"$NB\" -x \"$DZEN2_X\" -y \"$DZEN2_Y\""
+COUNTD2="countdown $COUNTER2 GO | dzen2 -fn \"$DZEN2_FONT\" -fg \"$NF\" -ta c -w \"$DZEN2_W\" -bg \"$NB\" -x \"$DZEN2_X\" -y \"$DZEN2_Y\""
+XCLIP="(xclip -o) | xclip -selection clipboard"
+
+cd $IMG_PATH
+
+MENU="1. Quick Fullscreen
+2. Delayed Fullscreen
+3. Select Area
+4. Fullscreen and Edit
+5. Selection and Edit
+6. External screenshot (2clip)
+"
+
+CHOICE="$(echo "$MENU" | dmenu -l 6 -fn "$TFONT" -nf "$NF" -nb "$NB" -sf "$SF" -sb "$SB" -p "Make Your Wish:")"
+
+case "$CHOICE" in
+  "1. Quick Fullscreen")
+    scrot -d 1 "$FILEMASK" && notify ${TIME} "Screenshot saved"
+    ;;
+  "2. Delayed Fullscreen")
+    eval $COUNTD & sleep $(echo $COUNTER1+1 | bc) && scrot -d 1 "$FILEMASK" && notify ${TIME} "Screenshot saved"
+    ;;
+  "3. Select Area")
+     scrot -s "$FILEMASK" && notify ${TIME} "Screenshot saved"
+    ;;
+  "4. Fullscreen and Edit")
+     scrot -d 1 "$FILEMASK" -e "$EDIT \$f" && notify ${TIME} "Screenshot edited and saved"
+    ;;
+  "5. Selection and Edit")
+     scrot -s "$FILEMASK" -e "$EDIT \$f" && notify ${TIME} "Screenshot edited and saved"
+    ;;
+  "6. External screenshot (2clip)")
+     xfce4-screenshooter -r -c  && notify ${TIME} "Screenshot copied to clip"
+    ;;
+  *)
+     notify-send -u low "No Selection Made"
+    ;;
+esac

@@ -1,20 +1,19 @@
 #!/bin/bash
 
-# Originally based on code by Dieter Plaetinck.
-# Pretty much re-written by Mina Nagy (mnzaki).
-# Adopted by bohoomil.
+# Originally Based on code by Dieter Plaetinck.
+# Pretty much re-written by Mina Nagy (mnzaki)
 
 config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/dmenu"
 mkdir -p "$config_dir"
 
 if [ -f $config_dir/dmenurc ]; then
-  . $config_dir/dmenurc && dmenu_cmd="dmenu $dmenu_cfg"
+  . $config_dir/dmenurc && dmenu_cmd="dmenu -i $dmenu_cfg"
 else
   dmenu_cmd="dmenu -i"
 fi
 
 terminal="urxvtc -e"
-max_recent=50 # Number of recent commands to track
+max_recent=20 # Number of recent commands to track
 
 cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/dmenu-recent"
 recent_cache="$cache_dir/recent"
@@ -23,6 +22,11 @@ known_types=" background terminal terminal_hold "
 
 mkdir -p "$cache_dir"
 touch "$recent_cache"
+
+#[[ ! -d "$cache_dir" ]] && mkdir -p "$cache_dir"
+#[[ ! -d "$config_dir" ]] && mkdir -p "$config_dir"
+#[[ ! -f "$recent_cache" ]] && touch "$recent_cache"
+#[[ ! -f "$rest_cache" ]] && touch "$rest_cache"
 
 IFS=:
 if stest -dqr -n "$rest_cache" $PATH 2>/dev/null; then
