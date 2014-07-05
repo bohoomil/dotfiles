@@ -2,5 +2,6 @@
 
 pidof -s xautolock >& /dev/null
 if [ $? -ne 0 ]; then
-  xautolock -time 60 -locker "systemctl suspend" &
+  xautolock -time 60 -notify 20 -notifier 'notify-send -a xautolock "Dell will go to sleep in 20s"' -locker 'systemctl suspend' &
 fi
+
