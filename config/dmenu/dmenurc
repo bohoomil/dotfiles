@@ -1,4 +1,3 @@
 # vim:ft=sh
-dmenu_fnt="-*-terminus-*-*-*-*-12-*-*-*-*-*-iso10646-*"
-dmenu_cfg="-fn $dmenu_fnt -i -nb #000000 -nf #8A9499 -sb #BE1919 -sf #CCCCCC"
 
+dmenu_cfg="-fn dwmfnt-10:bold -i -nb #00243F -nf #8A9499 -sb #991f3d -sf #eee"
