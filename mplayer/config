@@ -3,53 +3,68 @@
 
 [default]
 # --- general prefs
-#really-quiet=1						# silence console output
 quiet=1
-#ontop=1										# always keep mplayer on top
 
 # --- disable screensaver
-#heartbeat-cmd="xscreensaver-command -deactivate >&- 2>&- &"
 stop-xscreensaver=1
 heartbeat-cmd="xautolock -disable;xautolock -enable"
 
-# sets postprocessing into overdrive using all 
+# sets postprocessing into overdrive using all
 # possible spare cpu cycles to make the movie look better
 autoq=100
-vf=pp=de,hqdn3d
+vf=hqdn3d=scale=-ssf-ls=100
+spuaa=4                   # (0-4)
+spugauss=0.5              # (0.0-3.0)
 
 # --- audio prefs
-ao=alsa										# audio out
+ao=alsa                   # audio out
 
 # --- video prefs
-#vo=xv
+#vo=gl:yuv=4:lscale=1:cscale=1:rectangle=1
 vo=gl
-zoom=yes									# sofware scaling
-sid=0											# subtitle set
-double=yes								# double buffering (recommended for subtitles)
-monitoraspect=16:9				# 16:9 or or 4:3 
-framedrop=1								# for slower machines
-hardframedrop=0						# toggle hard frame drop
+zoom=yes                  # sofware scaling
+sid=0                     # subtitle set
+double=yes                # double buffering (recommended for subtitles)
+monitoraspect=16:9        # 16:9 or or 4:3
+framedrop=1               # for slower machines
+hardframedrop=0           # toggle hard frame drop
 vsync=1
 lavdopts=threads=2
-cache=262144
-#cache-min=4								# fill 4% of cache before playback
+cache=540                 # cache size; lower values produce "Cache not
+                          # responding" error
 lirc=0
 nojoystick=1
+mouse-movements=1         # for dvd menus
 
 # --- subtitle prefs
-ass=1
-ass-hinting=3
-ass-font-scale=1.2
-font='DejaVu Sans:style=Book'
-subfont-blur=0 #0-8
-
-subpos=90									# by default subtitles are too low (100 is lowest)
-subalign=2								# alignment (2 is bottom)
-sub-fuzziness=1						# find subtitle files (1: load all subs containing 
-													## movie name)
-slang=pl,en,eng,english		# language priorities (format varies by standard)
+subfont="Noto Sans:style=Regular"
+subfont-encoding=unicode
+subfont-text-scale=4      # truetype font scaling
+subfont-outline=0
+subfont-blur=8            # Slight blur (0-8)
+subpos=90                 # by default subtitles are too low (100 is lowest)
+subalign=2                # alignment (2 is bottom)
+sub-fuzziness=1           # find subtitle files (1: load all subs containing
+                          ## movie name)
+slang=en,eng,english      # language priorities (format varies by standard)
 
 # provide colorized terminal output
 msgmodule=1
 msgcolor=1
+msglevel:ass=-1
+msglevel:avsync=9
+msglevel:cache=-1
+msglevel:cplayer=4
+msglevel:decvideo=0
+msglevel:demux=4
+msglevel:demuxer=0
+msglevel:global=-1
+msglevel:header=-1
+msglevel:network=-1
+msglevel:osd=-1
+msglevel:playtree=0
+msglevel:statusline=9
+#msglevel:seek=9
+msglevel:subreader=0
+#msglevel:vo=0
 # vim:ft=mplayerconf:
