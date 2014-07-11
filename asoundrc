@@ -37,17 +37,48 @@ pcm.!default {
   slave.pcm "dmixer"
 }
 
-pcm.movie {
-  type plug
-  slave {
-    pcm "pcm.default"
-  }
-  #slave.pcm "dmixer"
-}
-
+# wine output
 pcm.wine {
   type plug
   #slave.pcm "hw:0" # direct output
   slave.pcm "dmixer"
 }
 
+# software volume
+pcm.softvol {
+  type softvol
+  slave.pcm "dmixer"
+  control {
+    name "Software"
+    card 0
+  }
+}
+
+# mpd volume control
+pcm.mpdvol {
+  type softvol
+  slave.pcm "dmixer"
+  control {
+    name "MPD"
+    card 0
+  }
+}
+# ctrl for mpd volume
+ctl.mpdvol {
+  type hw
+  card 0
+}
+
+# mplayer volume control
+pcm.mplayer {
+  type softvol
+  slave.pcm "dmixer"
+  control {
+    name "Mplayer"
+    card 0
+  }
+}
+ctl.mplayervol {
+  type hw
+  card 0
+}
