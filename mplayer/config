@@ -17,10 +17,11 @@ spuaa=4                   # (0-4)
 spugauss=0.5              # (0.0-3.0)
 
 # --- audio prefs
-ao=alsa:device=movie
-mixer-channel=PCM
+ao=alsa:device=mplayer
+mixer-channel=Mplayer
 volstep=2
 volume=75
+
 
 # --- video prefs
 #vo=gl:yuv=4:lscale=1:cscale=1:rectangle=1
