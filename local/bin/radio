@@ -1,6 +1,10 @@
 #!/bin/bash
-# simple web radio player
+# simple web radio player for $SHELL
 # bohoomil <bohoomil[at]gmail.com>
+
+wintitle="Radio"
+echo -e '\033k'$wintitle'\033\\'
+
 
 RED='\E[01;31m'
 GRE='\E[01;32m'
@@ -21,7 +25,7 @@ radios_list=('ČRo Vltava'
              quit)
 
 mplayer_cmd(){
-  /usr/bin/mplayer --noconfig=all --novideo --ao=alsa:device=movie --mixer-channel=PCM --volstep=2 --volume=75 --cache=720 --msgcolor --msgmodule --msglevel=cache=1:cplayer=4:demux=4:demuxer=0:network=-1:statusline=5:global=-1:header=-1:fixme=-1:open=-1:playtree=-1 -playlist "$1"
+  /usr/bin/mplayer --noconfig=all --novideo --ao=alsa:device=mplayer --mixer-channel=Mplayer --volstep=2 --volume=75 --cache=720 --msgcolor --msgmodule --msglevel=cache=1:cplayer=4:demux=4:demuxer=0:network=-1:statusline=5:global=-1:header=-1:fixme=-1:open=-1:playtree=-1 -playlist "$1"
 }
 
 head_main(){
