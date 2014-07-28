@@ -2,6 +2,7 @@
 
 # Originally Based on code by Dieter Plaetinck.
 # Pretty much re-written by Mina Nagy (mnzaki)
+# customized by bohoomil
 
 config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/dmenu"
 mkdir -p "$config_dir"
@@ -18,15 +19,14 @@ max_recent=20 # Number of recent commands to track
 cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/dmenu-recent"
 recent_cache="$cache_dir/recent"
 rest_cache="$cache_dir/all"
+blacklist_cfg="$config_dir/blacklist"
 known_types=" background terminal terminal_hold "
 
-mkdir -p "$cache_dir"
-touch "$recent_cache"
-
-#[[ ! -d "$cache_dir" ]] && mkdir -p "$cache_dir"
-#[[ ! -d "$config_dir" ]] && mkdir -p "$config_dir"
-#[[ ! -f "$recent_cache" ]] && touch "$recent_cache"
-#[[ ! -f "$rest_cache" ]] && touch "$rest_cache"
+[ ! -d "$config_dir" ] && mkdir -p "$config_dir"
+[ ! -d "$cache_dir" ] && mkdir -p "$cache_dir"
+[ ! -f "$recent_cache" ] && touch "$recent_cache"
+[ ! -f "$blacklist_cfg" ] && touch "$blacklist_cfg"
+[ ! -f "$rest_cache" ] && touch "$rest_cache"
 
 IFS=:
 if stest -dqr -n "$rest_cache" $PATH 2>/dev/null; then
@@ -34,7 +34,7 @@ if stest -dqr -n "$rest_cache" $PATH 2>/dev/null; then
 fi
 
 IFS=" "
-cmd=$(cat "$recent_cache" "$rest_cache" | $dmenu_cmd -p Execute: "$@") || exit
+cmd=$(cat "$recent_cache" "$rest_cache" | grep -vxFf "$blacklist_cfg" | $dmenu_cmd -p Execute: "$@") || exit
 
 if ! grep -qx "$cmd" "$recent_cache" &> /dev/null; then
   grep -vx "$cmd" "$rest_cache" > "$rest_cache.$$"
