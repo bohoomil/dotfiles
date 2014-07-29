@@ -98,11 +98,18 @@ let g:riv_fold_level = 2
 "let g:riv_auto_fold2_lines = 1
 au BufRead,BufNewFile *.rest,rst set ft=rst tw=78
 
-" -- .md .mkd
+" -- .md .mkd pandoc
 let g:vim_markdown_folding_disabled=0
 let g:vim_markdown_initial_foldlevel=1
-au BufRead,BufNewFile *.md,*.mdown,*.markdown set tw=0 ft=mkd
+let g:pandoc#syntax#style#emphases = 0
+au BufRead,BufNewFile *.md,*.mdown,*.markdown set tw=0 ft=pandoc
 "wm=0
+
+"augroup mkd
+"autocmd BufRead *.mkd  set ai formatoptions=tcroqn2 comments=n:&gt;
+"augroup END
+"syntax region markdownFold start="^\z(#\+\) " end="\(^#\(\z1#*\)\@!#*[^#]\)\@=" transparent fold
+"autocmd FileType markdown set foldmethod=syntax
 
 " -- .asc .asciidoc
 au BufRead,BufNewFile *.asc,*.asciidoc set tw=0 ft=asciidoc
@@ -210,6 +217,9 @@ map ; :
 " -- xelatex
 map <C-v> :!latexmk -quiet -xelatex -pvc -new-viewer- -view=pdf % > /dev/null 2>&1 &<cr><cr>
 
+" -- Explorer
+nmap <silent> <F2> :Explore<CR>
+
 " -- NERDTree
 nmap <silent> <F9> :NERDTreeToggle<CR>
 let NERDTreeChDirMode=2
@@ -224,11 +234,43 @@ let NERDTreeHightlightCursorline=0
 "let NERDTreeMinimalUI=1
 let NERDTreeDirArrows=0
 
-" -- DistractFree
-let g:distractfree_width = '70%'
-let g:distractfree_colorscheme = 'eu3writer'
-let g:distractfree_keep_options = 'textwidth=60'
-nmap <silent> <F12> :DistractFreeToggle<CR>
+" -- Goyo
+nmap <silent> <F12> :Goyo<CR>
+
+function! GoyoBefore()
+  let b:quitting = 0
+  let b:quitting_bang = 0
+  autocmd QuitPre <buffer> let b:quitting = 1
+  cabbrev <buffer> q! let b:quitting_bang = 1 <bar> q!
+endfunction
+
+function! GoyoAfter()
+  " Quit Vim if this is the only remaining buffer
+  if b:quitting && len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 1
+    if b:quitting_bang
+      qa!
+    else
+      qa
+    endif
+  endif
+endfunction
+
+let g:goyo_callbacks = [function('GoyoBefore'), function('GoyoAfter')]
+
+" -- Limelight
+nmap <silent> <F11> :Limelight<CR>
+nmap <silent> <F10> :Limelight!<CR>
+
+" Color name (:help cterm-colors) or ANSI code
+let g:limelight_conceal_ctermfg = 'gray'
+let g:limelight_conceal_ctermfg = 8
+
+" Color name (:help gui-colors) or RGB color
+let g:limelight_conceal_guifg = 'DarkGray'
+let g:limelight_conceal_guifg = '#777777'
+
+" Default: 0.5
+let g:limelight_default_coefficient = 0.7
 
 " -- folding
 map <C-m> <C-M>
@@ -264,7 +306,7 @@ nmap <silent> <Up> gk
 nmap <silent> k gk
 nmap <silent> j gj
 
-" -- allow saving files as root
+" -- allow writing to files with root priviledges
 cnoremap w!! w !sudo tee % >/dev/null
 
 " -- mouse
@@ -273,6 +315,33 @@ if has('mouse')
 endif
 set mousemodel=popup_setpos
 "}}}
+
+" ### GVIM {{{
+" set geometry
+if has("gui_running")
+  "set background=light
+  "colorscheme solarized
+  "colorscheme darkspectrum
+  "set GUI font
+  set guifont=Luxi\ Mono\ 10
+
+  " set window size
+  set lines=55 columns=90
+
+  " disable error / visual bell
+  "set noeb novb
+
+  " disable scrollbar
+  set guioptions-=r
+
+  " hide some menu buttons
+  aunmenu ToolBar.SaveAll
+  aunmenu ToolBar.LoadSesn
+  aunmenu ToolBar.SaveSesn
+  aunmenu ToolBar.FindHelp
+  aunmenu ToolBar.RunCtags
+endif
+" }}}
 
 " ### MISC SETTINGS {{{
 " -- show syntax highlighting groups for word under cursor
