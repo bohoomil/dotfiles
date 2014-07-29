@@ -67,7 +67,7 @@ set wildmode=longest,full
 set clipboard=unnamed      " yank and copy to X clipboard
 
 " -- spell check
-set spelllang=pl,en_gb
+set spelllang=en_gb
 
 " -- set noexpandtab
 set tabstop=2              " set tab keys to 2 spaces
