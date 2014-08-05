@@ -1,0 +1,53 @@
+#!/bin/bash
+#
+# by bohoomil
+# Display the number of installed packages,
+# version of the kernel and gcc used.
+
+HOST=$(uname -n)
+KERNEL=$(uname -r)
+MACHINE=$(uname -m)
+GCC=$(gcc --version | head -n 1 | awk '{ print $3 }')
+SETUP=$(grep -i '\ installed filesystem' /var/log/pacman.log | perl -lne 'print $1 while (/\[(.*?)\]/g)')
+
+SHLL=$(echo $SHELL | awk -F '/' '{ print $3 }')
+
+ALL=$(pacman -Q | wc -l)
+EXPL=$(pacman -Qe | wc -l)
+EXPLND=$(pacman -Qet | wc -l)
+LOCAL=$(pacman -Qm | wc -l)
+DWMV=$(dwm -v 2>&1 | awk -F ',' '{gsub("dwm-",""); print $1 }')
+UPT=$(uptime | sed 's/.*up \(.*\),.*user.*/\1/')
+
+echo ""
+echo -e "      machine: \e[00;36m$HOST\e[0;0m"
+echo ""
+
+echo -e "  set up date: \e[00;37m$SETUP\e[0;0m"
+
+echo -e " architecture: \e[01;34m$MACHINE\e[0;0m"
+
+echo -e "       kernel: \e[01;34m$KERNEL\e[0;0m"
+
+echo -e "          gcc: \e[01;34m$GCC\e[0;0m"
+
+echo -e "        shell: \e[01;34m$SHLL\e[0;0m"
+
+echo -e "          dwm: \e[01;34m$DWMV\e[0;0m"
+
+echo -e "       uptime: \e[01;34m$UPT\e[0;0m"
+
+echo ""
+
+echo -e "\e[01;31m $ALL\e[0;0m" installed packages altogether;
+
+echo -e "\e[01;33m $EXPL\e[0;0m" explicitly installed packages \(incl. deps\);
+
+echo -e "\e[01;36m $EXPLND\e[0;0m" explicitly installed packages \(excl. deps\);
+
+echo -e " \e[01;32m $LOCAL\e[0;0m"  locally installed packages.
+
+echo ""
+
+exit 0
+
