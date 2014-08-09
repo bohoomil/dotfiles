@@ -1,63 +1,67 @@
 #!/bin/sh
 # wrapper for Tarsnap by jwr
 
-box="homer"
+box="zeus"
 dir="/home/bohoomil /etc"
 
 # base commands
-arc="-c -f $box-$(date +%d%m%y) --humanize-numbers $dir"              # archive
-tst="-c -f $box-$(date +%d%m%y) --humanize-numbers --dry-run -v $dir" # dry run
-del="-d -f $box-"                                    # delete archive
-ext="-x -f $box-"                                    # extract archive
-                      
+# archive
+arc="-c -f $box-$(date +%d%m%y) --humanize-numbers $dir"
+# dry run
+tst="-c -f $box-$(date +%d%m%y) --humanize-numbers --dry-run -v $dir"
+# delete archive
+del="-d -f $box-"
+# extract archive
+ext="-x -f $box-"
+
 usage () {
 
-    cat <<EOF
-    Tarsnap options:
-      -a  |  archive   Create and upload a new snapshot
-      -d  |  delete    Delete a snapshot
-      -e  |  extract   Extract an archive
-      -l  |  list      List all current snapshots
-      -s  |  summary   Print a summary
-      -t  |  test      Dry-run a new snapshot
-      -h  |  help      Show these options
+  cat <<EOF
+  Tarsnap options:
+    -a  |  archive   Create and upload a new snapshot
+    -d  |  delete    Delete a snapshot
+    -e  |  extract   Extract an archive
+    -l  |  list      List all current snapshots
+    -s  |  summary   Print a summary
+    -t  |  test      Dry-run a new snapshot
+    -h  |  help      Show these options
 EOF
 
 }
 
 check () {
-    while true; do
-        read -p "Which archive? " archive
+  while true; do
+    read -p "Which archive? " archive
 
-        # check for an archive number 
-        if [ ! -z "${archive##*[!0-9]*}" ]; then
-            
-            [ "$opt" = "-d" ] && op="${del}${archive}" || op="${ext}${archive}"
-            break
-        
-        else
-            printf "%s\n\n" "Numbers, please..."
-        fi
-    done
+    # check for an archive number
+    if [ ! -z "${archive##*[!0-9]*}" ]; then
+
+      [ "$opt" = "-d" ] && op="${del}${archive}" || op="${ext}${archive}"
+      break
+
+    else
+      printf "%s\n\n" "Numbers, please..."
+    fi
+  done
 }
 
 dryrun () {
-    printf "%s\n" "Starting dry run: results saved to tarsnapout.txt" 
-    op="${tst}" 
+  printf "%s\n" "Starting dry run: results saved to tarsnapout.txt"
+  op="${tst}"
 }
 
 opt="$1"
 [ -z "$opt" ] && usage && exit
 
-    case "$1" in
-        -a) op="${arc}"           ;;
-        -l) op="--list-archives"  ;; 
-        -s) op="--print-stats"    ;; 
-     -d|-e) check                 ;;
-        -t) dryrun                ;;
-      -h|*) usage && exit         ;;  
-    esac
+  case "$1" in
+    -a) op="${arc}"           ;;
+    -l) op="--list-archives"  ;;
+    -s) op="--print-stats"    ;;
+    -d|-e) check              ;;
+    -t) dryrun                ;;
+    -h|*) usage && exit       ;;
+  esac
 
-# run the options    
+# run the options
 [ "$1" = "-t" ] && sudo tarsnap $op 2>tarsnapout.txt || sudo tarsnap $op
 
