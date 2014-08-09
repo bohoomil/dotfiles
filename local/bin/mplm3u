@@ -1,3 +1,3 @@
 #!/bin/sh
-urxvtc -geometry 98x30 -e mplayer -playlist "$1"
+urxvtc -geometry 98x30 -e mpv -playlist "$1"
 
