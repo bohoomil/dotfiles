@@ -1,0 +1,27 @@
+# mpv config by bohoomil
+
+user-agent="Mozilla/5.0"
+
+stop-screensaver=yes
+
+#vo=opengl,lscale=lanczos2
+vo=opengl-hq
+vf=hqdn3d:chroma_spatial=3
+sub-gauss=0.75              # (0.0-3.0)
+sub-gray
+slang=en
+
+ao=alsa:device=mpv:mixer-name=MPV,block=no
+ad-lavc-downmix=no
+audio-channels=stereo
+softvol=no
+volstep=2
+volume=50
+
+no-border
+
+cache-default=9182
+
+msg-color
+msg-level=af=fatal:ffmpeg=fatal:ao=warn:cplayer=warn:statusline=status:demux=info
+
