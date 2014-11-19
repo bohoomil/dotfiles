@@ -6,7 +6,7 @@
 # dependency: GeoIP
 
 myip=$(dig myip.opendns.com @resolver1.opendns.com +short)
-loc=$(geoiplookup $myip | awk -F' ' '{print $4}' | sed '$s/,$//')
+loc=$(geoiplookup $myip | awk -F' ' '{gsub(/,/,""); print $4}')
 
 echo -en "IP: $myip\n";
 echo -en "country:\e[01;35m $loc\n";
