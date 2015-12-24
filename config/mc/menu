@@ -150,7 +150,7 @@ n       Inspect gzip'ed newsbatch file
 
 = t r &
 + ! t t
-h       Strip headers from current newsarticle
+h       Strip headers from current news article
 	CHECK=`awk '{print $1 ; exit}' %f` 2>/dev/null
 	case "$CHECK" in
 	  Newsgroups:|Path:)
@@ -165,7 +165,7 @@ h       Strip headers from current newsarticle
 	esac
 
 + t t
-H       Strip headers from the marked newsarticles
+H       Strip headers from the marked news articles
 	set %t
 	while [ -n "$1" ]; do
 	  CHECK=`awk '{print $1 ; exit}' $1` 2>/dev/null
