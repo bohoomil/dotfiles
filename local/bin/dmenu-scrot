@@ -6,7 +6,7 @@
 #1.Added variable for notification timeouts. 2. Show link in notification
 
 
-IMG_PATH=/home/bohoomil
+IMG_PATH=$HOME
 UL=fb
 EDIT=display
 
